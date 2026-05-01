@@ -1,0 +1,7 @@
+{
+  "name": "Web y Movil",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
