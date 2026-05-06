@@ -1,0 +1,49 @@
+/* src/components/ProcedureCard.css */
+
+.procedure-card {
+  height: 100%;
+  /* Relleno: #EEEEEE al 94% aproximadamente */
+  background: rgba(238, 238, 238, 0.94); 
+  
+  /* Trazos: #A8B7C7 con Peso: 1 */
+  border: 1px solid #A8B7C7;
+  
+ 
+  
+
+}
+
+.procedure-card:hover {
+  /* Un pequeño efecto al pasar el mouse para que se sienta interactivo en web */
+  transform: translateY(-4px);
+  filter: brightness(0.98);
+}
+
+.card-header-icon {
+  font-size: 32px;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.card-description {
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.4;
+  min-height: 45px;
+}
+
+.detail-button {
+  margin-top: 20px;
+  /* El botón azul que ya definimos en el global */
+  --border-radius: 4px;
+  font-weight: bold;
+  height: 36px;
+  width: fit-content;
+}

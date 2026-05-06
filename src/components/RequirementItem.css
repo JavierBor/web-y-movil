@@ -1,0 +1,48 @@
+/* src/components/RequirementItem.css */
+
+.requirement-item-box {
+  /* Forzamos el fondo blanco para contrastar con el MainCard gris */
+  background: #ffffff !important; 
+  border: 1px solid #cccccc !important;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  height: 100%;
+  min-height: 90px;
+  /* Mantenemos puntas rectas para el look municipal */
+  border-radius: 0; 
+  margin-bottom: 10px;
+}
+
+.requirement-icon-container {
+  /* Aquí está el truco para los iconos pequeños */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+}
+
+.requirement-icon-container ion-icon {
+  font-size: 38px; /* Tamaño grande y claro */
+  color: #333333;
+}
+
+.requirement-text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.requirement-item-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #222222;
+  line-height: 1.2;
+}
+
+.requirement-item-desc {
+  margin: 6px 0 0 0;
+  font-size: 0.85rem;
+  color: #666666;
+}

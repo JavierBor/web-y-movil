@@ -1,0 +1,24 @@
+.docs-subtitle {
+  text-align: center;
+  color: #666;
+  margin-top: -20px;
+  margin-bottom: 30px;
+}
+
+.detalle-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 30px;
+}
+
+.btn-continuar {
+  --border-radius: 4px;
+  font-weight: bold;
+  text-transform: none;
+  min-width: 120px;
+}
+
+/* Espaciado entre las tarjetas de requisitos */
+ion-col {
+  padding: 8px;
+}

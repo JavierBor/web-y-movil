@@ -75,7 +75,7 @@ const MenuPrincipal: React.FC = () => {
                   <br/>
                   <p>Accede al catalogo de tramites para filtrar por sucursal y ver requisitos</p>
                   <br/>
-                  <IonButton expand="block">Agendar Cita</IonButton>
+                  <IonButton expand="block" routerLink="\tramites">Agendar Cita</IonButton>
                 </IonCardContent>
               </IonCard>
             </IonCol>

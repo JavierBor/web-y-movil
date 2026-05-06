@@ -1,0 +1,52 @@
+/* Altura fija y elegante para el Toolbar en Web */
+.custom-toolbar {
+  --padding-top: 5px;
+  --padding-bottom: 5px;
+  --min-height: 70px;
+}
+
+/* Título a la izquierda: quitamos el absolute */
+.header-web-title {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: 15px;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+/* Logo centrado sin chocar con los lados */
+.header-logo-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none; /* Permite hacer clic en botones debajo si fuera necesario */
+  z-index: 10;
+}
+
+.header-logo-img {
+  height: 55px;
+  width: auto;
+  background: white;
+  padding: 4px;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Ajustes de botones */
+.account-btn {
+  --color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Media query: Si la ventana es pequeña, reducimos el título */
+@media (max-width: 900px) {
+  .header-web-title {
+    font-size: 16px;
+  }
+  .header-logo-img {
+    height: 45px;
+  }
+}

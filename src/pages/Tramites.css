@@ -1,0 +1,47 @@
+/* Título principal de la página */
+.page-main-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* Contenedor del filtro de sucursales (RF3) */
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 40px;
+  max-width: 300px; /* Evita que el select sea demasiado ancho en web */
+}
+
+.filter-label {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+/* Estilo para el IonSelect tipo Web */
+.sucursal-select {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  --placeholder-color: #666;
+  --placeholder-opacity: 1;
+}
+
+/* Espaciado del Grid para que no quede pegado al filtro */
+ion-grid {
+  padding: 0;
+  margin-top: 20px;
+}
+
+/* Media Query para pantallas muy grandes (Ultra-wide) */
+@media (min-width: 1400px) {
+  .page-main-title {
+    font-size: 3rem;
+  }
+}
