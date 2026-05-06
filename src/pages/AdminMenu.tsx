@@ -24,7 +24,9 @@ const AdminMenu: React.FC = () => {
                   <IonCardContent>
                     <IonIcon icon={calendarOutline} className="card-icon" />
                     <h2>Gestionar Trámites</h2>
+                    <br/>
                     <p>Gestionar a modificar los trámites solicitados en la municipalidad</p>
+                    <br/>
                     <IonButton expand="block" routerLink="/admin/gestion">Agendar Cita</IonButton>
                   </IonCardContent>
                 </IonCard>
@@ -36,7 +38,9 @@ const AdminMenu: React.FC = () => {
                   <IonCardContent>
                     <IonIcon icon={clipboardOutline} className="card-icon" />
                     <h2>Ver Tramites Pendientes</h2>
+                    <br/>
                     <p>Ver el estado y seguimniento de solicitudes en curso</p>
+                    <br/>
                     <IonButton expand="block" routerLink="/admin/pendientes">Ver tramites</IonButton>
                   </IonCardContent>
                 </IonCard>
@@ -48,7 +52,9 @@ const AdminMenu: React.FC = () => {
                   <IonCardContent>
                     <IonIcon icon={notificationsOutline} className="card-icon" />
                     <h2>Enviar Alertas/Avisos</h2>
+                    <br/>
                     <p>Envia alertas y avisos urgentes sobre citas y tramites</p>
+                    <br/>
                     <IonButton expand="block" routerLink="/admin/avisos">Enviar aviso</IonButton>
                   </IonCardContent>
                 </IonCard>

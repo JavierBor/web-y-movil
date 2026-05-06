@@ -30,7 +30,7 @@ import './Tramites.css';
 
 const Tramites: React.FC = () => {
   const history = useHistory();
-  const [sucursal, setSucursal] = useState('Valparaiso');
+  const [sucursal, setSucursal] = useState('Edificio Consistorial Av. Sta Teresa');
 
   // Datos de los trámites municipales
   const listaTramites = [
@@ -40,7 +40,7 @@ const Tramites: React.FC = () => {
       desc: "Impuesto anual para el tránsito legal de vehículos" 
     },
     { 
-      title: "Obtener/Renovar Licencia de Conducir", 
+      title: "Obtener/Renovar Licencia", 
       icon: documentTextOutline, 
       desc: "Documento oficial que autoriza legalmente a conducir" 
     },
