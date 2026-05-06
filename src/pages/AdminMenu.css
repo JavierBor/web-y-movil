@@ -1,0 +1,7 @@
+.admin-label {
+  color: white;
+  font-weight: bold;
+  font-size: 22px; /* Un poco más grande como en el mockup */
+  margin-right: 15px;
+  text-transform: none;
+}

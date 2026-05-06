@@ -37,6 +37,7 @@ import MenuPrincipal from './pages/MenuPrincipal';
 import Tramites from './pages/Tramites'; // Tu nueva página
 import DetalleTramite from './pages/DetalleTramite';
 import SubirDocumentos from './pages/SubirDocumentos';
+import AdminMenu from './pages/AdminMenu';
 setupIonicReact();
 
 const App: React.FC = () => (
@@ -48,6 +49,7 @@ const App: React.FC = () => (
         <Route path="/Register" component={Register} exact />
         <Route path="/MenuPrincipal" component={MenuPrincipal} exact />
         <Route path="/agendar" component={Tramites} exact />
+        <Route path="/AdminMenu" component={AdminMenu} exact /> 
     
         <Route path="/detalle-tramite" component={DetalleTramite} exact />
         <Route path="/subir-documentos" component={SubirDocumentos} exact />

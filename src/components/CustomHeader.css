@@ -1,52 +1,49 @@
-/* Altura fija y elegante para el Toolbar en Web */
 .custom-toolbar {
-  --padding-top: 5px;
-  --padding-bottom: 5px;
-  --min-height: 70px;
+  --padding-start: 20px;
+  --padding-end: 20px;
+  position: relative;
 }
 
-/* Título a la izquierda: quitamos el absolute */
 .header-web-title {
-  color: white;
   font-size: 20px;
   font-weight: bold;
+  color: white;
   margin-left: 15px;
   text-transform: none;
-  white-space: nowrap;
+  z-index: 2; /* Por encima del logo */
 }
 
-/* Logo centrado sin chocar con los lados */
 .header-logo-wrapper {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none; /* Permite hacer clic en botones debajo si fuera necesario */
-  z-index: 10;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none; /* No bloquea clics en botones [cite: 47] */
+  z-index: 1;
 }
 
 .header-logo-img {
-  height: 55px;
-  width: auto;
+  height: 50px;
   background: white;
   padding: 4px;
   border-radius: 4px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-/* Ajustes de botones */
 .account-btn {
-  --color: white;
   font-weight: bold;
-  font-size: 14px;
+  --color: white;
+  z-index: 2;
 }
 
-/* Media query: Si la ventana es pequeña, reducimos el título */
-@media (max-width: 900px) {
-  .header-web-title {
-    font-size: 16px;
-  }
-  .header-logo-img {
-    height: 45px;
-  }
+/* Estilo para la etiqueta Admin del mockup de administrador [cite: 112] */
+.admin-label {
+  color: white;
+  font-weight: bold;
+  font-size: 22px;
+  margin-right: 15px;
+  text-transform: none;
 }

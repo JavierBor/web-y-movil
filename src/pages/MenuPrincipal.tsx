@@ -10,6 +10,7 @@ import {
   closeOutline, logOutOutline, settingsOutline 
 } from 'ionicons/icons';
 import './MenuPrincipal.css';
+import CustomHeader from '../components/CustomHeader';
 
 const MenuPrincipal: React.FC = () => {
   const [popoverState, setPopoverState] = useState({ showPopover: false, event: undefined });
@@ -25,25 +26,7 @@ const MenuPrincipal: React.FC = () => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="primary">
-          <IonButtons slot="start">
-            <IonBackButton defaultHref="/login" text="Inicio" />
-          </IonButtons>
-          
-          <div className="header-logo-container">
-            <IonImg src="/Logo.png" className="header-logo" alt="Logo Municipalidad" />
-          </div>
-          <h1 className="header-title">Municipalidad Santo Domingo</h1>
-          <IonButtons slot="end">
-            <IonButton onClick={openPopover}>
-              <IonIcon slot="start" icon={personCircleOutline} />
-              Mi Cuenta
-              <IonIcon slot="end" icon={chevronDownOutline} />
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
+      <CustomHeader showBackButton={false} />
 
       {/* Popover solicitado: Modo Administrador y Cerrar Sesión */}
       <IonPopover

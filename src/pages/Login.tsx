@@ -19,6 +19,7 @@ import {
 } from '@ionic/react';
 import { personCircleOutline, chevronDownOutline } from 'ionicons/icons';
 import './Login.css';
+import CustomHeader from '../components/CustomHeader';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -32,23 +33,7 @@ const Login: React.FC = () => {
   return (
     <IonPage>
       {/* Encabezado con color corporativo */}
-      <IonHeader>
-        <IonToolbar color="primary">
-          
-          <div className="header-logo-container">
-            {/* Reemplaza 'assets/logo.png' con la ruta real de tu imagen */}
-            <IonImg src="public/logo.png" className="header-logo" alt="Logo Municipalidad" />
-          </div>
-          <h1 className="header-title">Municipalidad Santo Domingo</h1>
-          <IonButtons slot="end">
-            <IonButton>
-              <IonIcon slot="start" icon={personCircleOutline} />
-              Mi Cuenta
-              <IonIcon slot="end" icon={chevronDownOutline} />
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
+      <CustomHeader showBackButton={false} showAccountButton={false} />
 
       <IonContent className="ion-padding login-background">
         <div className="login-container">

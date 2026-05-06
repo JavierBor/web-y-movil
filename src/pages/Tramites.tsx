@@ -40,7 +40,7 @@ const Tramites: React.FC = () => {
       desc: "Impuesto anual para el tránsito legal de vehículos" 
     },
     { 
-      title: "Obtener/Renovar Licencia", 
+      title: "Obtener/Renovar Licencia de Conducir", 
       icon: documentTextOutline, 
       desc: "Documento oficial que autoriza legalmente a conducir" 
     },
@@ -92,8 +92,7 @@ const Tramites: React.FC = () => {
                 interface="popover"
                 onIonChange={e => setSucursal(e.detail.value)}
               >
-                <IonSelectOption value="Valparaiso">Valparaíso</IonSelectOption>
-                <IonSelectOption value="Santo Domingo">Santo Domingo</IonSelectOption>
+                <IonSelectOption value="Edificio Consistorial Av. Sta Teresa">Edificio Consistorial Av. Sta Teresa</IonSelectOption>
               </IonSelect>
             </div>
 
