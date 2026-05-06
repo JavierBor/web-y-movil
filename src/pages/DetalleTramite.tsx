@@ -66,11 +66,11 @@ const DetalleTramite: React.FC = () => {
                     description="Aprobacion obligatoria." 
                   />
                 </IonCol>
-              </IoginRow>
+              </IonRow>
             </IonGrid>
 
             <div className="detalle-footer">
-                <IonButton routerLink="/subir-documentos">Continuar</IonButton>
+            <IonButton routerLink="/subir-documentos">Continuar</IonButton>
               
                
             </div>
