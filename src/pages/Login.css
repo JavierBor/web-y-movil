@@ -1,76 +1,54 @@
-/* Contenedor principal para centrar el formulario */
-.login-container {
+/* src/pages/Login.css */
+
+/* Contenedor interno del formulario dentro del MainCard */
+.login-form {
+  padding: 10px 0;
+}
+
+/* Estilo del botón principal de acceso */
+.btn-ingresar {
+  margin-top: 10px; /* Reducido porque el CustomInput ya tiene su propio margen inferior */
+  --border-radius: 4px;
+  font-weight: bold;
+  height: 45px; /* Un poco más de altura para mejor UX en web */
+}
+
+/* Divisor estético entre las dos acciones principales */
+.register-divider {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  margin: 30px 0;
+  color: #999;
 }
 
-.login-title {
-  font-weight: normal;
-  margin-bottom: 20px;
+.register-divider hr {
+  flex: 1;
+  border: none;
+  border-top: 1px solid #ddd;
 }
 
-/* Estilo de la tarjeta */
-.login-card {
-  width: 100%;
-  max-width: 400px;
-  background: #f0f0f0; /* Color gris claro del mockup */
-  border: 1px solid #ccc;
-  border-radius: 8px;
+.register-divider span {
+  padding: 0 15px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-/* Inputs con borde y fondo blanco */
-.custom-input {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-top: 8px;
-  --padding-start: 10px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
+/* Sección inferior para usuarios nuevos */
 .register-section {
   text-align: center;
-  margin-top: 20px;
 }
 
-/* Contenedor del Logo */
-.header-logo-container {
-  display: flex;
-  justify-content: flex-start; /* Alinea a la izquierda */
-  align-items: center;     
-  position: absolute;
-  width: 100%;
-  height: 100%;            /* Ocupa todo el alto de la barra para centrarse bien */
-  top: 0;
-  left: 0;
-  pointer-events: none;    /* Permite que los botones de los lados sigan siendo clickeables */
-  z-index: 0;
-  margin-left: 190px;      /* Espacio desde el borde izquierdo */
+.register-section p {
+  margin-bottom: 12px;
+  font-size: 0.9rem;
 }
 
-/* Ajustes de la Imagen del Logo */
-.header-logo {
-  height: 80px;            /* Aumentamos de 40px a 60px (ajústalo a tu gusto) */
-  max-height: 100%;         /* Evita que se salga de la barra azul */
-  width: auto;             /* Mantiene la proporción */
-  background: white;       /* Fondo blanco como en el mockup */
-  padding: 5px;            /* Espaciado interno para que el logo no toque los bordes del fondo blanco */
-  border-radius: 4px;      /* Bordes ligeramente redondeados para suavizar */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sombra sutil para darle profundidad */
-}
-
-.header-title {
-  position: absolute;
-  left: 15;
-  bottom: 10%;
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-  z-index: 1; /* Asegura que el título esté por encima del logo */
+.btn-register-outline {
+  --border-radius: 4px;
+  --border-width: 1.5px;
+  font-weight: 600;
+  height: 45px;
 }

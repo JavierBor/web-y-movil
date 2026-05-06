@@ -38,6 +38,7 @@ import Tramites from './pages/Tramites'; // Tu nueva página
 import DetalleTramite from './pages/DetalleTramite';
 import SubirDocumentos from './pages/SubirDocumentos';
 import AdminMenu from './pages/AdminMenu';
+import AgendarCita from './pages/AgendarCita';
 setupIonicReact();
 
 const App: React.FC = () => (
@@ -53,6 +54,7 @@ const App: React.FC = () => (
     
         <Route path="/detalle-tramite" component={DetalleTramite} exact />
         <Route path="/subir-documentos" component={SubirDocumentos} exact />
+        <Route path="/seleccionar-fecha" component={AgendarCita} exact />
 
       </IonRouterOutlet>
     </IonReactRouter>

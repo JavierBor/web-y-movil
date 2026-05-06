@@ -1,0 +1,96 @@
+/* Contenedores de columnas */
+.calendar-col { padding-right: 30px; border-right: 1px solid #ddd; }
+.times-col { padding-left: 30px; }
+
+/* Estilo del Calendario */
+.calendar-wrapper { background: white; padding: 10px; }
+
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.month-name { font-weight: bold; font-size: 1.1rem; color: #333; }
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.weekday-label {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #999;
+  font-weight: bold;
+  padding-bottom: 10px;
+}
+
+.day-cell {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s;
+  border: 1px solid #f0f0f0;
+}
+
+.day-cell:hover:not(.blocked) { background: #f5f5f5; }
+
+.day-cell.active {
+  background: #71889c !important; /* El color de tu mockup */
+  color: white;
+  font-weight: bold;
+}
+
+.day-cell.blocked {
+  background: #eee;
+  color: #bbb;
+  cursor: not-allowed;
+}
+
+/* Botones de Tiempo */
+.section-subtitle { font-size: 1rem; color: #333; margin-bottom: 20px; font-weight: bold; }
+.time-group-label { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+
+.time-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.time-btn {
+  background: white;
+  border: 1px solid #A8B7C7;
+  padding: 8px 0;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.time-btn.selected {
+  background: #0054a6;
+  color: white;
+  border-color: #0054a6;
+}
+
+/* Footer */
+.calendar-footer {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+}
+
+.btn-confirm { --border-radius: 4px; width: 250px; font-weight: bold; }
+
+/* Responsive */
+@media (max-width: 992px) {
+  .calendar-col { border-right: none; border-bottom: 1px solid #ddd; padding: 0 0 30px 0; }
+  .times-col { padding: 30px 0 0 0; }
+}

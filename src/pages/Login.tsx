@@ -1,25 +1,17 @@
 import React, { useState } from 'react';
 import { 
   IonContent, 
-  IonHeader, 
   IonPage, 
-  IonTitle, 
-  IonToolbar, 
-  IonInput, 
   IonButton, 
-  IonItem, 
-  IonLabel, 
-  IonCard, 
-  IonCardContent, 
-  IonButtons, 
-  IonBackButton, 
-  IonImg,
-  IonIcon,
   IonText
 } from '@ionic/react';
-import { personCircleOutline, chevronDownOutline } from 'ionicons/icons';
 import './Login.css';
+
+// Componentes de Arquitectura Estandarizada
 import CustomHeader from '../components/CustomHeader';
+import PageLayout from '../components/PageLayout';
+import MainCard from '../components/MainCard';
+import CustomInput from '../components/CustomInput';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -27,53 +19,65 @@ const Login: React.FC = () => {
 
   const handleLogin = () => {
     console.log('Iniciando sesión con:', email, password);
-    // Aquí irá la lógica de autenticación con JWT más adelante [cite: 51]
+    // Próxima parada: Integración con Backend
   };
 
   return (
     <IonPage>
-      {/* Encabezado con color corporativo */}
-      <CustomHeader showBackButton={false} showAccountButton={false} />
+      <CustomHeader showBackButton={false} />
 
-      <IonContent className="ion-padding login-background">
-        <div className="login-container">
-          <h1 className="login-title">Iniciar Sesión</h1>
-          
-          <IonCard className="login-card">
-            <IonCardContent>
-              <div className="form-group">
-                <IonLabel position="stacked">Correo Electrónico</IonLabel>
-                <IonInput 
-                  type="email" 
-                  value={email} 
-                  onIonChange={e => setEmail(e.detail.value!)}
-                  className="custom-input"
-                />
-              </div>
+      <IonContent>
+        <PageLayout>
+          <MainCard title="Iniciar Sesión" maxWidth="450px">
+            
+            <div className="login-form">
+              {/* Usamos nuestro nuevo componente reutilizable */}
+              <CustomInput 
+                label="Correo Electrónico"
+                type="email"
+                placeholder="correo@ejemplo.cl"
+                value={email}
+                onIonChange={setEmail} 
+              />
 
-              <div className="form-group">
-                <IonLabel position="stacked">Contraseña</IonLabel>
-                <IonInput 
-                  type="password" 
-                  value={password} 
-                  onIonChange={e => setPassword(e.detail.value!)}
-                  className="custom-input"
-                />
-              </div>
+              <CustomInput 
+                label="Contraseña"
+                type="password"
+                placeholder="********"
+                value={password}
+                onIonChange={setPassword}
+              />
 
-              <IonButton expand="block" className="ion-margin-top" routerLink="/MenuPrincipal" onClick={handleLogin}>
+              <IonButton 
+                expand="block" 
+                className="btn-ingresar" 
+                routerLink="/MenuPrincipal" 
+                onClick={handleLogin}
+              >
                 Iniciar sesión
               </IonButton>
 
+              <div className="register-divider">
+                <hr /> <span>O</span> <hr />
+              </div>
+
               <div className="register-section">
-                <p>¿No tienes cuenta?</p>
-                <IonButton fill="solid" expand="block" routerLink="/register">
-                  Registrarse
+                <IonText color="medium">
+                  <p>¿No tienes cuenta?</p>
+                </IonText>
+                <IonButton 
+                  fill="outline" 
+                  expand="block" 
+                  routerLink="/register" 
+                  className="btn-register-outline"
+                >
+                  Crear una cuenta nueva
                 </IonButton>
               </div>
-            </IonCardContent>
-          </IonCard>
-        </div>
+            </div>
+
+          </MainCard>
+        </PageLayout>
       </IonContent>
     </IonPage>
   );

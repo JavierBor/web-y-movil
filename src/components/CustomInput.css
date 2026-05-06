@@ -1,0 +1,27 @@
+.custom-input-group {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.custom-input-label {
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.muni-input-field {
+  --background: white;
+  --padding-start: 12px;
+  border: 1px solid #A8B7C7; /* El color de borde institucional */
+  margin-top: 5px;
+  --border-radius: 4px;
+  min-height: 40px;
+  font-size: 0.95rem;
+}
+
+/* Efecto focus para que se vea pro */
+.muni-input-field.ion-focused {
+  border-color: var(--ion-color-primary);
+  box-shadow: 0 0 0 1px var(--ion-color-primary);
+}

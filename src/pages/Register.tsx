@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
 import { 
-  IonContent, IonHeader, IonPage, IonToolbar, IonInput, IonButton, 
-  IonLabel, IonCard, IonCardContent, IonButtons, IonBackButton, 
-  IonImg, IonIcon, IonGrid, IonRow, IonCol, IonCheckbox, IonItem
+  IonContent, 
+  IonPage, 
+  IonButton, 
+  IonGrid, 
+  IonRow, 
+  IonCol, 
+  IonCheckbox, 
+  IonItem,
+  IonLabel,
+  IonText
 } from '@ionic/react';
-import { personCircleOutline, chevronDownOutline } from 'ionicons/icons';
 import './Register.css';
+
+// Componentes de Arquitectura Estandarizada
 import CustomHeader from '../components/CustomHeader';
+import PageLayout from '../components/PageLayout';
+import MainCard from '../components/MainCard';
+import CustomInput from '../components/CustomInput';
 
 const Register: React.FC = () => {
-  // Estados para capturar los datos requeridos por la pauta
   const [formData, setFormData] = useState({
     email: '',
     username: '',
@@ -21,108 +31,114 @@ const Register: React.FC = () => {
     terms: false
   });
 
+  // Función auxiliar para actualizar campos específicos del objeto de estado
+  const updateField = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
   const handleRegister = () => {
     console.log('Datos de registro:', formData);
-    // Próximamente: validaciones y envío a API con JWT 
+    // Lógica futura: validaciones y envío a API
   };
 
   return (
     <IonPage>
-      <CustomHeader defaultHref="/Login" showAccountButton={false} />
+      <CustomHeader defaultHref="/Login" />
 
-      <IonContent className="ion-padding register-background">
-        <div className="register-container">
-          <h1 className="register-title">Registrar cuenta</h1>
-          
-          <IonCard className="register-card">
-            <IonCardContent>
-              <IonGrid>
-                <IonRow>
-                  {/* Columna Izquierda */}
-                  <IonCol size="12" sizeMd="6">
-                    <div className="form-group">
-                      <IonLabel position="stacked">Correo Electrónico</IonLabel>
-                      <IonInput 
-                        className="custom-input"
-                        value={formData.email}
-                        onIonChange={e => setFormData({...formData, email: e.detail.value!})}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <IonLabel position="stacked">Nombre de usuario</IonLabel>
-                      <IonInput 
-                        className="custom-input"
-                        value={formData.username}
-                        onIonChange={e => setFormData({...formData, username: e.detail.value!})}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <IonLabel position="stacked">Comuna</IonLabel>
-                      <IonInput 
-                        className="custom-input"
-                        value={formData.comuna}
-                        onIonChange={e => setFormData({...formData, comuna: e.detail.value!})}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <IonLabel position="stacked">Confirmar contraseña</IonLabel>
-                      <IonInput 
-                        type="password"
-                        className="custom-input"
-                        value={formData.confirmPassword}
-                        onIonChange={e => setFormData({...formData, confirmPassword: e.detail.value!})}
-                      />
-                    </div>
-                  </IonCol>
+      <IonContent>
+        <PageLayout>
+          <MainCard title="Registrar Cuenta" maxWidth="900px">
+            
+            <IonGrid className="ion-no-padding">
+              <IonRow>
+                {/* COLUMNA IZQUIERDA */}
+                <IonCol size="12" sizeMd="6" className="register-col-padding">
+                  <CustomInput 
+                    label="Correo Electrónico"
+                    placeholder="correo@ejemplo.cl"
+                    type="email"
+                    value={formData.email}
+                    onIonChange={(val) => updateField('email', val)}
+                  />
 
-                  {/* Columna Derecha */}
-                  <IonCol size="12" sizeMd="6">
-                    <div className="form-group">
-                      <IonLabel position="stacked">RUT</IonLabel>
-                      <IonInput 
-                        className="custom-input"
-                        value={formData.rut}
-                        onIonChange={e => setFormData({...formData, rut: e.detail.value!})}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <IonLabel position="stacked">Región</IonLabel>
-                      <IonInput 
-                        className="custom-input"
-                        value={formData.region}
-                        onIonChange={e => setFormData({...formData, region: e.detail.value!})}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <IonLabel position="stacked">Contraseña</IonLabel>
-                      <IonInput 
-                        type="password"
-                        className="custom-input"
-                        value={formData.password}
-                        onIonChange={e => setFormData({...formData, password: e.detail.value!})}
-                      />
-                    </div>
+                  <CustomInput 
+                    label="Nombre de Usuario"
+                    placeholder="JuanPerez123"
+                    value={formData.username}
+                    onIonChange={(val) => updateField('username', val)}
+                  />
 
-                    <IonItem lines="none" className="terms-item">
-                      <IonCheckbox 
-                        slot="start" 
-                        checked={formData.terms}
-                        onIonChange={e => setFormData({...formData, terms: e.detail.checked})}
-                      />
-                      <IonLabel>Acepto términos y condiciones</IonLabel>
-                    </IonItem>
+                  <CustomInput 
+                    label="Comuna"
+                    placeholder="Santo Domingo"
+                    value={formData.comuna}
+                    onIonChange={(val) => updateField('comuna', val)}
+                  />
 
-                    <div className="button-container">
-                      <IonButton expand="block" onClick={handleRegister} routerLink='/MenuPrincipal'>
-                        Registrarse
-                      </IonButton>
-                    </div>
-                  </IonCol>
-                </IonRow>
-              </IonGrid>
-            </IonCardContent>
-          </IonCard>
-        </div>
+                  <CustomInput 
+                    label="Contraseña"
+                    type="password"
+                    placeholder="********"
+                    value={formData.password}
+                    onIonChange={(val) => updateField('password', val)}
+                  />
+                </IonCol>
+
+                {/* COLUMNA DERECHA */}
+                <IonCol size="12" sizeMd="6" className="register-col-padding">
+                  <CustomInput 
+                    label="RUT"
+                    placeholder="12.345.678-9"
+                    value={formData.rut}
+                    onIonChange={(val) => updateField('rut', val)}
+                  />
+
+                  <CustomInput 
+                    label="Región"
+                    placeholder="Valparaíso"
+                    value={formData.region}
+                    onIonChange={(val) => updateField('region', val)}
+                  />
+
+                  <CustomInput 
+                    label="Confirmar Contraseña"
+                    type="password"
+                    placeholder="********"
+                    value={formData.confirmPassword}
+                    onIonChange={(val) => updateField('confirmPassword', val)}
+                  />
+
+                  <IonItem lines="none" className="terms-checkbox-item">
+                    <IonCheckbox 
+                      slot="start" 
+                      checked={formData.terms}
+                      onIonChange={e => updateField('terms', e.detail.checked)}
+                    />
+                    <IonLabel className="ion-text-wrap">Acepto términos y condiciones</IonLabel>
+                  </IonItem>
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+
+            <div className="register-actions">
+              <IonButton 
+                expand="block" 
+                onClick={handleRegister} 
+                routerLink='/MenuPrincipal'
+                className="btn-register-submit"
+              >
+                Crear cuenta
+              </IonButton>
+              
+              <IonText color="medium">
+                <p style={{marginTop: '15px'}}>
+                  ¿Ya tienes cuenta? <a href="/Login" className="login-link">Inicia sesión</a>
+                </p>
+              </IonText>
+            </div>
+
+          </MainCard>
+        </PageLayout>
       </IonContent>
     </IonPage>
   );
