@@ -13,7 +13,7 @@
 .muni-input-field {
   --background: white;
   --padding-start: 12px;
-  border: 1px solid #A8B7C7; /* El color de borde institucional */
+  border: 1px solid #A8B7C7; 
   margin-top: 5px;
   --border-radius: 4px;
   min-height: 40px;

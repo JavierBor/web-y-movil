@@ -1,110 +1,104 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
-  IonContent, IonHeader, IonPage, IonToolbar, IonTitle, IonButtons, 
-  IonBackButton, IonImg, IonButton, IonIcon, IonGrid, IonRow, 
-  IonCol, IonCard, IonCardContent, IonText, IonList, IonItem, IonPopover 
+  IonContent, 
+  IonPage, 
+  IonGrid, 
+  IonRow, 
+  IonCol, 
+  IonButton, 
+  IonIcon 
 } from '@ionic/react';
 import { 
-  personCircleOutline, chevronDownOutline, calendarOutline, 
-  clipboardOutline, notificationsOutline, alertCircleOutline, 
-  closeOutline, logOutOutline, settingsOutline 
+  calendarOutline, 
+  clipboardOutline, 
+  notificationsOutline, 
+  alertCircleOutline,
+  closeOutline
 } from 'ionicons/icons';
-import './MenuPrincipal.css';
+
+// Componentes de la Arquitectura
 import CustomHeader from '../components/CustomHeader';
+import PageLayout from '../components/PageLayout';
+import MainCard from '../components/MainCard';
 
-const MenuPrincipal: React.FC = () => {
-  const [popoverState, setPopoverState] = useState({ showPopover: false, event: undefined });
+import './MenuDashboard.css'; // Crearemos un CSS compartido para ambos menús
 
-  // Funciones para el menú de "Mi Cuenta"
-  const openPopover = (e: any) => {
-    setPopoverState({ showPopover: true, event: e.nativeEvent });
-  };
-
-  const closePopover = () => {
-    setPopoverState({ showPopover: false, event: undefined });
-  };
-
+function MenuPrincipal() {
   return (
     <IonPage>
       <CustomHeader showBackButton={false} />
 
-      {/* Popover solicitado: Modo Administrador y Cerrar Sesión */}
-      <IonPopover
-        isOpen={popoverState.showPopover}
-        event={popoverState.event}
-        onDidDismiss={closePopover}
-      >
-        <IonList>
-          <IonItem button routerLink="/admin-dashboard" onClick={closePopover}>
-            <IonIcon slot="start" icon={settingsOutline} />
-            Modo Administrador
-          </IonItem>
-          <IonItem button onClick={() => { console.log("Cerrando sesión"); closePopover(); }} lines="none">
-            <IonIcon slot="start" icon={logOutOutline} color="danger" />
-            <IonText color="danger">Cerrar sesión</IonText>
-          </IonItem>
-        </IonList>
-      </IonPopover>
+      <IonContent className="dashboard-bg">
+        <PageLayout>
+          {/* Un poco de padding superior para centrar verticalmente en la pantalla */}
+          <div className="dashboard-container">
+            
+            <IonGrid>
+              <IonRow className="ion-justify-content-center">
+                
+                {/* TARJETA 1: Agendar */}
+                <IonCol size="12" sizeMd="4">
+                  <MainCard maxWidth="100%" fullHeight={true}>
+                    <div className="dash-card-content">
+                      <IonIcon icon={calendarOutline} className="dash-icon" />
+                      <h2 className="dash-title">Agendar Tramite</h2>
+                      <p className="dash-desc">
+                        Accede al catalogo de tramites para filtrar por sucursal y ver requisitos
+                      </p>
+                      <IonButton expand="block" className="dash-btn" routerLink="/agendar">
+                        AGENDAR CITA
+                      </IonButton>
+                    </div>
+                  </MainCard>
+                </IonCol>
 
-      <IonContent className="ion-padding">
-        <IonGrid className="menu-grid">
-          <IonRow>
-            {/* RF1 y RF3: Agendar Trámite */}
-            <IonCol size="12" sizeMd="4">
-              <IonCard className="main-card" routerLink="/agendar">
-                <IonCardContent>
-                  <IonIcon icon={calendarOutline} className="card-icon" />
-                  <h2>Agendar Tramite</h2>
-                  <br/>
-                  <p>Accede al catalogo de tramites para filtrar por sucursal y ver requisitos</p>
-                  <br/>
-                  <IonButton expand="block" routerLink="\tramites">Agendar Cita</IonButton>
-                </IonCardContent>
-              </IonCard>
-            </IonCol>
+                {/* TARJETA 2: Mis Trámites */}
+                <IonCol size="12" sizeMd="4">
+                  <MainCard maxWidth="100%" fullHeight={true}>
+                    <div className="dash-card-content">
+                      <IonIcon icon={clipboardOutline} className="dash-icon" />
+                      <h2 className="dash-title">Ver Tramites Pendientes</h2>
+                      <p className="dash-desc">
+                        Consulta el estado y seguimiento de tus solicitudes en curso
+                      </p>
+                      <IonButton expand="block" className="dash-btn" routerLink="/mis-tramites">
+                        VER TRAMITES
+                      </IonButton>
+                    </div>
+                  </MainCard>
+                </IonCol>
 
-            {/* RF6: Ver Trámites Pendientes */}
-            <IonCol size="12" sizeMd="4">
-              <IonCard className="main-card" routerLink="/tramites-pendientes">
-                <IonCardContent>
-                  <IonIcon icon={clipboardOutline} className="card-icon" />
-                  <h2>Ver Tramites Pendientes</h2>
-                  <br/>
-                  <p>Consulta el estado y seguimiento de tus solicitudes en curso</p>
-                  <br/>
-                  <IonButton expand="block">Ver tramites</IonButton>
-                </IonCardContent>
-              </IonCard>
-            </IonCol>
+                {/* TARJETA 3: Notificaciones */}
+                <IonCol size="12" sizeMd="4">
+                  <MainCard maxWidth="100%" fullHeight={true}>
+                    <div className="dash-card-content relative-icon">
+                      {/* El puntito rojo de notificación */}
+                      <div className="notification-dot"></div>
+                      <IonIcon icon={notificationsOutline} className="dash-icon" />
+                      
+                      <h2 className="dash-title">Notificaciones Pendientes</h2>
+                      <p className="dash-desc">
+                        Recibe alertas y avisos urgentes sobre tus citas y tramites
+                      </p>
+                      
+                      
+                      <div className="alert-box warning">
+                        <IonIcon icon={alertCircleOutline} className="alert-icon" />
+                        <span className="alert-text">Recordatorio: Cita mañana a las 10:00 AM</span>
+                        <IonIcon icon={closeOutline} className="alert-close" />
+                      </div>
+                    </div>
+                  </MainCard>
+                </IonCol>
 
-            {/* Sistema de Notificaciones */}
-            <IonCol size="12" sizeMd="4">
-              <IonCard className="main-card">
-                <IonCardContent>
-                  <div className="notif-badge-container">
-                    <IonIcon icon={notificationsOutline} className="card-icon" />
-                    <div className="red-dot"></div>
-                  </div>
-                  <h2>Notificaciones Pendientes</h2>
-                   <br/>
-                  <p>Recibe alertas y avisos urgentes sobre tus citas y tramites</p>
-                   <br/>
-                  {/* Alerta de recordatorio según mockup */}
-                  <div className="notif-alert">
-                    <IonIcon icon={alertCircleOutline} slot="start" />
-                    <IonText>
-                      <small>Recordatorio: Cita mañana a las 10:00 AM</small>
-                    </IonText>
-                    <IonIcon icon={closeOutline} className="close-alert" />
-                  </div>
-                </IonCardContent>
-              </IonCard>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+              </IonRow>
+            </IonGrid>
+
+          </div>
+        </PageLayout>
       </IonContent>
     </IonPage>
   );
-};
+}
 
 export default MenuPrincipal;

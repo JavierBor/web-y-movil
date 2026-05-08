@@ -43,14 +43,14 @@ A continuación, se describen los requerimientos identificados para el desarroll
 | **RF4** | Postulación y Carga de Documentos | Formulario para ingresar datos personales y adjuntar archivos (Cédula de Identidad Frontal/Reverso). |
 | **RF5** | Acceso a notificaciones pendientes | El usuario recibirá alertas alertas y avisos sobre sus citas y trámites. |
 | **RF6** | Seguimiento de Estados (Tracking) | Visualización del progreso del trámite mediante una línea de tiempo (Recibido, En Revisión, Aprobado, etc.). |
-| **RF7** | El administrador podrá activar/desactivar trámites y moverlos entre sucursales en tiempo real. |
+| **RF7** | El administrador podrá Confirmar/Rechazar trámites y enviar alertas o avisos en tiempo real. |
 
 #### Requerimientos No Funcionales
 
 | ID | Nombre | Descripción |
 | :--- | :--- | :--- |
 | **RNF1** | Seguridad de Acceso | El sistema debe implementar autenticación mediante JWT (JSON Web Tokens) y asegurar que todas las contraseñas sean almacenadas usando un hash con bcrypt para protección de credenciales. |
-| **RNF2** | Responsividad y Multiplataforma | La interfaz debe ser desarrollada en Ionic con React, garantizando una experiencia de usuario coherente y fluida tanto en dispositivos móviles como en navegadores web. |
+| **RNF2** | Responsividad y Multiplataforma | La interfaz debe ser desarrollada en Ionic con React, garantizando una experiencia de usuario coherente y fluida en navegadores web, sin importar el tamaño de la pantalla. |
 | **RNF3** | Estándares de Arquitectura API | El backend debe operar como una API RESTful, utilizando el formato JSON para el intercambio de datos y manejando correctamente los códigos de estado HTTP para cada respuesta. |
 | **RNF4** | Integridad de Datos | El sistema debe utilizar una base de datos relacional (PostgreSQL o MySQL) con protección básica contra inyección SQL para garantizar la seguridad de la información de los trámites. |
 
@@ -90,7 +90,7 @@ La aplicación se organiza en una estructura de árbol donde el acceso se ramifi
 * **Nivel 1 (Acceso):** `Login` y `Register` (Rutas públicas).
 * **Nivel 2 (Nodos Centrales):** `MenuPrincipal` (Ciudadano) y `AdminMenu` (Administrador).
 * **Nivel 3 (Funcionalidades):** Desde el menú ciudadano se accede de forma jerárquica a:
-    * `Tramites` -> `DetalleTramite` -> `AgendarCita` -> `SubirDocumentos`.
+    * `Tramites` -> `DetalleTramite` ->  `SubirDocumentos` → `AgendarCita`.
 
 ### 5.3 Diferenciación de Roles
 * **Ciudadano:** Acceso a la consulta de trámites y gestión de citas personales.
@@ -100,7 +100,7 @@ La aplicación se organiza en una estructura de árbol donde el acceso se ramifi
 Se han definido dos flujos principales para garantizar la eficiencia de la interacción:
 
 1.  **Flujo Ciudadano (Reserva de Trámite):**
-    `Login` → `MenuPrincipal` → `Tramites` → `DetalleTramite` → `AgendarCita` → `SubirDocumentos`.
+    `Login` → `MenuPrincipal` → `Tramites` → `DetalleTramite`  → `SubirDocumentos` → `AgendarCita`.
 2.  **Flujo Administrativo:**
     `Login` → `MenuPrincipal` → `Acceso Mi Cuenta` → `AdminMenu`.
 

@@ -1,0 +1,47 @@
+/* src/pages/AdminAlerts.css */
+
+.alerts-form-container {
+  padding: 10px;
+}
+
+/* Replicamos el estilo de CustomInput para el textarea */
+.custom-textarea-group {
+  margin-bottom: 25px;
+}
+
+.muni-textarea-field {
+  --background: white;
+  --padding-start: 12px;
+  --padding-top: 12px;
+  border: 1px solid #A8B7C7;
+  margin-top: 8px;
+  --border-radius: 4px;
+  font-size: 0.95rem;
+  min-height: 150px;
+}
+
+/* Contenedor de botones alineado a la izquierda como el mockup */
+.alerts-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.btn-send-alert {
+  --border-radius: 4px;
+  font-weight: bold;
+  --padding-start: 25px;
+  --padding-end: 25px;
+}
+
+.btn-cancel-alert {
+  --border-radius: 4px;
+  --border-width: 1px;
+  --color: #666;
+  --border-color: #A8B7C7;
+  font-weight: 500;
+  --padding-start: 25px;
+  --padding-end: 25px;
+}

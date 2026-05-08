@@ -1,68 +1,91 @@
 import React from 'react';
 import { 
-  IonContent, IonPage, IonGrid, IonRow, IonCol, 
-  IonCard, IonCardContent, IonIcon, IonButton 
+  IonContent, 
+  IonPage, 
+  IonGrid, 
+  IonRow, 
+  IonCol, 
+  IonIcon, 
+  IonButton 
 } from '@ionic/react';
-import { calendarOutline, clipboardOutline, notificationsOutline } from 'ionicons/icons';
+import { 
+  calendarOutline, 
+  clipboardOutline, 
+  notificationsOutline 
+} from 'ionicons/icons';
+
+// Componentes de Arquitectura
 import CustomHeader from '../components/CustomHeader';
-import './MenuPrincipal.css'; // Reutilizamos los estilos de centrado
+import PageLayout from '../components/PageLayout';
+import MainCard from '../components/MainCard';
+
+// Usamos el mismo CSS que el menú de usuario para mantener consistencia
+import './MenuDashboard.css'; 
 
 const AdminMenu: React.FC = () => {
   return (
     <IonPage>
-      {/* Usamos el componente con isAdmin={true} para mostrar la etiqueta del mockup [cite: 170] */}
-      <CustomHeader defaultHref="/menu-principal" isAdmin={true} />
+      {/* Header en modo Admin sin botón de volver para que sea el menú raíz */}
+      <CustomHeader showBackButton={false} isAdmin={true} />
 
-      <IonContent className="ion-padding">
-        <div className="main-center-wrapper">
-          <IonGrid className="menu-grid">
-            <IonRow className="ion-justify-content-center">
-              
-              {/* RF7: Gestionar Trámites (CRUD de trámites) [cite: 148, 176] */}
-              <IonCol size="12" sizeMd="4">
-                <IonCard className="main-card">
-                  <IonCardContent>
-                    <IonIcon icon={calendarOutline} className="card-icon" />
-                    <h2>Gestionar Trámites</h2>
-                    <br/>
-                    <p>Gestionar a modificar los trámites solicitados en la municipalidad</p>
-                    <br/>
-                    <IonButton expand="block" routerLink="/admin/gestion">Agendar Cita</IonButton>
-                  </IonCardContent>
-                </IonCard>
-              </IonCol>
+      <IonContent className="dashboard-bg">
+        <PageLayout>
+          <div className="dashboard-container">
+            <IonGrid>
+              <IonRow className="ion-justify-content-center">
+                
+                {/* TARJETA 1: Gestionar Trámites */}
+                <IonCol size="12" sizeMd="4">
+                  <MainCard maxWidth="100%" fullHeight={true}>
+                    <div className="dash-card-content">
+                      <IonIcon icon={calendarOutline} className="dash-icon" />
+                      <h2 className="dash-title">Gestionar Trámites</h2>
+                      <p className="dash-desc">
+                        Gestiona o modifica el catálogo de trámites disponibles en la municipalidad.
+                      </p>
+                      <IonButton expand="block" className="dash-btn" routerLink="/admin/gestion">
+                        GESTIONAR
+                      </IonButton>
+                    </div>
+                  </MainCard>
+                </IonCol>
 
-              {/* Panel de Seguimiento Administrativo  */}
-              <IonCol size="12" sizeMd="4">
-                <IonCard className="main-card">
-                  <IonCardContent>
-                    <IonIcon icon={clipboardOutline} className="card-icon" />
-                    <h2>Ver Tramites Pendientes</h2>
-                    <br/>
-                    <p>Ver el estado y seguimniento de solicitudes en curso</p>
-                    <br/>
-                    <IonButton expand="block" routerLink="/admin/pendientes">Ver tramites</IonButton>
-                  </IonCardContent>
-                </IonCard>
-              </IonCol>
+                {/* TARJETA 2: Panel de Seguimiento Administrativo */}
+                <IonCol size="12" sizeMd="4">
+                  <MainCard maxWidth="100%" fullHeight={true}>
+                    <div className="dash-card-content">
+                      <IonIcon icon={clipboardOutline} className="dash-icon" />
+                      <h2 className="dash-title">Trámites Pendientes</h2>
+                      <p className="dash-desc">
+                        Revisa el estado, audita documentos y haz seguimiento de solicitudes de ciudadanos en curso.
+                      </p>
+                      <IonButton expand="block" className="dash-btn" routerLink="/admin/pendientes">
+                        VER BANDEJA
+                      </IonButton>
+                    </div>
+                  </MainCard>
+                </IonCol>
 
-              {/* Sistema de Notificaciones Masivas [cite: 185] */}
-              <IonCol size="12" sizeMd="4">
-                <IonCard className="main-card">
-                  <IonCardContent>
-                    <IonIcon icon={notificationsOutline} className="card-icon" />
-                    <h2>Enviar Alertas/Avisos</h2>
-                    <br/>
-                    <p>Envia alertas y avisos urgentes sobre citas y tramites</p>
-                    <br/>
-                    <IonButton expand="block" routerLink="/admin/avisos">Enviar aviso</IonButton>
-                  </IonCardContent>
-                </IonCard>
-              </IonCol>
+                {/* TARJETA 3: Sistema de Notificaciones Masivas */}
+                <IonCol size="12" sizeMd="4">
+                  <MainCard maxWidth="100%" fullHeight={true}>
+                    <div className="dash-card-content">
+                      <IonIcon icon={notificationsOutline} className="dash-icon" />
+                      <h2 className="dash-title">Enviar Alertas/Avisos</h2>
+                      <p className="dash-desc">
+                        Envía alertas generales o avisos urgentes específicos sobre citas a los ciudadanos.
+                      </p>
+                      <IonButton expand="block" className="dash-btn" routerLink="/admin/avisos">
+                        ENVIAR AVISO
+                      </IonButton>
+                    </div>
+                  </MainCard>
+                </IonCol>
 
-            </IonRow>
-          </IonGrid>
-        </div>
+              </IonRow>
+            </IonGrid>
+          </div>
+        </PageLayout>
       </IonContent>
     </IonPage>
   );

@@ -1,0 +1,54 @@
+/* src/pages/MenuDashboard.css */
+
+.dashboard-container {
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+/* Forzamos que las columnas del grid tengan la misma altura */
+.ion-justify-content-center {
+  display: flex;
+  align-items: stretch; /* Esto hace que todas las tarjetas midan lo mismo de alto */
+}
+
+.dash-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+  /* AJUSTE CLAVE: Altura mínima para que se vean "alargadas" */
+  min-height: 450px; 
+  padding: 40px 20px;
+  height: 100%;
+}
+
+.dash-icon {
+  font-size: 100px; /* Un poco más grande como en el mockup */
+  color: #0054a6;
+  margin-bottom: 30px;
+}
+
+.dash-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.dash-desc {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 40px;
+  flex-grow: 1; /* Esto empuja el botón hacia abajo para que siempre esté al final */
+  max-width: 250px; /* Mantiene el texto centrado y no tan estirado a lo ancho */
+}
+
+.dash-btn {
+  --border-radius: 4px;
+  font-weight: bold;
+  height: 50px;
+  width: 100%;
+  max-width: 220px; /* Para que el botón no sea gigante a lo ancho */
+}
