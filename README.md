@@ -75,14 +75,18 @@ Siguiendo la lógica de `App.tsx`, las rutas se dividen en principales (centros 
 
 | Tipo | Ruta (Path) | Componente (.tsx) | Acceso | Descripción |
 | :--- | :--- | :--- | :--- | :--- |
-| **Principal** | `/Login` | `Login` | Público | Pantalla de entrada y redirección por defecto. |
-| **Principal** | `/Register` | `Register` | Público | Formulario de creación de cuenta ciudadana. |
-| **Principal** | `/MenuPrincipal` | `MenuPrincipal` | Protegido | Dashboard central para el Ciudadano. |
-| **Principal** | `/AdminMenu` | `AdminMenu` | Protegido | Panel de gestión para el Administrador. |
-| **Secundaria** | `/agendar` | `Tramites` | Protegido | Catálogo de trámites disponibles para reserva. |
-| **Secundaria** | `/detalle-tramite` | `DetalleTramite` | Protegido | Información específica y requisitos del trámite. |
-| **Secundaria** | `/seleccionar-fecha`| `AgendarCita` | Protegido | Interfaz de calendario para elegir cupos. |
-| **Secundaria** | `/subir-documentos`| `SubirDocumentos` | Protegido | Carga de archivos necesarios para la solicitud. |
+| **Principal** | `/Login` | `Login` | Público | Pantalla de entrada al sistema. |
+| **Principal** | `/Register` | `Register` | Público | Registro de nuevos usuarios ciudadanos. |
+| **Principal** | `/MenuPrincipal` | `MenuPrincipal` | Protegido | Dashboard central del Ciudadano. |
+| **Principal** | `/AdminMenu` | `AdminMenu` | Protegido (Admin) | Panel central de administración. |
+| **Secundaria** | `/tramites` | `Tramites` | Protegido | Catálogo general de servicios municipales. |
+| **Secundaria** | `/mis-tramites` | `MisTramites` | Protegido | Historial y estado de trámites del usuario. |
+| **Secundaria** | `/notificaciones`| `MisNotificaciones` | Protegido | Centro de avisos personales del ciudadano. |
+| **Secundaria** | `/permiso-circulacion` | `PermisoCirculacion` | Protegido | Trámite específico de Permiso de Circulación. |
+| **Secundaria** | `/aseo-tramite` | `AseoTramite` | Protegido | Trámite específico de Aseo Domiciliario. |
+| **Secundaria** | `/gestion-tramites`| `GestionTramites` | Protegido (Admin) | Gestión del catálogo de trámites (CRUD). |
+| **Secundaria** | `/enviar-avisos` | `EnviarAvisos` | Protegido (Admin) | Emisión de notificaciones masivas. |
+| **Secundaria** | `/admin-alerts` | `AdminAlerts` | Protegido (Admin) | Monitor de alertas del sistema. |
 
 ### 5.2 Relaciones Jerárquicas entre Vistas (Faltan funcionalidades)
 La aplicación se organiza en una estructura de árbol donde el acceso se ramifica desde los centros de control principales:
@@ -91,6 +95,7 @@ La aplicación se organiza en una estructura de árbol donde el acceso se ramifi
 * **Nivel 2 (Nodos Centrales):** `MenuPrincipal` (Ciudadano) y `AdminMenu` (Administrador).
 * **Nivel 3 (Funcionalidades):** Desde el menú ciudadano se accede de forma jerárquica a:
     * `Tramites` -> `DetalleTramite` ->  `SubirDocumentos` → `AgendarCita`.
+Para la entrega del frontend, decidimos poder cambiar la vista del usuario con la del administrador presionando en el boton "MI CUENTA"
 
 ### 5.3 Diferenciación de Roles
 * **Ciudadano:** Acceso a la consulta de trámites y gestión de citas personales.
