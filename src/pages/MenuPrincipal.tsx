@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   IonContent, 
   IonPage, 
@@ -80,13 +79,9 @@ function MenuPrincipal() {
                       <p className="dash-desc">
                         Recibe alertas y avisos urgentes sobre tus citas y tramites
                       </p>
-                      
-                      
-                      <div className="alert-box warning">
-                        <IonIcon icon={alertCircleOutline} className="alert-icon" />
-                        <span className="alert-text">Recordatorio: Cita mañana a las 10:00 AM</span>
-                        <IonIcon icon={closeOutline} className="alert-close" />
-                      </div>
+                      <IonButton expand="block" className="dash-btn" routerLink="/mis-notificaciones">
+                        VER NOTIFICACIONES
+                      </IonButton>
                     </div>
                   </MainCard>
                 </IonCol>

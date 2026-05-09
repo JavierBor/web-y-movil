@@ -1,0 +1,420 @@
+/* ─────────────────────────────────────────
+   MisNotificaciones.css
+   Vista usuario — Mis Notificaciones Pendientes
+   Ionic 7 + React + TypeScript
+───────────────────────────────────────── */
+
+:root {
+  --muni-blue: #1565C0;
+  --muni-blue-dark: #0D47A1;
+  --muni-blue-light: #1976D2;
+  --muni-surface: #f4f5f8;
+  --muni-card-bg: #ffffff;
+  --muni-border: #d6dce8;
+  --muni-text-primary: #1a1a2e;
+  --muni-text-secondary: #5a6378;
+  --muni-text-muted: #9ea8bd;
+
+  /* Tipos de notificación */
+  --urgente-color: #B71C1C;
+  --urgente-borde: #EF5350;
+  --urgente-icono: #C62828;
+  --cita-color: #1565C0;
+  --cita-icono: #1565C0;
+  --aprobado-color: #2E7D32;
+  --aprobado-icono: #388E3C;
+  --mensaje-color: #546E7A;
+  --mensaje-icono: #607D8B;
+
+  /* Barra de progreso urgente */
+  --barra-bg: #FFCDD2;
+  --barra-fill-start: #EF5350;
+  --barra-fill-end: #B71C1C;
+
+  --card-radius: 8px;
+}
+
+/* ── PAGE ── */
+.notif-page {
+  background: var(--muni-surface);
+}
+
+/* ── HEADER ── */
+.notif-header {
+  --background: var(--muni-blue);
+  box-shadow: 0 2px 8px rgba(21, 101, 192, 0.25);
+}
+
+.notif-toolbar {
+  --background: var(--muni-blue);
+  --color: #ffffff;
+  --min-height: 60px;
+  padding: 0 10px;
+}
+
+.notif-back-btn {
+  --color: #ffffff;
+  --background: transparent;
+  --background-hover: rgba(255, 255, 255, 0.12);
+  --border-radius: 6px;
+  --padding-start: 8px;
+  --padding-end: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.notif-logo-wrap {
+  display: flex;
+  align-items: center;
+  margin-left: 6px;
+}
+
+.notif-logo {
+  height: 48px;
+  width: auto;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.notif-account-btn {
+  --color: #ffffff;
+  --background: transparent;
+  --background-hover: rgba(255, 255, 255, 0.12);
+  --border-radius: 6px;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  text-transform: none;
+  gap: 4px;
+}
+
+.notif-account-icon {
+  font-size: 26px;
+}
+
+.notif-account-label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ── CONTENT ── */
+.notif-content {
+  --background: var(--muni-surface);
+}
+
+.notif-wrapper {
+  padding: 26px 20px 48px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.notif-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--muni-text-primary);
+  text-align: center;
+  margin-bottom: 20px;
+  letter-spacing: 0.01em;
+}
+
+/* ── TARJETA ── */
+.notif-card {
+  background: var(--muni-card-bg);
+  border: 1px solid var(--muni-border);
+  border-radius: var(--card-radius);
+  display: grid;
+  grid-template-columns: 210px 1fr 230px;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: box-shadow 0.18s ease;
+}
+
+.notif-card:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.09);
+}
+
+/* Borde lateral por tipo */
+.notif-card.tipo-urgente  { border-left: 4px solid var(--urgente-borde); }
+.notif-card.tipo-cita     { border-left: 4px solid var(--cita-color); }
+.notif-card.tipo-aprobado { border-left: 4px solid var(--aprobado-color); }
+.notif-card.tipo-mensaje  { border-left: 4px solid var(--mensaje-color); }
+
+/* ── COL INFO ── */
+.notif-col-info {
+  padding: 18px 16px;
+  border-right: 1px solid var(--muni-border);
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+}
+
+.notif-nombre {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--muni-text-primary);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.notif-ref,
+.notif-fecha {
+  font-size: 11.5px;
+  color: var(--muni-text-secondary);
+  margin: 0;
+  margin-top: 3px;
+}
+
+/* ── COL ÍCONO CENTRAL ── */
+.notif-col-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 12px;
+  align-self: stretch;
+}
+
+/* ─ URGENTE ─ */
+.icono-urgente-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.icono-urgente {
+  font-size: 36px;
+  color: var(--urgente-icono);
+  animation: ring 1.8s ease-in-out infinite;
+}
+
+@keyframes ring {
+  0%, 100% { transform: rotate(0deg); }
+  10%       { transform: rotate(-12deg); }
+  20%       { transform: rotate(12deg); }
+  30%       { transform: rotate(-8deg); }
+  40%       { transform: rotate(8deg); }
+  50%       { transform: rotate(0deg); }
+}
+
+.barra-progreso-wrap {
+  width: 100%;
+  max-width: 180px;
+  height: 10px;
+  background: var(--barra-bg);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.barra-progreso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--barra-fill-start), var(--barra-fill-end));
+  border-radius: 5px;
+  transition: width 0.4s ease;
+}
+
+.urgente-fecha-limite {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--urgente-color);
+  margin: 0;
+  text-align: center;
+}
+
+.urgente-dias {
+  font-size: 11px;
+  color: var(--muni-text-secondary);
+  margin: 0;
+  text-align: center;
+}
+
+/* ─ CITA ─ */
+.icono-cita-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.icono-cita {
+  font-size: 40px;
+  color: var(--cita-icono);
+}
+
+.cita-info {
+  font-size: 12px;
+  color: var(--muni-text-primary);
+  text-align: center;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ─ APROBADO ─ */
+.icono-aprobado-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.icono-aprobado {
+  font-size: 44px;
+  color: var(--aprobado-icono);
+}
+
+.aprobado-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--aprobado-icono);
+  margin: 0;
+}
+
+/* ─ MENSAJE ─ */
+.icono-mensaje-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.icono-mensaje {
+  font-size: 40px;
+  color: var(--mensaje-icono);
+}
+
+.mensaje-estado {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--mensaje-icono);
+  margin: 0;
+}
+
+/* ── COL ACCIÓN ── */
+.notif-col-accion {
+  padding: 18px 16px;
+  border-left: 1px solid var(--muni-border);
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.notif-mensaje {
+  font-size: 13px;
+  color: var(--muni-text-primary);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.notif-btn {
+  --background: var(--muni-blue);
+  --background-activated: var(--muni-blue-dark);
+  --background-hover: var(--muni-blue-light);
+  --color: #ffffff;
+  --border-radius: 5px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 7px;
+  --padding-bottom: 7px;
+  --box-shadow: 0 2px 6px rgba(21, 101, 192, 0.25);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  height: 34px;
+  align-self: flex-start;
+}
+
+.notif-spinner {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── RESPONSIVE: TABLET ── */
+@media (max-width: 768px) {
+  .notif-card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .notif-col-info {
+    border-right: none;
+    border-bottom: 1px solid var(--muni-border);
+    padding: 14px 14px 12px;
+  }
+
+  .notif-col-icono {
+    padding: 12px;
+    border-bottom: 1px solid var(--muni-border);
+  }
+
+  .barra-progreso-wrap {
+    max-width: 240px;
+  }
+
+  .notif-col-accion {
+    border-left: none;
+    padding: 12px 14px 14px;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .notif-btn {
+    align-self: auto;
+  }
+}
+
+/* ── RESPONSIVE: MOBILE ── */
+@media (max-width: 480px) {
+  .notif-wrapper {
+    padding: 14px 12px 36px;
+  }
+
+  .notif-title {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+
+  .notif-col-accion {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .notif-btn {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .notif-account-label {
+    display: none;
+  }
+}
+
+/* ── DARK MODE ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --muni-surface: #1a1e2e;
+    --muni-card-bg: #242838;
+    --muni-border: #3a405a;
+    --muni-text-primary: #e8ecf4;
+    --muni-text-secondary: #9aa3bc;
+    --muni-text-muted: #5d6480;
+    --barra-bg: #4a1a1a;
+    --urgente-borde: #EF5350;
+    --aprobado-icono: #66BB6A;
+    --aprobado-color: #66BB6A;
+    --cita-icono: #42a5f5;
+    --cita-color: #42a5f5;
+  }
+
+  .notif-card {
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.28);
+  }
+}

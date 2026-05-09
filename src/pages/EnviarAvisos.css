@@ -1,0 +1,360 @@
+/* ─────────────────────────────────────────
+   EnviarAvisos.css
+   Paleta municipal: azul primario #1565C0
+   Estructura: Ionic 7 + React
+───────────────────────────────────────── */
+
+:root {
+  /* ── Paleta ajustada al mockup ── */
+  --muni-blue: #006FB3;
+  --muni-blue-dark: #005a8c;
+  --muni-blue-light: #0088d4;
+  --muni-blue-soft: #E3F0FF;
+  --muni-surface: #F3F3F3;
+  --muni-card-bg: #ffffff;
+  --muni-border: #DEE2E6;
+  --muni-border-focus: #006FB3;
+  --muni-error: #C62828;
+  --muni-error-bg: #FFF3F3;
+  --muni-text-primary: #000000;
+  --muni-text-secondary: #6B6875;
+  --muni-text-placeholder: #989DA8;
+  --muni-btn-cancel-border: #A8B7C7;
+  --muni-btn-cancel-text: #6B6875;
+  --input-height: 44px;
+  --input-radius: 6px;
+  --card-radius: 10px;
+}
+
+/* ── PAGE ── */
+.enviar-avisos-page {
+  background: var(--muni-surface);
+}
+
+/* ── HEADER ── */
+.enviar-avisos-header {
+  --background: var(--muni-blue);
+  --color: #ffffff;
+  box-shadow: 0 2px 8px rgba(21, 101, 192, 0.25);
+}
+
+.enviar-avisos-toolbar {
+  --background: var(--muni-blue);
+  --color: #ffffff;
+  --min-height: 56px;
+  padding: 0 8px;
+}
+
+/* Botón Volver */
+.back-btn {
+  --color: #ffffff;
+  --background: transparent;
+  --background-hover: rgba(255, 255, 255, 0.12);
+  --border-radius: 6px;
+  --padding-start: 8px;
+  --padding-end: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+.back-btn ion-icon {
+  font-size: 18px;
+  margin-right: 2px;
+}
+
+/* Logo en header */
+.header-brand {
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.header-logo {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* Título central */
+.header-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+/* Botón Mi Cuenta */
+.account-btn {
+  --color: #ffffff;
+  --background: transparent;
+  --background-hover: rgba(255, 255, 255, 0.12);
+  --border-radius: 6px;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: none;
+  gap: 4px;
+}
+
+.account-btn ion-icon {
+  font-size: 22px;
+}
+
+.account-label {
+  font-size: 13px;
+  font-weight: 500;
+  margin-left: 2px;
+}
+
+/* ── CONTENT ── */
+.enviar-avisos-content {
+  --background: var(--muni-surface);
+}
+
+.form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 28px 16px 40px;
+  min-height: 100%;
+}
+
+/* ── CARD ── */
+.form-card {
+  background: var(--muni-card-bg);
+  border-radius: var(--card-radius);
+  border: 1px solid var(--muni-border);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  padding: 28px 32px 32px;
+  width: 100%;
+  max-width: 560px;
+}
+
+/* ── FIELD GROUPS ── */
+.field-group {
+  margin-bottom: 20px;
+}
+
+.field-label {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muni-text-primary);
+  margin-bottom: 7px;
+  letter-spacing: 0.01em;
+}
+
+/* ── INPUT CONTAINER ── */
+.input-container,
+.textarea-container {
+  border: 1.5px solid var(--muni-border);
+  border-radius: var(--input-radius);
+  background: #ffffff;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  overflow: hidden;
+}
+
+.input-container:focus-within,
+.textarea-container:focus-within {
+  border-color: var(--muni-border-focus);
+  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+}
+
+.input-container.input-error,
+.textarea-container.input-error {
+  border-color: var(--muni-error);
+  background: var(--muni-error-bg);
+}
+
+.input-container.input-error:focus-within,
+.textarea-container.input-error:focus-within {
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+}
+
+/* ── IONIC INPUT OVERRIDES ── */
+.custom-input {
+  --background: transparent;
+  --color: var(--muni-text-primary);
+  --placeholder-color: var(--muni-text-placeholder);
+  --placeholder-opacity: 1;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --highlight-color-focused: transparent;
+  --highlight-color-valid: transparent;
+  --highlight-color-invalid: transparent;
+  min-height: var(--input-height);
+  font-size: 14px;
+}
+
+/* ── IONIC TEXTAREA OVERRIDES ── */
+.custom-textarea {
+  --background: transparent;
+  --color: var(--muni-text-primary);
+  --placeholder-color: var(--muni-text-placeholder);
+  --placeholder-opacity: 1;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+  --highlight-color-focused: transparent;
+  --highlight-color-valid: transparent;
+  --highlight-color-invalid: transparent;
+  font-size: 14px;
+  min-height: 140px;
+}
+
+/* ── ERROR TEXT ── */
+.error-text {
+  display: block;
+  margin-top: 5px;
+}
+
+.error-text p {
+  font-size: 12.5px;
+  color: var(--muni-error);
+  margin: 0;
+  padding: 0;
+  line-height: 1.4;
+}
+
+/* ── CHAR COUNTER ── */
+.char-counter {
+  text-align: right;
+  margin-top: -12px;
+  margin-bottom: 20px;
+}
+
+.char-counter span {
+  font-size: 12px;
+  color: var(--muni-text-placeholder);
+}
+
+.char-counter span.char-limit {
+  color: var(--muni-error);
+  font-weight: 600;
+}
+
+/* ── ACTION BUTTONS ── */
+.action-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+/* Botón Enviar */
+.btn-enviar {
+  --background: var(--muni-blue);
+  --background-activated: var(--muni-blue-dark);
+  --background-hover: var(--muni-blue-light);
+  --color: #ffffff;
+  --border-radius: 6px;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+  --box-shadow: 0 2px 6px rgba(21, 101, 192, 0.3);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  flex: 1;
+  min-width: 140px;
+  transition: opacity 0.15s ease;
+}
+
+.btn-enviar:disabled {
+  opacity: 0.65;
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+/* Botón Cancelar */
+.btn-cancelar {
+  --background: transparent;
+  --background-activated: rgba(0, 0, 0, 0.04);
+  --background-hover: rgba(0, 0, 0, 0.04);
+  --color: var(--muni-btn-cancel-text);
+  --border-color: var(--muni-btn-cancel-border);
+  --border-width: 1.5px;
+  --border-style: solid;
+  --border-radius: 6px;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  flex: 1;
+  min-width: 120px;
+}
+
+/* ── RESPONSIVE: MOBILE ── */
+@media (max-width: 480px) {
+  .form-wrapper {
+    padding: 16px 12px 32px;
+  }
+
+  .form-card {
+    padding: 20px 16px 24px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-enviar,
+  .btn-cancelar {
+    flex: unset;
+    width: 100%;
+  }
+
+  .header-title {
+    font-size: 15px;
+  }
+
+  .account-label {
+    display: none;
+  }
+}
+
+/* ── DARK MODE ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --muni-surface: #1a1e2e;
+    --muni-card-bg: #242838;
+    --muni-border: #3a405a;
+    --muni-text-primary: #e8ecf4;
+    --muni-text-secondary: #9aa3bc;
+    --muni-text-placeholder: #5d6480;
+    --muni-btn-cancel-border: #4a5270;
+    --muni-btn-cancel-text: #9aa3bc;
+    --muni-error-bg: #2e1a1a;
+  }
+
+  .form-card {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .input-container,
+  .textarea-container {
+    background: #1e2235;
+  }
+
+  .input-container:focus-within,
+  .textarea-container:focus-within {
+    border-color: #42a5f5;
+    box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
+  }
+}

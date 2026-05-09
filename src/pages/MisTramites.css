@@ -1,0 +1,397 @@
+/* ─────────────────────────────────────────
+   MisTramites.css
+   Vista de usuario — Mis Trámites Pendientes
+   Ionic 7 + React + TypeScript
+───────────────────────────────────────── */
+
+:root {
+  --muni-blue: #006FB3;
+  --muni-blue-dark: #0D47A1;
+  --muni-blue-light: #0088d4;
+  --muni-surface: #f4f5f8;
+  --muni-card-bg: #ffffff;
+  --muni-border: #A8B7C7;
+  --muni-text-primary: #2E2E2C;
+  --muni-text-secondary: #8E98A0;
+  --muni-text-muted: #99A3AB;
+
+  /* Stepper */
+  --step-completado: #006FB3;
+  --step-activo: #F57C00;       /* naranja — acción requerida */
+  --step-error: #9E9E9E;        /* gris con X */
+  --step-pendiente: #aab8c8;    /* gris inactivo */
+  --step-line-active: #006FB3;
+  --step-line-inactive: #A8B7C7;
+  --step-icon-completado: #006FB3;
+  --step-icon-error: #9E9E9E;
+
+  --card-radius: 8px;
+}
+
+/* ── PAGE ── */
+.mis-tramites-page {
+  background: var(--muni-surface);
+}
+
+/* ── HEADER ── */
+.mt-header {
+  --background: var(--muni-blue);
+  box-shadow: 0 2px 8px rgba(21, 101, 192, 0.25);
+}
+
+.mt-toolbar {
+  --background: var(--muni-blue);
+  --color: #ffffff;
+  --min-height: 60px;
+  padding: 0 10px;
+}
+
+.mt-back-btn {
+  --color: #ffffff;
+  --background: transparent;
+  --background-hover: rgba(255, 255, 255, 0.12);
+  --border-radius: 6px;
+  --padding-start: 8px;
+  --padding-end: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.mt-logo-wrap {
+  display: flex;
+  align-items: center;
+  margin-left: 6px;
+}
+
+.mt-logo {
+  height: 48px;
+  width: auto;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.mt-account-btn {
+  --color: #ffffff;
+  --background: transparent;
+  --background-hover: rgba(255, 255, 255, 0.12);
+  --border-radius: 6px;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  text-transform: none;
+  gap: 4px;
+}
+
+.mt-account-icon {
+  font-size: 26px;
+}
+
+.mt-account-label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.mt-chevron {
+  font-size: 13px;
+}
+
+/* ── CONTENT ── */
+.mt-content {
+  --background: var(--muni-surface);
+}
+
+.mt-wrapper {
+  padding: 26px 20px 48px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.mt-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--muni-text-primary);
+  text-align: center;
+  margin-bottom: 20px;
+  letter-spacing: 0.01em;
+}
+
+/* ── TARJETA ── */
+.mt-card {
+  background: var(--muni-card-bg);
+  border: 1px solid var(--muni-border);
+  border-radius: var(--card-radius);
+  display: grid;
+  grid-template-columns: 200px 1fr 220px;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  margin-bottom: 10px;
+  transition: box-shadow 0.18s ease;
+}
+
+.mt-card:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* ── COLUMNA INFO ── */
+.mt-col-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  border-right: 1px solid var(--muni-border);
+  padding-right: 16px;
+}
+
+.mt-nombre {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muni-text-primary);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.mt-ref,
+.mt-fecha {
+  font-size: 12px;
+  color: var(--muni-text-secondary);
+  margin: 0;
+  margin-top: 3px;
+}
+
+/* ── COLUMNA STEPPER ── */
+.mt-col-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+}
+
+/* ── STEPPER ── */
+.stepper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  gap: 0;
+}
+
+/* Nodo del paso */
+.step-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 60px;
+  flex-shrink: 0;
+}
+
+/* Círculo / ícono */
+.step-circle {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Punto activo / pendiente */
+.step-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: block;
+}
+
+.step-dot.activo {
+  background-color: var(--step-activo);
+  box-shadow: 0 0 0 3px rgba(245, 124, 0, 0.18);
+}
+
+.step-dot.pendiente {
+  background-color: var(--step-pendiente);
+}
+
+/* Ícono de paso completado */
+.step-icon.completado {
+  font-size: 26px;
+  color: var(--step-icon-completado);
+}
+
+/* Ícono de error */
+.step-icon.error {
+  font-size: 26px;
+  color: var(--step-icon-error);
+}
+
+/* Etiqueta del paso */
+.step-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-size: 10.5px;
+  line-height: 1.3;
+  color: var(--muni-text-secondary);
+  min-height: 28px;
+}
+
+.step-label .step-line {
+  display: block;
+}
+
+.step-label-completado {
+  color: var(--step-completado);
+  font-weight: 600;
+}
+
+.step-label-activo {
+  color: var(--step-activo);
+  font-weight: 700;
+}
+
+.step-label-error {
+  color: var(--muni-text-secondary);
+  font-weight: 500;
+}
+
+.step-label-pendiente {
+  color: var(--muni-text-muted);
+}
+
+/* Línea conectora */
+.step-connector {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  margin-top: 13px; /* alinea con el centro del círculo (28/2 - 1.5) */
+  align-self: flex-start;
+  min-width: 20px;
+}
+
+.connector-active {
+  background-color: var(--step-line-active);
+}
+
+.connector-inactive {
+  background-color: var(--step-line-inactive);
+}
+
+/* ── COLUMNA ACCIÓN ── */
+.mt-col-accion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  border-left: 1px solid var(--muni-border);
+  padding-left: 16px;
+}
+
+.mt-mensaje {
+  font-size: 13px;
+  color: var(--muni-text-primary);
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* Botones de acción */
+.mt-btn-primary {
+  --background: var(--muni-blue);
+  --background-activated: var(--muni-blue-dark);
+  --background-hover: var(--muni-blue-light);
+  --color: #ffffff;
+  --border-radius: 5px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 7px;
+  --padding-bottom: 7px;
+  --box-shadow: 0 2px 6px rgba(21, 101, 192, 0.25);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  height: 34px;
+}
+
+.mt-spinner {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── RESPONSIVE: TABLET ── */
+@media (max-width: 768px) {
+  .mt-card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 12px;
+  }
+
+  .mt-col-info {
+    border-right: none;
+    border-bottom: 1px solid var(--muni-border);
+    padding-right: 0;
+    padding-bottom: 10px;
+  }
+
+  .mt-col-accion {
+    border-left: none;
+    border-top: 1px solid var(--muni-border);
+    padding-left: 0;
+    padding-top: 10px;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .mt-col-stepper {
+    padding: 0;
+  }
+}
+
+/* ── RESPONSIVE: MOBILE ── */
+@media (max-width: 480px) {
+  .mt-wrapper {
+    padding: 14px 12px 36px;
+  }
+
+  .mt-title {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+
+  .mt-card {
+    padding: 14px 14px;
+  }
+
+  .step-label {
+    font-size: 9.5px;
+  }
+
+  .step-node {
+    min-width: 48px;
+  }
+
+  .mt-account-label {
+    display: none;
+  }
+}
+
+/* ── DARK MODE ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --muni-surface: #1a1e2e;
+    --muni-card-bg: #242838;
+    --muni-border: #3a405a;
+    --muni-text-primary: #e8ecf4;
+    --muni-text-secondary: #9aa3bc;
+    --muni-text-muted: #5d6480;
+    --step-completado: #42a5f5;
+    --step-line-active: #42a5f5;
+    --step-icon-completado: #42a5f5;
+  }
+
+  .mt-card {
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+  }
+}

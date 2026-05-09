@@ -1,0 +1,418 @@
+/* ─────────────────────────────────────────
+   GestionTramites.css
+   Paleta municipal azul #1565C0
+   Ionic 7 + React + TypeScript
+───────────────────────────────────────── */
+
+:root {
+  --muni-blue: #1565C0;
+  --muni-blue-dark: #0D47A1;
+  --muni-blue-light: #1976D2;
+  --muni-surface: #f4f5f8;
+  --muni-card-bg: #ffffff;
+  --muni-border: #d6dce8;
+  --muni-text-primary: #1a1a2e;
+  --muni-text-secondary: #5a6378;
+  --muni-text-placeholder: #9ea8bd;
+
+  /* Estados */
+  --color-confirmado: #2E7D32;
+  --color-pendiente: #1a1a2e;
+  --color-rechazado: #B71C1C;
+
+  /* Botones */
+  --btn-confirmar-bg: #1565C0;
+  --btn-confirmar-hover: #0D47A1;
+  --btn-rechazar-bg: #C62828;
+  --btn-rechazar-hover: #B71C1C;
+
+  --card-radius: 8px;
+}
+
+/* ── PAGE ── */
+.gestion-page {
+  background: var(--muni-surface);
+}
+
+/* ── HEADER ── */
+.gestion-header {
+  --background: var(--muni-blue);
+  --color: #ffffff;
+  box-shadow: 0 2px 8px rgba(21, 101, 192, 0.25);
+}
+
+.gestion-toolbar {
+  --background: var(--muni-blue);
+  --color: #ffffff;
+  --min-height: 56px;
+  padding: 0 8px;
+}
+
+.back-btn-g {
+  --color: #ffffff;
+  --background: transparent;
+  --background-hover: rgba(255, 255, 255, 0.12);
+  --border-radius: 6px;
+  --padding-start: 8px;
+  --padding-end: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.header-logo-wrap {
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.header-logo-g {
+  height: 36px;
+  width: auto;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.header-title-g {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+}
+
+.account-btn-g {
+  --color: #ffffff;
+  --background: transparent;
+  --background-hover: rgba(255, 255, 255, 0.12);
+  --border-radius: 6px;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: none;
+  gap: 4px;
+}
+
+.account-btn-g ion-icon {
+  font-size: 22px;
+}
+
+.account-label-g {
+  font-size: 13px;
+  font-weight: 500;
+  margin-left: 2px;
+}
+
+/* ── CONTENT ── */
+.gestion-content {
+  --background: var(--muni-surface);
+}
+
+.list-wrapper {
+  padding: 24px 20px 40px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Título de sección (visible en web) */
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--muni-text-primary);
+  text-align: center;
+  margin-bottom: 22px;
+  letter-spacing: 0.01em;
+}
+
+/* ── TARJETA DE TRÁMITE ── */
+.tramite-card {
+  background: var(--muni-card-bg);
+  border: 1px solid var(--muni-border);
+  border-radius: var(--card-radius);
+  display: grid;
+  grid-template-columns: 1fr 180px 240px;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  transition: box-shadow 0.18s ease;
+}
+
+.tramite-card:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Borde lateral según estado */
+.tramite-card.borde-confirmado {
+  border-left: 4px solid var(--color-confirmado);
+}
+
+.tramite-card.borde-pendiente {
+  border-left: 4px solid #F9A825;
+}
+
+.tramite-card.borde-rechazado {
+  border-left: 4px solid var(--color-rechazado);
+}
+
+/* ── COLUMNA INFO ── */
+.col-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.t-nombre {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muni-text-primary);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.t-ref {
+  font-size: 12px;
+  color: var(--muni-text-secondary);
+  margin: 0;
+}
+
+.t-fecha {
+  font-size: 12px;
+  color: var(--muni-text-secondary);
+  margin: 0;
+}
+
+/* ── COLUMNA ESTADO ── */
+.col-estado {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.estado-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muni-text-primary);
+  white-space: nowrap;
+}
+
+.estado-valor {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.estado-valor.confirmado {
+  color: var(--color-confirmado);
+}
+
+.estado-valor.pendiente {
+  color: var(--muni-text-primary);
+}
+
+.estado-valor.rechazado {
+  color: var(--color-rechazado);
+}
+
+/* ── COLUMNA ACCIONES ── */
+.col-acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.link-descargar {
+  font-size: 12.5px;
+  color: var(--muni-blue-light);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.link-descargar:hover {
+  color: var(--muni-blue-dark);
+  text-decoration: underline;
+}
+
+.dl-icon {
+  font-size: 14px;
+}
+
+/* Grupo de botones */
+.btn-group {
+  display: flex;
+  flex-direction: row;
+  gap: 7px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Botón Confirmar */
+.btn-confirmar {
+  --background: var(--btn-confirmar-bg);
+  --background-activated: var(--btn-confirmar-hover);
+  --background-hover: var(--btn-confirmar-hover);
+  --color: #ffffff;
+  --border-radius: 5px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --padding-top: 6px;
+  --padding-bottom: 6px;
+  --box-shadow: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  height: 32px;
+  min-width: 110px;
+}
+
+/* Botón Rechazar */
+.btn-rechazar {
+  --background: var(--btn-rechazar-bg);
+  --background-activated: var(--btn-rechazar-hover);
+  --background-hover: var(--btn-rechazar-hover);
+  --color: #ffffff;
+  --border-radius: 5px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --padding-top: 6px;
+  --padding-bottom: 6px;
+  --box-shadow: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  height: 32px;
+  min-width: 100px;
+}
+
+.mini-spinner {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 12px;
+  color: var(--muni-text-secondary);
+}
+
+.empty-icon {
+  font-size: 48px;
+  color: #c5cdd8;
+}
+
+/* ── RESPONSIVE: TABLET ── */
+@media (max-width: 768px) {
+  .tramite-card {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .col-info {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .col-estado {
+    grid-column: 2;
+    grid-row: 1;
+    justify-content: flex-end;
+  }
+
+  .col-acciones {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    align-items: flex-start;
+    border-top: 1px solid var(--muni-border);
+    padding-top: 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .btn-group {
+    justify-content: flex-start;
+  }
+}
+
+/* ── RESPONSIVE: MOBILE ── */
+@media (max-width: 480px) {
+  .list-wrapper {
+    padding: 14px 12px 32px;
+  }
+
+  .tramite-card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 10px;
+  }
+
+  .col-info { grid-column: 1; grid-row: 1; }
+
+  .col-estado {
+    grid-column: 1;
+    grid-row: 2;
+    justify-content: flex-start;
+  }
+
+  .col-acciones {
+    grid-column: 1;
+    grid-row: 3;
+    align-items: flex-start;
+    flex-direction: column;
+    border-top: 1px solid var(--muni-border);
+    padding-top: 10px;
+  }
+
+  .btn-group {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .btn-confirmar,
+  .btn-rechazar {
+    flex: 1;
+  }
+
+  .section-title {
+    font-size: 17px;
+  }
+
+  .account-label-g {
+    display: none;
+  }
+
+  .header-title-g {
+    font-size: 14px;
+  }
+}
+
+/* ── DARK MODE ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --muni-surface: #1a1e2e;
+    --muni-card-bg: #242838;
+    --muni-border: #3a405a;
+    --muni-text-primary: #e8ecf4;
+    --muni-text-secondary: #9aa3bc;
+    --color-confirmado: #66BB6A;
+    --color-rechazado: #EF5350;
+  }
+
+  .tramite-card {
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+  }
+}
