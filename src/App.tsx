@@ -26,6 +26,7 @@ import GestionTramites from './pages/GestionTramites';
 import EnviarAvisos from './pages/EnviarAvisos';
 import MisTramites from './pages/MisTramites';
 import MisNotificaciones from './pages/MisNotificaciones';
+import AdminAlerts from './pages/AdminAlerts';
 
 setupIonicReact();
 
@@ -51,7 +52,7 @@ const App: React.FC = () => (
         {/* Menú admin */}
         <Route path="/AdminMenu" component={AdminMenu} exact />
         <Route path="/admin/gestion" component={Tramites} exact />
-        <Route path="/admin/avisos" component={EnviarAvisos} exact />
+        <Route path="/admin/avisos" component={AdminAlerts} exact />
         <Route path="/admin/pendientes" component={GestionTramites} exact />
       </IonRouterOutlet>
     </IonReactRouter>

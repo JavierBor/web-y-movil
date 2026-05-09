@@ -1,28 +1,23 @@
-/* ─────────────────────────────────────────
-   GestionTramites.css
-   Paleta municipal azul #1565C0
-   Ionic 7 + React + TypeScript
-───────────────────────────────────────── */
 
 :root {
-  --muni-blue: #1565C0;
-  --muni-blue-dark: #0D47A1;
-  --muni-blue-light: #1976D2;
-  --muni-surface: #f4f5f8;
-  --muni-card-bg: #ffffff;
-  --muni-border: #d6dce8;
-  --muni-text-primary: #1a1a2e;
-  --muni-text-secondary: #5a6378;
-  --muni-text-placeholder: #9ea8bd;
+  --muni-blue: #006FB3;
+  --muni-blue-dark: #005a8c;
+  --muni-blue-light: #0088d4;
+  --muni-surface: #EEEEEE;
+  --muni-card-bg: #FFFFFF;
+  --muni-border: #A8B7C7;
+  --muni-text-primary: #2E2E2C;
+  --muni-text-secondary: #4A4A4A;
+  --muni-text-placeholder: #99A3AB;
 
   /* Estados */
-  --color-confirmado: #2E7D32;
-  --color-pendiente: #1a1a2e;
+  --color-confirmado: #65A400;
+  --color-pendiente: #2E2E2C;
   --color-rechazado: #B71C1C;
 
   /* Botones */
-  --btn-confirmar-bg: #1565C0;
-  --btn-confirmar-hover: #0D47A1;
+  --btn-confirmar-bg: #006FB3;
+  --btn-confirmar-hover: #005a8c;
   --btn-rechazar-bg: #C62828;
   --btn-rechazar-hover: #B71C1C;
 
@@ -38,7 +33,7 @@
 .gestion-header {
   --background: var(--muni-blue);
   --color: #ffffff;
-  box-shadow: 0 2px 8px rgba(21, 101, 192, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 111, 179, 0.25);
 }
 
 .gestion-toolbar {
@@ -114,7 +109,6 @@
   margin: 0 auto;
 }
 
-/* Título de sección (visible en web) */
 .section-title {
   font-size: 20px;
   font-weight: 700;
@@ -131,10 +125,11 @@
   border-radius: var(--card-radius);
   display: grid;
   grid-template-columns: 1fr 180px 240px;
-  align-items: center;
+  align-items: stretch;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 20px 24px;
   margin-bottom: 10px;
+  min-height: 140px;
   transition: box-shadow 0.18s ease;
 }
 
@@ -142,13 +137,12 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Borde lateral según estado */
 .tramite-card.borde-confirmado {
   border-left: 4px solid var(--color-confirmado);
 }
 
 .tramite-card.borde-pendiente {
-  border-left: 4px solid #F9A825;
+  border-left: 4px solid #A8B7C7;
 }
 
 .tramite-card.borde-rechazado {
@@ -163,21 +157,16 @@
 }
 
 .t-nombre {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--muni-text-primary);
   margin: 0;
   line-height: 1.35;
 }
 
-.t-ref {
-  font-size: 12px;
-  color: var(--muni-text-secondary);
-  margin: 0;
-}
-
+.t-ref,
 .t-fecha {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muni-text-secondary);
   margin: 0;
 }
@@ -224,7 +213,7 @@
 }
 
 .link-descargar {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--muni-blue-light);
   text-decoration: none;
   display: flex;
@@ -252,7 +241,6 @@
   justify-content: flex-end;
 }
 
-/* Botón Confirmar */
 .btn-confirmar {
   --background: var(--btn-confirmar-bg);
   --background-activated: var(--btn-confirmar-hover);
@@ -264,15 +252,14 @@
   --padding-top: 6px;
   --padding-bottom: 6px;
   --box-shadow: none;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.01em;
-  height: 32px;
-  min-width: 110px;
+  height: 36px;
+  min-width: 120px;
 }
 
-/* Botón Rechazar */
 .btn-rechazar {
   --background: var(--btn-rechazar-bg);
   --background-activated: var(--btn-rechazar-hover);
@@ -284,12 +271,12 @@
   --padding-top: 6px;
   --padding-bottom: 6px;
   --box-shadow: none;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.01em;
-  height: 32px;
-  min-width: 100px;
+  height: 36px;
+  min-width: 120px;
 }
 
 .mini-spinner {
@@ -310,7 +297,7 @@
 
 .empty-icon {
   font-size: 48px;
-  color: #c5cdd8;
+  color: #A8B7C7;
 }
 
 /* ── RESPONSIVE: TABLET ── */
@@ -408,11 +395,22 @@
     --muni-border: #3a405a;
     --muni-text-primary: #e8ecf4;
     --muni-text-secondary: #9aa3bc;
-    --color-confirmado: #66BB6A;
+    --color-confirmado: #81C784;
     --color-rechazado: #EF5350;
+    --color-pendiente: #9aa3bc;
+    --btn-confirmar-bg: #006FB3;
+    --btn-confirmar-hover: #005a8c;
   }
 
   .tramite-card {
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+  }
+
+  .tramite-card.borde-pendiente {
+    border-left-color: #5d6480;
+  }
+
+  .empty-icon {
+    color: #5d6480;
   }
 }
