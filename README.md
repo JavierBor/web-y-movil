@@ -95,6 +95,7 @@ La aplicación se organiza en una estructura de árbol donde el acceso se ramifi
 * **Nivel 2 (Nodos Centrales):** `MenuPrincipal` (Ciudadano) y `AdminMenu` (Administrador).
 * **Nivel 3 (Funcionalidades):** Desde el menú ciudadano se accede de forma jerárquica a:
     * `Tramites` -> `DetalleTramite` ->  `SubirDocumentos` → `AgendarCita`.
+
 Para la entrega del frontend, decidimos poder cambiar la vista del usuario con la del administrador presionando en el boton "MI CUENTA"
 
 ### 4.3 Diferenciación de Roles
