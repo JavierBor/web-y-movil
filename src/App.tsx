@@ -25,14 +25,11 @@ import AdminMenu from './pages/AdminMenu';
 import GestionTramites from './pages/GestionTramites';
 import EnviarAvisos from './pages/EnviarAvisos';
 import MisTramites from './pages/MisTramites';
-import MisNotificaciones from './pages/MisNotificaciones';
-<<<<<<< HEAD
-import AdminAlerts from './pages/AdminAlerts';
-
-=======
 import AseoTramite from './pages/AseoTramite';
 import PermisoCirculacion from './pages/PermisoCirculacion';
->>>>>>> aa3822fffdb68b93459ab9d4cb10f1e25b8283a6
+import MisNotificaciones from './pages/MisNotificaciones';
+import AdminAlerts from './pages/AdminAlerts';
+
 setupIonicReact();
 
 const App: React.FC = () => (
