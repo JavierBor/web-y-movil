@@ -1,0 +1,67 @@
+.aseo-container {
+  padding: 10px;
+}
+
+.aseo-instruction {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 25px;
+  line-height: 1.4;
+}
+
+.aseo-actions {
+  margin-top: 20px;
+}
+
+/* Estilos del Éxito / Recibo */
+.success-container {
+  text-align: center;
+  padding: 20px 10px;
+}
+
+.success-icon {
+  font-size: 64px;
+  margin-bottom: 10px;
+}
+
+.success-title {
+  font-weight: 800;
+  margin-bottom: 30px;
+}
+
+.receipt-box {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.receipt-box IonItem {
+  --padding-start: 15px;
+}
+
+.receipt-box small {
+  color: #888;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.receipt-box p {
+  color: #333;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.aseo-actions-final {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-muni {
+  --border-radius: 4px;
+  font-weight: bold;
+  height: 48px;
+}

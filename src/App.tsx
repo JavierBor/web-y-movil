@@ -26,8 +26,13 @@ import GestionTramites from './pages/GestionTramites';
 import EnviarAvisos from './pages/EnviarAvisos';
 import MisTramites from './pages/MisTramites';
 import MisNotificaciones from './pages/MisNotificaciones';
+<<<<<<< HEAD
 import AdminAlerts from './pages/AdminAlerts';
 
+=======
+import AseoTramite from './pages/AseoTramite';
+import PermisoCirculacion from './pages/PermisoCirculacion';
+>>>>>>> aa3822fffdb68b93459ab9d4cb10f1e25b8283a6
 setupIonicReact();
 
 const App: React.FC = () => (
@@ -55,6 +60,12 @@ const App: React.FC = () => (
         <Route path="/admin/avisos" component={AdminAlerts} exact />
         <Route path="/admin/pendientes" component={GestionTramites} exact />
       </IonRouterOutlet>
+        <Route exact path="/tramites/aseo">
+          <AseoTramite />
+        </Route>
+        <Route exact path="/tramites/permiso-circulacion">
+          <PermisoCirculacion />
+        </Route>
     </IonReactRouter>
   </IonApp>
 );

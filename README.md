@@ -66,25 +66,29 @@ El sistema está diseñado para dos perfiles principales:
 
 * **Enlace al Prototipo (Figma):** [Proyecto Web y Móvil - Trámites](https://www.figma.com/proto/DL35jWeIPprjCTITTUBVDe/Proyecto-web-y-movil?node-id=3569-2&t=RzJ9EIYChqhZK2EX-1&scaling=min-zoom&content-scaling=fixed&page-id=3315%3A3)
 
-## 5. Arquitectura de Navegación y Estructura
+## 4. Arquitectura de Navegación y Estructura
 
 La aplicación utiliza **React Router** para gestionar una navegación modular, permitiendo separar las vistas públicas de las privadas y estructurar el flujo según el rol del usuario.
 
-### 5.1 Definición de Rutas (Añadir archivos faltantes)
+### 4.1 Definición de Rutas (Añadir archivos faltantes)
 Siguiendo la lógica de `App.tsx`, las rutas se dividen en principales (centros de control) y secundarias (pasos de un proceso).
 
 | Tipo | Ruta (Path) | Componente (.tsx) | Acceso | Descripción |
 | :--- | :--- | :--- | :--- | :--- |
-| **Principal** | `/Login` | `Login` | Público | Pantalla de entrada y redirección por defecto. |
-| **Principal** | `/Register` | `Register` | Público | Formulario de creación de cuenta ciudadana. |
-| **Principal** | `/MenuPrincipal` | `MenuPrincipal` | Protegido | Dashboard central para el Ciudadano. |
-| **Principal** | `/AdminMenu` | `AdminMenu` | Protegido | Panel de gestión para el Administrador. |
-| **Secundaria** | `/agendar` | `Tramites` | Protegido | Catálogo de trámites disponibles para reserva. |
-| **Secundaria** | `/detalle-tramite` | `DetalleTramite` | Protegido | Información específica y requisitos del trámite. |
-| **Secundaria** | `/seleccionar-fecha`| `AgendarCita` | Protegido | Interfaz de calendario para elegir cupos. |
-| **Secundaria** | `/subir-documentos`| `SubirDocumentos` | Protegido | Carga de archivos necesarios para la solicitud. |
+| **Principal** | `/Login` | `Login` | Público | Pantalla de entrada al sistema. |
+| **Principal** | `/Register` | `Register` | Público | Registro de nuevos usuarios ciudadanos. |
+| **Principal** | `/MenuPrincipal` | `MenuPrincipal` | Protegido | Dashboard central del Ciudadano. |
+| **Principal** | `/AdminMenu` | `AdminMenu` | Protegido (Admin) | Panel central de administración. |
+| **Secundaria** | `/tramites` | `Tramites` | Protegido | Catálogo general de servicios municipales. |
+| **Secundaria** | `/mis-tramites` | `MisTramites` | Protegido | Historial y estado de trámites del usuario. |
+| **Secundaria** | `/notificaciones`| `MisNotificaciones` | Protegido | Centro de avisos personales del ciudadano. |
+| **Secundaria** | `/permiso-circulacion` | `PermisoCirculacion` | Protegido | Trámite específico de Permiso de Circulación. |
+| **Secundaria** | `/aseo-tramite` | `AseoTramite` | Protegido | Trámite específico de Aseo Domiciliario. |
+| **Secundaria** | `/gestion-tramites`| `GestionTramites` | Protegido (Admin) | Gestión del catálogo de trámites (CRUD). |
+| **Secundaria** | `/enviar-avisos` | `EnviarAvisos` | Protegido (Admin) | Emisión de notificaciones masivas. |
+| **Secundaria** | `/admin-alerts` | `AdminAlerts` | Protegido (Admin) | Monitor de alertas del sistema. |
 
-### 5.2 Relaciones Jerárquicas entre Vistas (Faltan funcionalidades)
+### 4.2 Relaciones Jerárquicas entre Vistas (Faltan funcionalidades)
 La aplicación se organiza en una estructura de árbol donde el acceso se ramifica desde los centros de control principales:
 
 * **Nivel 1 (Acceso):** `Login` y `Register` (Rutas públicas).
@@ -92,11 +96,13 @@ La aplicación se organiza en una estructura de árbol donde el acceso se ramifi
 * **Nivel 3 (Funcionalidades):** Desde el menú ciudadano se accede de forma jerárquica a:
     * `Tramites` -> `DetalleTramite` ->  `SubirDocumentos` → `AgendarCita`.
 
-### 5.3 Diferenciación de Roles
+Para la entrega del frontend, decidimos poder cambiar la vista del usuario con la del administrador presionando en el boton "MI CUENTA"
+
+### 4.3 Diferenciación de Roles
 * **Ciudadano:** Acceso a la consulta de trámites y gestión de citas personales.
 * **Administrador:** Acceso exclusivo a `/AdminMenu` para la gestión de trámites y revisión de solicitudes globales.
 
-### 5.4 Flujo de Tareas (Revisar Flujo Administrativo)
+### 4.4 Flujo de Tareas (Revisar Flujo Administrativo)
 Se han definido dos flujos principales para garantizar la eficiencia de la interacción:
 
 1.  **Flujo Ciudadano (Reserva de Trámite):**
@@ -104,10 +110,10 @@ Se han definido dos flujos principales para garantizar la eficiencia de la inter
 2.  **Flujo Administrativo:**
     `Login` → `MenuPrincipal` → `Acceso Mi Cuenta` → `AdminMenu`.
 
-### 5.5 Puntos Críticos de Interacción (Falta esto)
+### 4.5 Puntos Críticos de Interacción (Falta esto)
 
 
-### 5.6 coherencia de experiencia entre dispositivos (Falta esto)
+### 4.6 coherencia de experiencia entre dispositivos (Falta esto)
 
 
 ### 5.7 Justificación Técnica
