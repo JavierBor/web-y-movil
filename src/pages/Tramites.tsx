@@ -72,6 +72,12 @@ const Tramites: React.FC = () => {
       // Implementación futura para otros trámites
       console.log(`Navegación pendiente para: ${title}`);
     }
+    if (title === "Derechos de aseo") {
+      history.push('/tramites/aseo');
+    }
+    if (title === "Permiso de circulación") {
+      history.push('/tramites/permiso-circulacion');
+    }
   };
 
   return (

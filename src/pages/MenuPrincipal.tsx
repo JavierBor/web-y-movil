@@ -35,14 +35,14 @@ function MenuPrincipal() {
             <IonGrid>
               <IonRow className="ion-justify-content-center">
                 
-                {/* TARJETA 1: Agendar */}
+                {/* TARJETA 1:  REALIZAR */}
                 <IonCol size="12" sizeMd="4">
                   <MainCard maxWidth="100%" fullHeight={true}>
                     <div className="dash-card-content">
                       <IonIcon icon={calendarOutline} className="dash-icon" />
-                      <h2 className="dash-title">Agendar Tramite</h2>
+                      <h2 className="dash-title">Realizar Tramite</h2>
                       <p className="dash-desc">
-                        Accede al catalogo de tramites para filtrar por sucursal y ver requisitos
+                        Accede al catalogo de tramites
                       </p>
                       <IonButton expand="block" className="dash-btn" routerLink="/agendar">
                         AGENDAR CITA
