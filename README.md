@@ -54,7 +54,7 @@ A continuación, se describen los requerimientos identificados para el desarroll
 | **RF4** | Postulación y Carga de Documentos | Formulario para ingresar datos personales y adjuntar archivos (Cédula de Identidad Frontal/Reverso). |
 | **RF5** | Acceso a notificaciones pendientes | El usuario recibirá alertas alertas y avisos sobre sus citas y trámites. |
 | **RF6** | Seguimiento de Estados (Tracking) | Visualización del progreso del trámite mediante una línea de tiempo (Recibido, En Revisión, Aprobado, etc.). 
-| **RF7** | El administrador podrá Confirmar/Rechazar trámites y enviar alertas o avisos en tiempo real. |
+| **RF7** | Gestión administrativa | El administrador podrá Confirmar/Rechazar trámites y enviar alertas o avisos en tiempo real. |
 
 #### Requerimientos No Funcionales
 
