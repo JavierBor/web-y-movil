@@ -13,7 +13,7 @@ import './CustomHeader.css';
 interface HeaderProps {
   showBackButton?: boolean;
   defaultHref?: string;
-  showAccountButton?: boolean; // Para ocultar en Login/Register [cite: 79, 80]
+  showAccountButton?: boolean; // Para ocultar en Login/Register
   isAdmin?: boolean;           // Para mostrar la etiqueta 'Admin' 
 }
 
@@ -23,7 +23,7 @@ const CustomHeader: React.FC<HeaderProps> = ({
   showAccountButton = true,
   isAdmin = false 
 }) => {
-  // Estado interno para gestionar el menú (Popover) [cite: 100]
+  // Estado interno para gestionar el menú (Popover)
   const [popoverState, setPopoverState] = useState<{
     showPopover: boolean,
     event: any | undefined
@@ -43,18 +43,18 @@ const CustomHeader: React.FC<HeaderProps> = ({
   return (
     <IonHeader>
       <IonToolbar color="primary" className="custom-toolbar">
-        {/* LADO IZQUIERDO: Botón Inicio y Título [cite: 46] */}
+        {/* LADO IZQUIERDO: Botón Inicio y Título */}
         <IonButtons slot="start">
           {showBackButton && <IonBackButton defaultHref={defaultHref} text="Volver" />}
           <h1 className="header-web-title">Municipalidad Santo Domingo</h1>
         </IonButtons>
         
-        {/* CENTRO: Logo con posicionamiento absoluto [cite: 47] */}
+        {/* CENTRO: Logo con posicionamiento absoluto */}
         <div className="header-logo-wrapper">
           <IonImg src="/Logo.png" className="header-logo-img" alt="Logo" />
         </div>
 
-        {/* LADO DERECHO: Etiqueta Admin y Botón Mi Cuenta [cite: 48, 111] */}
+        {/* LADO DERECHO: Etiqueta Admin y Botón Mi Cuenta */}
         {showAccountButton && (
           <IonButtons slot="end">
             {isAdmin && <span className="admin-label">Admin</span>}
@@ -67,7 +67,7 @@ const CustomHeader: React.FC<HeaderProps> = ({
         )}
       </IonToolbar>
 
-      {/* Menú Desplegable Integrado [cite: 100, 101] */}
+      {/* Menú Desplegable Integrado */}
       <IonPopover
         isOpen={popoverState.showPopover}
         event={popoverState.event}
