@@ -1,13 +1,26 @@
 const app = require('./app');
 const sequelize = require('./config/database');
-const Usuario = require('./models/Usuario'); // Importamos el modelo
+
+// 1. Importar todos los modelos
+const Usuario = require('./models/Usuario');
+const Sucursal = require('./models/Sucursal');
+const Tramite = require('./models/Tramite');
 
 const PORT = 3000;
 
-// Sincronizar la base de datos y luego levantar el servidor
-sequelize.sync({ force: false }) // force: false evita que se borren los datos al reiniciar
+// 2. Crear las relaciones (Ese "algo" que los identifica)
+// Un Usuario tiene muchos Trámites
+Usuario.hasMany(Tramite, { foreignKey: 'usuarioId' });
+Tramite.belongsTo(Usuario, { foreignKey: 'usuarioId' });
+
+// Una Sucursal tiene muchos Trámites
+Sucursal.hasMany(Tramite, { foreignKey: 'sucursalId' });
+Tramite.belongsTo(Sucursal, { foreignKey: 'sucursalId' });
+
+// 3. Sincronizar y levantar servidor
+sequelize.sync({ alter: true }) 
     .then(() => {
-        console.log('Tablas sincronizadas en la base de datos.');
+        console.log('Tablas y Relaciones sincronizadas en la base de datos.');
         
         app.listen(PORT, () => {
             console.log(`Servidor corriendo en http://localhost:${PORT}`);

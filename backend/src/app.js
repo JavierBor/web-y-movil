@@ -1,17 +1,24 @@
 const express = require('express');
 const cors = require('cors');
 
+const authRoutes = require('./routes/authRoutes');
+const tramiteRoutes = require('./routes/tramiteRoutes'); 
+
 const app = express();
 
+// Middlewares básicos
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // Vital para que Express entienda los datos JSON que le enviemos
 
+// Tu ruta raíz que ya tenías funcionando
 app.get('/', (req, res) => {
-    res.status(200).json({ 
-        mensaje: "Servidor Express funcionando correctamente", 
-        estado: 200 
-    });
+    res.send('Servidor Express corriendo correctamente');
 });
 
-// ESTA LÍNEA ES OBLIGATORIA
+// 2. CONECTAR LAS RUTAS CON UN PREFIJO
+// Esto significa que todas las rutas de authRoutes empezarán con /api/auth
+app.use('/api/auth', authRoutes);
+// Todas las rutas de tramiteRoutes empezarán con /api/tramites
+app.use('/api/tramites', tramiteRoutes);
+
 module.exports = app;
