@@ -36,7 +36,7 @@ interface Tramite {
 const tramitesIniciales: Tramite[] = [
   {
     id: '1',
-    nombre: 'Solicitud de Pasaporte',
+    nombre: 'Obtener Licencia',
     ref: 'WEB-PAS-1122',
     fecha: '15/05/2024',
     estado: 'Confirmado',
@@ -44,7 +44,7 @@ const tramitesIniciales: Tramite[] = [
   },
   {
     id: '2',
-    nombre: 'Certificado de Cédula de Identidad',
+    nombre: 'Permiso de Circulación',
     ref: 'WEB-CERT-9988',
     fecha: '10/05/2024',
     estado: 'Pendiente',
@@ -52,7 +52,7 @@ const tramitesIniciales: Tramite[] = [
   },
   {
     id: '3',
-    nombre: 'Solicitud de Bono Invierno',
+    nombre: 'Derechos de aseo',
     ref: 'WEB-BOND-5566',
     fecha: '01/05/2024',
     estado: 'Pendiente',
@@ -60,7 +60,7 @@ const tramitesIniciales: Tramite[] = [
   },
   {
     id: '4',
-    nombre: 'Renacionalización',
+    nombre: 'Becas Municipales',
     ref: 'WEB-RE-3344',
     fecha: '15/04/2024',
     estado: 'Pendiente',

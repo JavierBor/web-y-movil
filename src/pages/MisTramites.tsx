@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import CustomHeader from '../components/CustomHeader';
 import {
   IonPage,
   IonHeader,
@@ -190,35 +191,8 @@ const MisTramites: React.FC = () => {
   return (
     <IonPage className="mis-tramites-page">
 
-      {/* ── HEADER ── */}
-      <IonHeader className="mt-header ion-no-border">
-        <IonToolbar className="mt-toolbar">
-          <IonButtons slot="start">
-            <IonButton className="mt-back-btn" onClick={() => history.goBack()}>
-              <IonIcon icon={arrowBackOutline} slot="start" />
-              <IonLabel>Volver</IonLabel>
-            </IonButton>
-          </IonButtons>
-
-          <div className="mt-logo-wrap" slot="start">
-            <img
-              src="/assets/logo-municipalidad.png"
-              alt="Logo Municipalidad"
-              className="mt-logo"
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-            />
-          </div>
-
-          <IonButtons slot="end">
-            <IonButton className="mt-account-btn">
-              <IonIcon icon={personCircleOutline} className="mt-account-icon" />
-              <span className="mt-account-label">Mi Cuenta</span>
-              <IonIcon icon={chevronDownOutline} className="mt-chevron" />
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
-
+      {/* Header con modo Usuario */}
+      <CustomHeader defaultHref="/MenuPrincipal" />
       {/* ── CONTENT ── */}
       <IonContent className="mt-content">
         <div className="mt-wrapper">

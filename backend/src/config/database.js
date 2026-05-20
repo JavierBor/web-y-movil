@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize');
 
 // Configuración de la conexión a PostgreSQL
-const sequelize = new Sequelize('tramites_db', 'postgres', 'postgres', {
+const sequelize = new Sequelize('tramites_db', 'postgres', 'dieg0alvarezz*', {
     host: 'localhost',
     dialect: 'postgres',
     logging: false // Para que no llene la consola de mensajes de SQL

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import CustomHeader from '../components/CustomHeader';  
+
 import {
   IonPage,
   IonHeader,
@@ -201,34 +203,7 @@ const MisNotificaciones: React.FC = () => {
   return (
     <IonPage className="notif-page">
 
-      {/* ── HEADER ── */}
-      <IonHeader className="notif-header ion-no-border">
-        <IonToolbar className="notif-toolbar">
-          <IonButtons slot="start">
-            <IonButton className="notif-back-btn" onClick={() => history.goBack()}>
-              <IonIcon icon={arrowBackOutline} slot="start" />
-              <IonLabel>Volver</IonLabel>
-            </IonButton>
-          </IonButtons>
-
-          <div className="notif-logo-wrap" slot="start">
-            <img
-              src="/assets/logo-municipalidad.png"
-              alt="Logo Municipalidad"
-              className="notif-logo"
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-            />
-          </div>
-
-          <IonButtons slot="end">
-            <IonButton className="notif-account-btn">
-              <IonIcon icon={personCircleOutline} className="notif-account-icon" />
-              <span className="notif-account-label">Mi Cuenta</span>
-              <IonIcon icon={chevronDownOutline} />
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
+      <CustomHeader showBackButton={true} defaultHref="/MenuPrincipal" />
 
       {/* ── CONTENT ── */}
       <IonContent className="notif-content">
