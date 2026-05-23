@@ -21,4 +21,13 @@ app.use('/api/auth', authRoutes);
 // Todas las rutas de tramiteRoutes empezarán con /api/tramites
 app.use('/api/tramites', tramiteRoutes);
 
+// Middleware global para atrapar errores y evitar que el servidor se caiga
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ 
+        ok: false, 
+        msg: 'Ocurrió un error interno en el servidor.' 
+    });
+});
+
 module.exports = app;

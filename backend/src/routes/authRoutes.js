@@ -67,15 +67,15 @@ router.post('/login', async (req, res) => {
                 mensaje: "La contraseña es incorrecta" 
             });
         }
-
-        
+        // 3. Si todo es correcto, devolver un mensaje de éxito con los datos del usuario
         res.status(200).json({
             ok: true,
             mensaje: "Inicio de sesión exitoso",
             usuario: {
                 id: usuario.id,
                 nombre: usuario.nombre_usuario,
-                correo: usuario.correo
+                correo: usuario.correo,
+                rol: usuario.rol
             }
         });
 

@@ -5,6 +5,7 @@ import {
   IonButton, 
   IonText
 } from '@ionic/react';
+import { useHistory } from 'react-router-dom'; // 👈 Importamos para controlar la navegación por código
 import './Login.css';
 
 // Componentes de Arquitectura Estandarizada
@@ -14,12 +15,50 @@ import MainCard from '../components/MainCard';
 import CustomInput from '../components/CustomInput';
 
 const Login: React.FC = () => {
+  const history = useHistory(); // 👈 Inicializamos el historial de rutas
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  const handleLogin = () => {
-    console.log('Iniciando sesión con:', email, password);
-    // Próxima parada: Integración con Backend
+  const handleLogin = async () => {
+    // Validación rápida antes de gastar recursos de red
+    if (!email || !password) {
+      alert('Por favor, rellene todos los campos.');
+      return;
+    }
+
+    try {
+      // Petición POST al endpoint que acabamos de validar en Postman
+      const respuesta = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        // Mapeamos 'email' a 'correo' y 'password' a 'contrasena' según lo que espera el backend
+        body: JSON.stringify({
+          correo: email,
+          contrasena: password
+        })
+      });
+
+      const datos = await respuesta.json();
+
+      if (datos.ok) {
+        console.log('Autenticación exitosa en Santo Domingo:', datos);
+        
+        // 💾 Guardamos la sesión de forma persistente para usarla en los formularios de trámites
+        localStorage.setItem('usuario_conectado', JSON.stringify(datos.usuario));
+        
+        // Redirección condicional: ¡Solo entra si las credenciales son válidas!
+        history.push('/MenuPrincipal');
+      } else {
+        // Muestra el mensaje exacto que configuramos en el backend (ej: "La contraseña es incorrecta")
+        alert(datos.mensaje);
+      }
+
+    } catch (error) {
+      console.error('Error de conexión con el servidor:', error);
+      alert('No se pudo conectar con el servidor municipal. Asegúrate de que el backend esté encendido.');
+    }
   };
 
   return (
@@ -31,7 +70,6 @@ const Login: React.FC = () => {
           <MainCard title="Iniciar Sesión" maxWidth="450px">
             
             <div className="login-form">
-              {/* Usamos nuestro nuevo componente reutilizable */}
               <CustomInput 
                 label="Correo Electrónico"
                 type="email"
@@ -48,10 +86,10 @@ const Login: React.FC = () => {
                 onIonChange={setPassword}
               />
 
+              {/* ⚠️ Quitamos routerLink para que handleLogin decida si se cambia de pantalla o no */}
               <IonButton 
                 expand="block" 
                 className="btn-ingresar" 
-                routerLink="/MenuPrincipal" 
                 onClick={handleLogin}
               >
                 Iniciar sesión

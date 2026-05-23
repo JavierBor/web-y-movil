@@ -5,15 +5,11 @@ const sequelize = require('./config/database');
 const Usuario = require('./models/Usuario');
 const Sucursal = require('./models/Sucursal');
 const Tramite = require('./models/Tramite');
+const SolicitudTramite = require('./models/SolicitudTramite'); // Agrupado aquí
 
 const PORT = 3000;
 
-// 2. Crear las relaciones (Ese "algo" que los identifica)
-const Usuario = require('./models/Usuario');
-const Sucursal = require('./models/Sucursal');
-const Tramite = require('./models/Tramite');
-const SolicitudTramite = require('./models/SolicitudTramite');
-
+// 2. Crear las relaciones
 // 1. Un usuario puede hacer muchas solicitudes de trámites
 Usuario.hasMany(SolicitudTramite, { foreignKey: 'usuario_id' });
 SolicitudTramite.belongsTo(Usuario, { foreignKey: 'usuario_id' });
@@ -25,6 +21,7 @@ SolicitudTramite.belongsTo(Sucursal, { foreignKey: 'sucursal_id' });
 // 3. Una solicitud pertenece a un tipo de trámite específico del catálogo
 Tramite.hasMany(SolicitudTramite, { foreignKey: 'tramite_id' });
 SolicitudTramite.belongsTo(Tramite, { foreignKey: 'tramite_id' });
+
 // 3. Sincronizar y levantar servidor
 sequelize.sync({ alter: true }) 
     .then(() => {

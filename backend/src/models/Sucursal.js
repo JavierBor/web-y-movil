@@ -20,7 +20,7 @@ const Sucursal = sequelize.define('Sucursal', {
         allowNull: true
     }
 }, {
-    // Forzamos a que en PostgreSQL la tabla se llame exactamente "Sucursales"
+    // Forzamos a que en PostgreSQL la tabla se llame exactamente "sucursales"
     tableName: 'sucursales', 
     // Al activar timestamps, Sequelize crea automáticamente 'createdAt' y 'updatedAt'
     timestamps: true 
