@@ -9,14 +9,22 @@ const Tramite = require('./models/Tramite');
 const PORT = 3000;
 
 // 2. Crear las relaciones (Ese "algo" que los identifica)
-// Un Usuario tiene muchos Trámites
-Usuario.hasMany(Tramite, { foreignKey: 'usuarioId' });
-Tramite.belongsTo(Usuario, { foreignKey: 'usuarioId' });
+const Usuario = require('./models/Usuario');
+const Sucursal = require('./models/Sucursal');
+const Tramite = require('./models/Tramite');
+const SolicitudTramite = require('./models/SolicitudTramite');
 
-// Una Sucursal tiene muchos Trámites
-Sucursal.hasMany(Tramite, { foreignKey: 'sucursalId' });
-Tramite.belongsTo(Sucursal, { foreignKey: 'sucursalId' });
+// 1. Un usuario puede hacer muchas solicitudes de trámites
+Usuario.hasMany(SolicitudTramite, { foreignKey: 'usuario_id' });
+SolicitudTramite.belongsTo(Usuario, { foreignKey: 'usuario_id' });
 
+// 2. Una sucursal puede recibir muchas solicitudes
+Sucursal.hasMany(SolicitudTramite, { foreignKey: 'sucursal_id' });
+SolicitudTramite.belongsTo(Sucursal, { foreignKey: 'sucursal_id' });
+
+// 3. Una solicitud pertenece a un tipo de trámite específico del catálogo
+Tramite.hasMany(SolicitudTramite, { foreignKey: 'tramite_id' });
+SolicitudTramite.belongsTo(Tramite, { foreignKey: 'tramite_id' });
 // 3. Sincronizar y levantar servidor
 sequelize.sync({ alter: true }) 
     .then(() => {

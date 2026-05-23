@@ -7,21 +7,17 @@ const Tramite = sequelize.define('Tramite', {
         primaryKey: true,
         autoIncrement: true
     },
-    tipo_tramite: {
+    nombre_tramite: {
         type: DataTypes.STRING(100),
-        allowNull: false // Ej: "Permiso de Circulación", "Aseo"
+        allowNull: false // Ej: "Licencia de Conducir B", "Derechos de Aseo"
     },
-    estado_tramite: {
-        type: DataTypes.STRING(50),
-        defaultValue: 'Pendiente' // Puede ser: Pendiente, Aprobado, Rechazado
-    },
-    fecha_solicitud: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+    requiere_documentos: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false // Útil para saber si el frontend debe mostrar la pestaña de carga
     }
 }, {
     tableName: 'tramites',
-    timestamps: true // Crea automáticamente createdAt y updatedAt
+    timestamps: true
 });
 
 module.exports = Tramite;
