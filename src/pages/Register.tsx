@@ -11,6 +11,7 @@ import {
   IonLabel,
   IonText
 } from '@ionic/react';
+import { useHistory } from 'react-router-dom'; // 🔌 Importamos useHistory para controlar la redirección por código
 import './Register.css';
 
 // Componentes de Arquitectura Estandarizada
@@ -19,7 +20,11 @@ import PageLayout from '../components/PageLayout';
 import MainCard from '../components/MainCard';
 import CustomInput from '../components/CustomInput';
 
+import API from '../services/api';  
+
+
 const Register: React.FC = () => {
+  const history = useHistory(); // 🔌 Inicializamos para redirigir solo si la API responde OK
   const [formData, setFormData] = useState({
     email: '',
     username: '',
@@ -35,12 +40,46 @@ const Register: React.FC = () => {
   const updateField = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+  const handleRegister = async () => {
+      // 1. Validaciones previas en el Frontend
+      if (!formData.email || !formData.username || !formData.rut || !formData.password) {
+        alert('Por favor, rellene todos los campos obligatorios.');
+        return;
+      }
 
-  const handleRegister = () => {
-    console.log('Datos de registro:', formData);
-    // Lógica futura: validaciones y envío a API
-  };
+      if (formData.password !== formData.confirmPassword) {
+        alert('Las contraseñas no coinciden. Por favor, verifíquelas.');
+        return;
+      }
 
+      if (!formData.terms) {
+        alert('Debes aceptar los términos y condiciones para continuar.');
+        return;
+      }
+
+      try {
+        // 🚀 2. LLAMADA LIMPIA CON AXIOS (EP 2.4): Enviamos el payload directo al prefijo /auth/register
+        // Los headers y la URL base se resuelven de forma automática en el archivo api.ts
+        await API.post('/auth/register', {
+          rut: formData.rut,
+          nombre_usuario: formData.username,
+          correo: formData.email,
+          region: formData.region,
+          comuna: formData.comuna,
+          contrasena: formData.password // Clave mapeada correctamente
+        });
+
+        // Si Axios no arrojó un error en el interceptor, la inserción en Postgres fue exitosa
+        alert('¡Cuenta creada con éxito! El servidor aplicó Bcrypt de forma automática.');
+        history.push('/Login'); // Redirección fluida controlada por código
+
+      } catch (error: any) {
+        // El catch ahora recibe el mensaje limpio y procesado desde el interceptor global
+        console.error('Error en proceso de registro:', error);
+        alert(error.message); 
+      }
+    };
+    
   return (
     <IonPage>
       <CustomHeader defaultHref="/Login" />
@@ -121,10 +160,10 @@ const Register: React.FC = () => {
             </IonGrid>
 
             <div className="register-actions">
+              {/* ⚠️ Quitamos el routerLink directo para que handleRegister maneje el flujo */}
               <IonButton 
                 expand="block" 
                 onClick={handleRegister} 
-                routerLink='/MenuPrincipal'
                 className="btn-register-submit"
               >
                 Crear cuenta

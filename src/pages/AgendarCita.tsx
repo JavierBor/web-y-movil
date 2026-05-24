@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { IonContent, IonPage, IonGrid, IonRow, IonCol, IonButton } from '@ionic/react';
-import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
+import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons'; 
 import CustomHeader from '../components/CustomHeader';
 import PageLayout from '../components/PageLayout';
 import MainCard from '../components/MainCard';

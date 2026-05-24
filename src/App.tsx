@@ -29,6 +29,7 @@ import AseoTramite from './pages/AseoTramite';
 import PermisoCirculacion from './pages/PermisoCirculacion';
 import MisNotificaciones from './pages/MisNotificaciones';
 import AdminAlerts from './pages/AdminAlerts';
+import AgendarCita from './pages/AgendarCita';
 
 setupIonicReact();
 
@@ -44,8 +45,10 @@ const App: React.FC = () => (
         {/* Menú usuario */}
         <Route path="/MenuPrincipal" component={MenuPrincipal} exact />
         <Route path="/agendar" component={Tramites} exact />
+        <Route path="/seleccionar-fecha" component={AgendarCita} exact />
         <Route path="/detalle-tramite" component={DetalleTramite} exact />
         <Route path="/subir-documentos" component={SubirDocumentos} exact />
+
         <Route path="/mis-tramites" component={MisTramites} exact />
         <Route path="/tramites" component={Tramites} exact />
         <Route path="/gestion-tramites" component={GestionTramites} exact />
