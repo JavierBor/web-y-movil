@@ -1,12 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const Usuario = require('../models/Usuario');
-const bcrypt = require('bcrypt'); // Importar la librería de encriptación
+const bcrypt = require('bcrypt'); 
+const jwt = require('jsonwebtoken'); // 🔑 Importamos la librería para generar los tokens seguros
 
-// Ruta para Registro de Usuarios REAL
+// Clave secreta para firmar los tokens (Idealmente viene de un archivo .env)
+const JWT_SECRET = process.env.JWT_SECRET || 'clave_secreta_municipalidad_santo_domingo_2026';
+
+// ==========================================
+// 1. POST: Registro de Usuarios REAL
+// URL: POST http://localhost:3000/api/auth/register
+// ==========================================
 router.post('/register', async (req, res) => {
     try {
-        // Extraemos los campos que vienen desde el cuerpo de la petición (req.body)
         const { nombre_usuario, rut, correo, region, comuna, contrasena } = req.body;
 
         // 1. Encriptar la contraseña para cumplir con el requisito de seguridad
@@ -23,7 +29,6 @@ router.post('/register', async (req, res) => {
             contrasena_hash // Guardar la clave ya protegida en la columna correspondiente
         });
 
-        // 3. Responder con éxito en formato JSON al cliente
         res.status(201).json({ 
             ok: true,
             mensaje: "Usuario registrado con éxito en la base de datos",
@@ -31,7 +36,6 @@ router.post('/register', async (req, res) => {
         });
 
     } catch (error) {
-        // Manejo de errores por si el RUT o Correo ya existen (Restricción de integridad UNIQUE)
         res.status(400).json({
             ok: false,
             mensaje: "Error al registrar el usuario",
@@ -41,7 +45,10 @@ router.post('/register', async (req, res) => {
 });
 
 
-// Ruta para Inicio de Sesión 
+// ==========================================
+// 2. POST: Inicio de Sesión con Firma Digital (JWT)
+// URL: POST http://localhost:3000/api/auth/login
+// ==========================================
 router.post('/login', async (req, res) => {
     try {
         const { correo, contrasena } = req.body;
@@ -49,7 +56,6 @@ router.post('/login', async (req, res) => {
         // 1. Buscar al usuario en la base de datos por su correo
         const usuario = await Usuario.findOne({ where: { correo } });
         
-        // Si no existe el correo, devolver 404 (Not Found)
         if (!usuario) {
             return res.status(404).json({ 
                 ok: false, 
@@ -60,17 +66,26 @@ router.post('/login', async (req, res) => {
         // 2. Comparar la contraseña ingresada con la encriptada en la DB
         const contraseñaValida = await bcrypt.compare(contrasena, usuario.contrasena_hash);
         
-        // Si no coincide, devolver 401 (Unauthorized)
         if (!contraseñaValida) {
             return res.status(401).json({ 
                 ok: false, 
                 mensaje: "La contraseña es incorrecta" 
             });
         }
-        // 3. Si todo es correcto, devolver un mensaje de éxito con los datos del usuario
+
+        // 🔑 3. GENERACIÓN DEL TOKEN JWT (Cumple EP 2.5)
+        // Guardamos el ID y el Rol dentro del token para que el frontend los use de forma segura
+        const token = jwt.sign(
+            { id: usuario.id, rol: usuario.rol },
+            JWT_SECRET,
+            { expiresIn: '24h' } // El token expirará automáticamente en 24 horas
+        );
+
+        // 4. Si todo es correcto, devolvemos el token y el objeto usuario esperados por Axios
         res.status(200).json({
             ok: true,
             mensaje: "Inicio de sesión exitoso",
+            token, // 👈 Aquí viaja el token que guardará tu frontend
             usuario: {
                 id: usuario.id,
                 nombre: usuario.nombre_usuario,
@@ -80,7 +95,6 @@ router.post('/login', async (req, res) => {
         });
 
     } catch (error) {
-        // Error interno del servidor 500
         res.status(500).json({
             ok: false,
             mensaje: "Error interno del servidor al intentar iniciar sesión",

@@ -82,7 +82,7 @@ const Register: React.FC = () => {
     
   return (
     <IonPage>
-      <CustomHeader defaultHref="/Login" />
+      <CustomHeader defaultHref="/Login" showAccountButton={false} />
 
       <IonContent>
         <PageLayout>

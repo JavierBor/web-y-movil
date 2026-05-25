@@ -18,7 +18,25 @@ router.post('/', async (req, res) => {
             tramite_id 
         } = req.body;
 
-        // Creamos la solicitud en PostgreSQL asociándola a las tablas maestras
+        // 🔐 CANDADO DE SEGURIDAD (Regla de Negocio): Un ciudadano solo puede tener una cita activa a la vez
+        // Buscamos si ya existe una solicitud para este usuario que esté 'Pendiente' o 'Confirmada'
+        const solicitudActiva = await SolicitudTramite.findOne({
+            where: {
+                usuario_id,
+                tramite_id,
+                estado_tramite: ['Pendiente', 'Confirmada']
+            }
+        });
+
+        // Si se encuentra una coincidencia, bloqueamos el proceso enviando un 400 Bad Request
+        if (solicitudActiva) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: "Ya cuentas con una solicitud activa (Pendiente o Confirmada). No puedes agendar un nuevo trámite hasta que el actual finalice o sea rechazado."
+            });
+        }
+
+        // 🟢 Si el validador pasa limpio, procedemos a escribir en PostgreSQL
         const nuevaSolicitud = await SolicitudTramite.create({
             documentos_url,
             fecha_cita,

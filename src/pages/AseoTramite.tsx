@@ -9,33 +9,90 @@ import {
   IonItem,
   IonLabel
 } from '@ionic/react';
-import { checkmarkCircleOutline, arrowBackOutline, downloadOutline } from 'ionicons/icons';
+import { useHistory } from 'react-router-dom';
+import { checkmarkCircleOutline, downloadOutline } from 'ionicons/icons';
 
 // Componentes de la Arquitectura
 import CustomHeader from '../components/CustomHeader';
 import PageLayout from '../components/PageLayout';
 import MainCard from '../components/MainCard';
 import CustomInput from '../components/CustomInput';
+import API from '../services/api'; // 🔌 Conexión centralizada de Axios
 
 import './AseoTramite.css';
 
 function AseoTramite() {
-  // 1. ESTADOS: Manejo de datos y flujo de la vista
+  const history = useHistory();
   const [isFinished, setIsFinished] = useState(false);
   const [formData, setFormData] = useState({
     rut: '',
     rol: ''
   });
 
-  // 2. LÓGICA: Simulación de procesamiento
-  function handleProcesarPago() {
-    if (formData.rut && formData.rol) {
-      // Aquí iría la llamada a la API en el futuro
-      setIsFinished(true);
-    } else {
-      alert("Por favor, complete todos los campos.");
+  // Estados transaccionales para el recibo dinámico
+  const [folioGenerado, setFolioGenerado] = useState('');
+  const [fechaTransaccion, setFechaTransaccion] = useState('');
+
+  /**
+   * 🚀 FUNCIÓN CORE: Conecta con Express y procesa el pago electrónico
+   */
+  const handleProcesarPago = async () => {
+    if (!formData.rut || !formData.rol) {
+      alert("Por favor, complete todos los campos requeridos.");
+      return;
     }
-  }
+
+    // 1. Rescatamos el usuario logueado en el sistema
+    const sesion = localStorage.getItem('usuario_conectado');
+    if (!sesion) {
+      alert("Error de autenticación: Inicie sesión para efectuar pagos.");
+      history.push('/Login');
+      return;
+    }
+    const usuario = JSON.parse(sesion);
+
+    // 2. Capturamos la fecha actual en formato local del servidor
+    const hoy = new Date();
+    const fechaFormateada = hoy.toISOString().split('T')[0]; // YYYY-MM-DD
+    const horaFormateada = hoy.toTimeString().split(' ')[0];  // HH:MM:SS
+
+    try {
+      // 3. Payload estructurado para los Derechos de Aseo
+      const payload = {
+        documentos_url: null,
+        fecha_cita: fechaFormateada, // Registra el día exacto del pago
+        hora_cita: horaFormateada,   // Registra la hora exacta del pago
+        comprobante_url: `/uploads/comprobantes/aseo_${formData.rol.replace('-', '_')}.pdf`,
+        usuario_id: usuario.id,
+        sucursal_id: 1,              // Edificio Consistorial Av. Sta Teresa
+        tramite_id: 3                // ID 3: Derechos de Aseo en tu catálogo maestro
+      };
+
+      console.log('Enviando pago de Derechos de Aseo:', payload);
+
+      const response = await API.post('/tramites', payload);
+
+      if (response.status === 201 || response.data.ok) {
+        // Generamos datos dinámicos únicos para la vista del recibo de éxito
+        const numAleatorio = Math.floor(1000 + Math.random() * 9000);
+        setFolioGenerado(`#SD-2026-${numAleatorio}`);
+        setFechaTransaccion(hoy.toLocaleDateString('es-CL', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        }));
+
+        // Cambiamos de estado para pintar el Comprobante de Éxito
+        setIsFinished(true);
+      }
+
+    } catch (error: any) {
+      console.error('Error al procesar el pago de aseo:', error);
+      // Extrae el mensaje de error del candado del backend si el usuario ya pagó
+      const msgError = error.response?.data?.mensaje || 'No se pudo completar la transacción.';
+      alert(msgError);
+    }
+  };
 
   return (
     <IonPage>
@@ -44,7 +101,6 @@ function AseoTramite() {
       <IonContent className="aseo-bg">
         <PageLayout>
           
-          {/* El MainCard actúa como contenedor dinámico */}
           <MainCard 
             title={isFinished ? "Comprobante de Pago" : "Realizar Pago: Derechos de Aseo"} 
             maxWidth="600px"
@@ -54,7 +110,7 @@ function AseoTramite() {
               /* --- ESTADO 1: FORMULARIO DE CAPTURA --- */
               <div className="aseo-container">
                 <p className="aseo-instruction">
-                  Ingrese los datos de la propiedad para consultar y pagar su derecho de aseo domiciliario.
+                  Ingrese los datos de la propiedad para consultar y pagar su derecho de aseo domiciliario en la comuna de Santo Domingo.
                 </p>
 
                 <CustomInput 
@@ -90,7 +146,7 @@ function AseoTramite() {
                 <div className="receipt-box">
                   <IonList lines="full">
                     <IonItem>
-                      <IonLabel><small>N° de Folio</small><p>#SD-2026-8842</p></IonLabel>
+                      <IonLabel><small>N° de Folio</small><p>{folioGenerado}</p></IonLabel>
                     </IonItem>
                     <IonItem>
                       <IonLabel><small>Propiedad (Rol)</small><p>{formData.rol}</p></IonLabel>
@@ -99,13 +155,16 @@ function AseoTramite() {
                       <IonLabel><small>Monto Pagado</small><p>$42.500</p></IonLabel>
                     </IonItem>
                     <IonItem>
-                      <IonLabel><small>Fecha de Transacción</small><p>09 de Mayo, 2026</p></IonLabel>
+                      <IonLabel><small>Fecha de Transacción</small><p>{fechaTransaccion}</p></IonLabel>
+                    </IonItem>
+                    <IonItem>
+                      <IonLabel><small>Estado Transacción</small><p style={{ color: 'green', fontWeight: 'bold' }}>Aprobada / Confirmada</p></IonLabel>
                     </IonItem>
                   </IonList>
                 </div>
 
                 <div className="aseo-actions-final">
-                  <IonButton fill="clear" color="primary">
+                  <IonButton fill="clear" color="primary" onClick={() => alert('Descargando documento oficial de tesorería municipal... (Simulación)')}>
                     <IonIcon slot="start" icon={downloadOutline} />
                     Descargar PDF
                   </IonButton>

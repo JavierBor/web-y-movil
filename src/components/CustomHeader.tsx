@@ -4,6 +4,7 @@ import {
   IonImg, IonButton, IonIcon, IonPopover, IonList, 
   IonItem, IonLabel, IonText 
 } from '@ionic/react';
+import { useHistory } from 'react-router-dom'; 
 import { 
   personCircleOutline, chevronDownOutline, 
   settingsOutline, logOutOutline 
@@ -13,8 +14,8 @@ import './CustomHeader.css';
 interface HeaderProps {
   showBackButton?: boolean;
   defaultHref?: string;
-  showAccountButton?: boolean; // Para ocultar en Login/Register
-  isAdmin?: boolean;           // Para mostrar la etiqueta 'Admin' 
+  showAccountButton?: boolean; 
+  isAdmin?: boolean;           
 }
 
 const CustomHeader: React.FC<HeaderProps> = ({ 
@@ -23,7 +24,8 @@ const CustomHeader: React.FC<HeaderProps> = ({
   showAccountButton = true,
   isAdmin = false 
 }) => {
-  // Estado interno para gestionar el menú (Popover)
+  const history = useHistory(); 
+
   const [popoverState, setPopoverState] = useState<{
     showPopover: boolean,
     event: any | undefined
@@ -40,21 +42,27 @@ const CustomHeader: React.FC<HeaderProps> = ({
     setPopoverState({ showPopover: false, event: undefined });
   };
 
+  const handleLogout = () => {
+    console.log("幕🔴 Cerrando sesión: Limpiando LocalStorage de forma segura...");
+    localStorage.removeItem('usuario_conectado');
+    localStorage.removeItem('token');
+    closePopover();         
+    history.push('/Login'); 
+  };
+
   return (
     <IonHeader>
+      {/* 🟢 Tag de apertura correcto */}
       <IonToolbar color="primary" className="custom-toolbar">
-        {/* LADO IZQUIERDO: Botón Inicio y Título */}
         <IonButtons slot="start">
           {showBackButton && <IonBackButton defaultHref={defaultHref} text="Volver" />}
           <h1 className="header-web-title">Municipalidad Santo Domingo</h1>
         </IonButtons>
         
-        {/* CENTRO: Logo con posicionamiento absoluto */}
         <div className="header-logo-wrapper">
           <IonImg src="/Logo.png" className="header-logo-img" alt="Logo" />
         </div>
 
-        {/* LADO DERECHO: Etiqueta Admin y Botón Mi Cuenta */}
         {showAccountButton && (
           <IonButtons slot="end">
             {isAdmin && <span className="admin-label">Admin</span>}
@@ -65,32 +73,27 @@ const CustomHeader: React.FC<HeaderProps> = ({
             </IonButton>
           </IonButtons>
         )}
-      </IonToolbar>
+      </IonToolbar> {/* 👈 Corregido aquí: </IonToolbar> en lugar de </Toolbar> */}
 
-      {/* Menú Desplegable Integrado */}
       <IonPopover
         isOpen={popoverState.showPopover}
         event={popoverState.event}
         onDidDismiss={closePopover}
       >
         <IonList>
-          {/* Renderizado condicional según el rol actual */}
           {isAdmin ? (
-            // Si ya es Admin, ofrece volver al portal del usuario
             <IonItem button routerLink="/MenuPrincipal" onClick={closePopover}>
               <IonIcon slot="start" icon={personCircleOutline} />
               <IonLabel>Modo Ciudadano</IonLabel>
             </IonItem>
           ) : (
-            // Si es Usuario, ofrece ir al panel de administración
             <IonItem button routerLink="/AdminMenu" onClick={closePopover}>
               <IonIcon slot="start" icon={settingsOutline} />
               <IonLabel>Modo Administrador</IonLabel>
             </IonItem>
           )}
 
-          {/* Opción de cerrar sesión (común para ambos) */}
-          <IonItem button onClick={() => { console.log("Cerrar sesión"); closePopover(); }} lines="none" routerLink='/Login'>
+          <IonItem button onClick={handleLogout} lines="none">
             <IonIcon slot="start" icon={logOutOutline} color="danger" />
             <IonText color="danger">
               <IonLabel>Cerrar sesión</IonLabel>

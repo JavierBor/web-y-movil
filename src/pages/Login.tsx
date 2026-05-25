@@ -5,7 +5,7 @@ import {
   IonButton, 
   IonText
 } from '@ionic/react';
-import { useHistory } from 'react-router-dom'; // 👈 Importamos para controlar la navegación por código
+import { useHistory } from 'react-router-dom'; // Para controlar la navegación por código
 import './Login.css';
 
 // Componentes de Arquitectura Estandarizada
@@ -16,7 +16,7 @@ import CustomInput from '../components/CustomInput';
 import API from '../services/api';  // 🔌 Importamos la instancia centralizada de Axios
 
 const Login: React.FC = () => {
-  const history = useHistory(); // 👈 Inicializamos el historial de rutas
+  const history = useHistory(); // Inicializar el historial de rutas
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
@@ -29,27 +29,30 @@ const handleLogin = async () => {
 
     try {
       // 🚀 2. Petición HTTP optimizada con Axios (EP 2.4)
-      // Enviamos el correo y la clave al endpoint que configuró tu amigo
       const response = await API.post('/auth/login', {
         correo: email,
         contrasena: password
       });
 
-      // 🔑 3. GUARDAR EL TOKEN JWT (Exigencia crítica EP 2.5)
-      // Asumiendo que el backend responde con { token: "ey...", usuario: {...} }
-      const { token } = response.data;
+      // 🔑 CAPTURAMOS EL TOKEN Y EL USUARIO ENVIADOS POR EL BACKEND
+      const { token, usuario } = response.data;
       
+      // 💾 Guardamos el token para los interceptores globales
       if (token) {
-        localStorage.setItem('token', token); // Aquí se almacena para el interceptor
+        localStorage.setItem('token', token); 
+      }
+
+      // 💾 Guardamos el usuario real (ID y Rol) para las pantallas de trámites
+      if (usuario) {
+        localStorage.setItem('usuario_conectado', JSON.stringify(usuario));
       }
 
       alert('¡Inicio de sesión exitoso!');
       
-      // 🔄 4. Redirección al Home o Panel Principal de trámites
+      // 🔄 Redirección al Menú Principal
       history.push('/MenuPrincipal'); 
 
     } catch (error: any) {
-      // Si las credenciales fallan, el interceptor de api.ts nos entrega el error limpio
       console.error('Error en el login:', error);
       alert(error.message || 'Credenciales incorrectas.');
     }
@@ -57,7 +60,7 @@ const handleLogin = async () => {
 
   return (
     <IonPage>
-      <CustomHeader showBackButton={false} />
+      <CustomHeader showBackButton={false} showAccountButton={false} />
 
       <IonContent>
         <PageLayout>
@@ -80,7 +83,7 @@ const handleLogin = async () => {
                 onIonChange={setPassword}
               />
 
-              {/* ⚠️ Quitamos routerLink para que handleLogin decida si se cambia de pantalla o no */}
+              {/* Quitamos routerLink para que handleLogin decida si se cambia de pantalla o no */}
               <IonButton 
                 expand="block" 
                 className="btn-ingresar" 
