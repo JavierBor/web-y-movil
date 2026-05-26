@@ -1,0 +1,27 @@
+/* src/pages/PlazaCabildoTramites.css */
+
+.tramites-header {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.tramites-header h1 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.tramites-header p {
+  color: #666;
+  font-size: 1rem;
+}
+
+.tramites-grid {
+  margin-top: 20px;
+}
+
+/* Estilo para las cards en grid */
+.tramite-col {
+  margin-bottom: 20px;
+}

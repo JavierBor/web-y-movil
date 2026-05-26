@@ -9,7 +9,6 @@ import {
   IonButton 
 } from '@ionic/react';
 import { 
-  calendarOutline, 
   clipboardOutline, 
   notificationsOutline 
 } from 'ionicons/icons';
@@ -34,24 +33,8 @@ const AdminMenu: React.FC = () => {
             <IonGrid>
               <IonRow className="ion-justify-content-center">
                 
-                {/* TARJETA 1: Gestionar Trámites */}
-                <IonCol size="12" sizeMd="4">
-                  <MainCard maxWidth="100%" fullHeight={true}>
-                    <div className="dash-card-content">
-                      <IonIcon icon={calendarOutline} className="dash-icon" />
-                      <h2 className="dash-title">Gestionar Trámites</h2>
-                      <p className="dash-desc">
-                        Gestiona o modifica el catálogo de trámites disponibles en la municipalidad.
-                      </p>
-                      <IonButton expand="block" className="dash-btn" routerLink="/admin/gestion">
-                        GESTIONAR
-                      </IonButton>
-                    </div>
-                  </MainCard>
-                </IonCol>
-
-                {/* TARJETA 2: Panel de Seguimiento Administrativo */}
-                <IonCol size="12" sizeMd="4">
+                {/* TARJETA 1: Panel de Seguimiento Administrativo */}
+                <IonCol size="12" sizeMd="6">
                   <MainCard maxWidth="100%" fullHeight={true}>
                     <div className="dash-card-content">
                       <IonIcon icon={clipboardOutline} className="dash-icon" />
@@ -66,8 +49,8 @@ const AdminMenu: React.FC = () => {
                   </MainCard>
                 </IonCol>
 
-                {/* TARJETA 3: Sistema de Notificaciones Masivas */}
-                <IonCol size="12" sizeMd="4">
+                {/* TARJETA 2: Sistema de Notificaciones Masivas */}
+                <IonCol size="12" sizeMd="6">
                   <MainCard maxWidth="100%" fullHeight={true}>
                     <div className="dash-card-content">
                       <IonIcon icon={notificationsOutline} className="dash-icon" />

@@ -2,12 +2,15 @@ const express = require('express');
 const cors = require('cors');
 
 const authRoutes = require('./routes/authRoutes');
-const tramiteRoutes = require('./routes/tramiteRoutes'); 
+const tramiteRoutes = require('./routes/tramiteRoutes');
+const becaRoutes = require('./routes/becaRoutes');
+const patenteRoutes = require('./routes/patenteRoutes');
 
 const app = express();
 
 // Middlewares básicos
 app.use(cors());
+app.use('/uploads', express.static('uploads')); // Para servir archivos subidos
 app.use(express.json()); // Vital para que Express entienda los datos JSON que le enviemos
 
 // Tu ruta raíz que ya tenías funcionando
@@ -20,6 +23,8 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 // Todas las rutas de tramiteRoutes empezarán con /api/tramites
 app.use('/api/tramites', tramiteRoutes);
+app.use('/api/becas', becaRoutes);
+app.use('/api/patentes', patenteRoutes);
 
 // Middleware global para atrapar errores y evitar que el servidor se caiga
 app.use((err, req, res, next) => {

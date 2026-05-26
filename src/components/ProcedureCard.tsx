@@ -18,7 +18,12 @@ const ProcedureCard: React.FC<ProcedureProps> = ({ title, description, icon, onD
         </div>
         <h3 className="card-title">{title}</h3>
         <p className="card-description">{description}</p>
-        <IonButton fill="solid" size="small" onClick={onDetailClick} className="detail-button">
+        <IonButton 
+          fill="solid" 
+          size="small" 
+          onClick={onDetailClick} 
+          className="detail-button"
+        >
           Ver detalles
         </IonButton>
       </IonCardContent>

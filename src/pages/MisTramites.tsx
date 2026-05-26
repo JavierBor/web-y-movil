@@ -63,7 +63,7 @@ const tramitesIniciales: Tramite[] = [
   },
   {
     id: '2',
-    nombre: 'Certificado de Cédula de Identidad',
+    nombre: 'Certificado ade Cédula de Identidad',
     ref: 'WEB-CERT-9988',
     fecha: '10/05/2024',
     pasos: [

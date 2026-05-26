@@ -28,10 +28,8 @@ import './Tramites.css';
 const Tramites: React.FC = () => {
   const history = useHistory();
   
-  // Estado para controlar la sucursal seleccionada
   const [sucursal, setSucursal] = useState('Edificio Consistorial Av. Sta Teresa');
 
-  // Datos de los trámites municipales con su respectiva sucursal asignada
   const listaTramites = [
     { 
       title: "Permiso de circulación", 
@@ -65,9 +63,6 @@ const Tramites: React.FC = () => {
     }
   ];
 
-  /**
-   * Manejador de navegación programática
-   */
   const handleNavigation = (title: string) => {
     if (title === "Obtener/Renovar Licencia") {
       history.push('/detalle-tramite');
@@ -75,23 +70,23 @@ const Tramites: React.FC = () => {
       history.push('/tramites/aseo');
     } else if (title === "Permiso de circulación") {
       history.push('/tramites/permiso-circulacion');
+    } else if (title === "Patentes Municipales") {
+      history.push('/PatenteMunicipal');  // ← Agregado
+    } else if (title === "Becas Municipales") {
+      history.push('/BecaMunicipal');     // ← Agregado
     } else {
       console.log(`Navegación pendiente para: ${title}`);
     }
   };
 
-  // PASO CLAVE: Filtramos el arreglo según el estado actual de la sucursal
   const tramitesFiltrados = listaTramites.filter(tramite => tramite.sucursal === sucursal);
 
   return (
     <IonPage>
-      {/* Header con retorno al menú principal */}
       <CustomHeader defaultHref="/MenuPrincipal" />
       
       <IonContent>
         <PageLayout>
-            
-          {/* Filtro de Sucursal (Requisito Funcional) */}
           <div className="filter-container">
             <IonLabel className="filter-label">Sucursal</IonLabel>
             <IonSelect 
@@ -100,7 +95,6 @@ const Tramites: React.FC = () => {
               interface="popover"
               onIonChange={e => setSucursal(e.detail.value)}
             >
-              {/* Opciones disponibles en el dropdown */}
               <IonSelectOption value="Edificio Consistorial Av. Sta Teresa">
                 Edificio Consistorial Av. Sta Teresa
               </IonSelectOption>
@@ -110,7 +104,6 @@ const Tramites: React.FC = () => {
             </IonSelect>
           </div>
 
-          {/* Grilla Responsiva de Trámites Filtrados */}
           <IonGrid className="ion-no-padding">
             <IonRow>
               {tramitesFiltrados.map((item, index) => (
@@ -125,7 +118,6 @@ const Tramites: React.FC = () => {
               ))}
             </IonRow>
           </IonGrid>
-
         </PageLayout>
       </IonContent>
     </IonPage>

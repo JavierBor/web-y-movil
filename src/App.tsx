@@ -27,6 +27,9 @@ import EnviarAvisos from './pages/EnviarAvisos';
 import MisTramites from './pages/MisTramites';
 import AseoTramite from './pages/AseoTramite';
 import PermisoCirculacion from './pages/PermisoCirculacion';
+import PlazaCabildoTramites from './pages/PlazaCabildoTramites';
+import PatenteMunicipal from './pages/PatenteMunicipal';
+import BecaMunicipal from './pages/BecaMunicipal';
 import MisNotificaciones from './pages/MisNotificaciones';
 import AdminAlerts from './pages/AdminAlerts';
 import AgendarCita from './pages/AgendarCita';
@@ -48,6 +51,17 @@ const App: React.FC = () => (
         <Route path="/seleccionar-fecha" component={AgendarCita} exact />
         <Route path="/detalle-tramite" component={DetalleTramite} exact />
         <Route path="/subir-documentos" component={SubirDocumentos} exact />
+        
+        {/* Plaza Cabildo y sus trámites */}
+        <Route exact path="/PlazaCabildoTramites">
+          <PlazaCabildoTramites />
+        </Route>
+        <Route exact path="/PatenteMunicipal">
+          <PatenteMunicipal />
+        </Route>
+        <Route exact path="/BecaMunicipal">
+          <BecaMunicipal />
+        </Route>
 
         <Route path="/mis-tramites" component={MisTramites} exact />
         <Route path="/tramites" component={Tramites} exact />
@@ -59,13 +73,15 @@ const App: React.FC = () => (
         <Route path="/admin/gestion" component={Tramites} exact />
         <Route path="/admin/avisos" component={AdminAlerts} exact />
         <Route path="/admin/pendientes" component={GestionTramites} exact />
-      </IonRouterOutlet>
+
+        {/* Trámites específicos */}
         <Route exact path="/tramites/aseo">
           <AseoTramite />
         </Route>
         <Route exact path="/tramites/permiso-circulacion">
           <PermisoCirculacion />
         </Route>
+      </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>
 );

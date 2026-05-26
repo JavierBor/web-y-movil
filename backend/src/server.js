@@ -23,7 +23,8 @@ Tramite.hasMany(SolicitudTramite, { foreignKey: 'tramite_id' });
 SolicitudTramite.belongsTo(Tramite, { foreignKey: 'tramite_id' });
 
 // 3. Sincronizar y levantar servidor
-sequelize.sync({ alter: true }) 
+// Cambiar alter: true a alter: false para que no intente modificar tablas existentes
+sequelize.sync({ alter: false }) 
     .then(() => {
         console.log('Tablas y Relaciones sincronizadas en la base de datos.');
         
