@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // 🔌 Añadimos useEffect para la carga asíncrona
 import {
   IonPage,
   IonContent,
   IonButton,
   IonIcon,
-  IonLabel,
   IonToast,
   IonSpinner,
   IonAlert,
@@ -13,14 +12,14 @@ import {
   downloadOutline,
   checkmarkCircleOutline,
 } from 'ionicons/icons';
-
-// Componentes de Arquitectura
+import { useHistory } from 'react-router-dom';
 import CustomHeader from '../components/CustomHeader';
 import PageLayout from '../components/PageLayout';
 import MainCard from '../components/MainCard';
+import API from '../services/api'; // 🔌 Instancia centralizada de Axios
 import './GestionTramites.css';
 
-// ─── Tipos ───────────────────────────────
+// ─── Tipos Originales Habilitados ────────────────────────
 type EstadoTramite = 'Confirmado' | 'Pendiente' | 'Rechazado';
 
 interface Tramite {
@@ -32,83 +31,114 @@ interface Tramite {
   documentoUrl?: string;
 }
 
-// ─── Datos iniciales ─────────────────────
-const tramitesIniciales: Tramite[] = [
-  {
-    id: '1',
-    nombre: 'Obtener Licencia',
-    ref: 'WEB-PAS-1122',
-    fecha: '15/05/2024',
-    estado: 'Confirmado',
-    documentoUrl: '#',
-  },
-  {
-    id: '2',
-    nombre: 'Permiso de Circulación',
-    ref: 'WEB-CERT-9988',
-    fecha: '10/05/2024',
-    estado: 'Pendiente',
-    documentoUrl: '#',
-  },
-  {
-    id: '3',
-    nombre: 'Derechos de aseo',
-    ref: 'WEB-BOND-5566',
-    fecha: '01/05/2024',
-    estado: 'Pendiente',
-    documentoUrl: '#',
-  },
-  {
-    id: '4',
-    nombre: 'Becas Municipales',
-    ref: 'WEB-RE-3344',
-    fecha: '15/04/2024',
-    estado: 'Pendiente',
-    documentoUrl: '#',
-  },
-];
-
 const GestionTramites: React.FC = () => {
-  const [tramites, setTramites] = useState<Tramite[]>(tramitesIniciales);
+  const history = useHistory();
+  
+  // Estados transaccionales conectados a la API
+  const [tramites, setTramites] = useState<Tramite[]>([]);
+  const [loadingView, setLoadingView] = useState<boolean>(true);
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  
   const [alertConfig, setAlertConfig] = useState<{
     isOpen: boolean;
     tramiteId: string;
     accion: 'Confirmar' | 'Rechazar';
     nombre: string;
   }>({ isOpen: false, tramiteId: '', accion: 'Confirmar', nombre: '' });
+  
   const [toast, setToast] = useState<{
     isOpen: boolean;
     message: string;
     color: 'success' | 'danger' | 'warning';
   }>({ isOpen: false, message: '', color: 'success' });
 
-  // ── Llama a la API REST del backend ──
+  /**
+   * 📡 GATILLO DE ENTRADA: Descarga el listado global de solicitudes desde Express
+   */
+  const cargarSolicitudesMunicipales = async () => {
+    try {
+      // Consumimos el endpoint GET /api/tramites que creaste en tu tramiteRoutes.js
+      const response = await API.get('/tramites');
+      const listaDB = response.data.solicitudes || [];
+
+      // 🔄 MAPEO INTELIGENTE: Transformamos registros relacionales a los tipos del Mockup
+      const mappedTramites: Tramite[] = listaDB.map((sol: any) => {
+        
+        // 1. Traducimos las IDs numéricas al nombre institucional del catálogo
+        let nombreOficial = 'Trámite Municipal';
+        if (sol.tramite_id === 1) nombreOficial = 'Permiso de Circulación';
+        if (sol.tramite_id === 2) nombreOficial = 'Obtener/Renovar Licencia Clase B';
+        if (sol.tramite_id === 3) nombreOficial = 'Derechos de Aseo Domiciliario';
+
+        // 2. Homologamos el género gramatical de los estados para no romper el CSS frontend
+        let estadoUI: EstadoTramite = 'Pendiente';
+        if (sol.estado_tramite === 'Confirmada' || sol.estado_tramite === 'Confirmado') estadoUI = 'Confirmado';
+        if (sol.estado_tramite === 'Rechazada' || sol.estado_tramite === 'Rechazado') estadoUI = 'Rechazado';
+
+        // 3. Limpiamos la cadena ISO de la fecha de Postgres
+        const fechaFormateada = sol.fecha_cita ? sol.fecha_cita.split('T')[0] : 'Por definir';
+
+        return {
+          id: sol.id.toString(),
+          nombre: nombreOficial,
+          ref: `MUN-SD-${sol.id.toString().padStart(4, '0')}`,
+          fecha: fechaFormateada,
+          estado: estadoUI,
+          documentoUrl: sol.documentos_url
+        };
+      });
+
+      setTramites(mappedTramites);
+
+    } catch (error) {
+      console.error('Error al poblar panel de control administrativo:', error);
+      setToast({
+        isOpen: true,
+        message: 'Error de comunicación: No se pudo obtener el catálogo de solicitudes.',
+        color: 'danger'
+      });
+    } finally {
+      setLoadingView(false);
+    }
+  };
+
+  useEffect(() => {
+    cargarSolicitudesMunicipales();
+  }, []);
+
+  /**
+   * 🚀 ACCIÓN TRANSACCIONAL: Despacha el cambio de estado a PostgreSQL via PUT
+   */
   const handleAccion = async (id: string, accion: 'Confirmar' | 'Rechazar') => {
     setLoadingId(id);
+    
+    // 🔀 Adaptamos la acción al string estricto de tu base de datos relacional
+    const estadoBackend = accion === 'Confirmar' ? 'Confirmada' : 'Rechazada';
+
     try {
-      // Reemplazar con: await fetch(`/api/tramites/${id}`, { method: 'PUT', ... })
-      await new Promise((res) => setTimeout(res, 1200));
+      // Impactamos el endpoint PUT /api/tramites/:id definido en tu backend
+      await API.put(`/tramites/${id}`, {
+        estado_tramite: estadoBackend
+      });
 
-      const nuevoEstado: EstadoTramite =
-        accion === 'Confirmar' ? 'Confirmado' : 'Rechazado';
-
+      // Si la API responde OK, actualizamos el nodo de forma reactiva instantánea
+      const nuevoEstadoUI: EstadoTramite = accion === 'Confirmar' ? 'Confirmado' : 'Rechazado';
       setTramites((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, estado: nuevoEstado } : t))
+        prev.map((t) => (t.id === id ? { ...t, estado: nuevoEstadoUI } : t))
       );
 
       setToast({
         isOpen: true,
-        message:
-          accion === 'Confirmar'
-            ? 'Trámite confirmado exitosamente.'
-            : 'Trámite rechazado correctamente.',
+        message: accion === 'Confirmar'
+          ? 'La solicitud municipal ha sido confirmada con éxito.'
+          : 'La solicitud ha sido rechazada. Notificación despachada al vecino.',
         color: accion === 'Confirmar' ? 'success' : 'warning',
       });
-    } catch {
+    } catch (error) {
+      console.error('Error al mutar el estado en Postgres:', error);
       setToast({
         isOpen: true,
-        message: 'Error al procesar la acción. Intente nuevamente.',
+        message: 'No se pudo actualizar el estado de la solicitud en el servidor.',
         color: 'danger',
       });
     } finally {
@@ -125,14 +155,26 @@ const GestionTramites: React.FC = () => {
     });
   };
 
+  if (loadingView) {
+    return (
+      <IonPage>
+        <CustomHeader defaultHref="/AdminMenu" isAdmin={true} />
+        <IonContent>
+          <div style={{ textAlign: 'center', marginTop: '70px' }}>
+            <IonSpinner name="crescent" color="primary" />
+            <p style={{ color: '#555', marginTop: '15px' }}>Conectando al servidor centralizado...</p>
+          </div>
+        </IonContent>
+      </IonPage>
+    );
+  }
+
   return (
     <IonPage className="gestion-page">
-      {/* Header con modo Admin activado */}
       <CustomHeader defaultHref="/AdminMenu" isAdmin={true} />
 
       <IonContent className="gestion-content">
         <PageLayout>
-          {/* Tarjeta principal con título */}
           <MainCard title="Gestión de Trámites Pendientes" maxWidth="960px">
             
             <div className="list-wrapper">
@@ -141,14 +183,14 @@ const GestionTramites: React.FC = () => {
                   key={tramite.id}
                   className={`tramite-card borde-${tramite.estado.toLowerCase()}`}
                 >
-                  {/* Col izquierda: info del trámite */}
+                  {/* Col izquierda: info real */}
                   <div className="col-info">
                     <p className="t-nombre">{tramite.nombre}</p>
-                    <p className="t-ref">Ref: {tramite.ref}</p>
-                    <p className="t-fecha">{tramite.fecha}</p>
+                    <p className="t-ref">{tramite.ref}</p>
+                    <p className="t-fecha">Agendado: {tramite.fecha}</p>
                   </div>
 
-                  {/* Col central: estado */}
+                  {/* Col central: estado reactivo */}
                   <div className="col-estado">
                     <span className="estado-label">Estado:&nbsp;</span>
                     <span className={`estado-valor ${tramite.estado.toLowerCase()}`}>
@@ -156,15 +198,22 @@ const GestionTramites: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Col derecha: acciones */}
+                  {/* Col derecha: acciones del funcionario */}
                   <div className="col-acciones">
                     <a
-                      href={tramite.documentoUrl ?? '#'}
+                      href="#"
                       className="link-descargar"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (!tramite.documentoUrl || tramite.documentoUrl === '#') {
+                          alert('Este trámite fue un pago directo electrónico. No requiere validación de archivos adjuntos.');
+                        } else {
+                          alert(`Gatillando descarga del expediente digital cargado por el ciudadano desde la ruta: ${tramite.documentoUrl}`);
+                        }
+                      }}
                     >
                       <IonIcon icon={downloadOutline} className="dl-icon" />
-                      Descargar documentos subidos
+                      Auditar documentos adjuntos
                     </a>
 
                     {tramite.estado === 'Pendiente' && (
@@ -178,7 +227,7 @@ const GestionTramites: React.FC = () => {
                           {loadingId === tramite.id ? (
                             <IonSpinner name="crescent" className="mini-spinner" />
                           ) : (
-                            'Confirmar Cita'
+                            'Confirmar Hora'
                           )}
                         </IonButton>
 
@@ -188,7 +237,7 @@ const GestionTramites: React.FC = () => {
                           onClick={() => abrirAlerta(tramite, 'Rechazar')}
                           disabled={loadingId === tramite.id}
                         >
-                          Rechazar Cita
+                          Rechazar
                         </IonButton>
                       </div>
                     )}
@@ -199,7 +248,7 @@ const GestionTramites: React.FC = () => {
               {tramites.length === 0 && (
                 <div className="empty-state">
                   <IonIcon icon={checkmarkCircleOutline} className="empty-icon" />
-                  <p>No hay trámites pendientes.</p>
+                  <p>Felicidades: No quedan solicitudes pendientes en la Municipalidad.</p>
                 </div>
               )}
             </div>
@@ -208,12 +257,11 @@ const GestionTramites: React.FC = () => {
         </PageLayout>
       </IonContent>
 
-      {/* ── ALERT ── */}
       <IonAlert
         isOpen={alertConfig.isOpen}
         onDidDismiss={() => setAlertConfig({ ...alertConfig, isOpen: false })}
-        header={`${alertConfig.accion} trámite`}
-        message={`¿Desea ${alertConfig.accion.toLowerCase()} el trámite "${alertConfig.nombre}"?`}
+        header={`${alertConfig.accion} solicitud`}
+        message={`¿Confirma que desea pasar a estado ${alertConfig.accion === 'Confirmar' ? 'Aprobado' : 'Rechazado'} la solicitud "${alertConfig.nombre}"?`}
         buttons={[
           { text: 'Cancelar', role: 'cancel' },
           {
@@ -223,7 +271,6 @@ const GestionTramites: React.FC = () => {
         ]}
       />
 
-      {/* ── TOAST ── */}
       <IonToast
         isOpen={toast.isOpen}
         onDidDismiss={() => setToast({ ...toast, isOpen: false })}
