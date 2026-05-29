@@ -17,7 +17,7 @@ import MainCard from '../components/MainCard';
 import CustomInput from '../components/CustomInput';
 import UploadItem from '../components/UploadItem';
 import { documentTextOutline, businessOutline, documentOutline } from 'ionicons/icons';
-import axios from 'axios';
+import API from '../services/api';
 import './PatenteMunicipal.css';
 
 const PatenteMunicipal: React.FC = () => {
@@ -25,6 +25,7 @@ const PatenteMunicipal: React.FC = () => {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Datos del negocio
     const [nombreNegocio, setNombreNegocio] = useState('');
@@ -32,7 +33,7 @@ const PatenteMunicipal: React.FC = () => {
     const [direccionComercial, setDireccionComercial] = useState('');
     const [tipoPatente, setTipoPatente] = useState('');
     
-    // Estado de archivos
+    // Estado de archivos (por ahora solo visual, no implementa subida real)
     const [documentos, setDocumentos] = useState({
         rut: false,
         patenteAnterior: false,
@@ -43,6 +44,7 @@ const PatenteMunicipal: React.FC = () => {
     const usuarioConectado = localStorage.getItem('usuario_conectado');
     const usuario = usuarioConectado ? JSON.parse(usuarioConectado) : null;
     const sucursalId = 1; // ID para Edificio Plaza Cabildo
+    const tramiteId = 4;   // ID para Patentes Municipales
 
     const rubrosComunes = [
         'Comercio minorista',
@@ -58,6 +60,7 @@ const PatenteMunicipal: React.FC = () => {
     ];
 
     const handleSubmit = async () => {
+        // Validaciones
         if (!nombreNegocio || !rubro || !direccionComercial || !tipoPatente) {
             setAlertMessage('Por favor complete todos los campos requeridos');
             setIsSuccess(false);
@@ -73,29 +76,49 @@ const PatenteMunicipal: React.FC = () => {
             return;
         }
 
-        const formData = new FormData();
-        formData.append('nombre_negocio', nombreNegocio);
-        formData.append('rubro', rubro);
-        formData.append('direccion_comercial', direccionComercial);
-        formData.append('tipo_patente', tipoPatente);
-        formData.append('usuario_id', usuario.id);
-        formData.append('sucursal_id', sucursalId.toString());
+        setIsLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:3000/api/patentes', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            // Payload para la API unificada
+            const payload = {
+                sucursal_id: sucursalId,
+                tramite_id: tramiteId,
+                usuario_id: usuario.id,
+                tipo_tramite: 'patente',
+                fecha_cita: null,
+                hora_cita: null,
+                documentos_url: null,
+                comprobante_url: null,
+                datos_extra: {
+                    nombre_negocio: nombreNegocio,
+                    rubro: rubro,
+                    direccion_comercial: direccionComercial,
+                    tipo_patente: tipoPatente
+                }
+            };
+
+            console.log('Enviando solicitud:', payload);
+            
+            const response = await API.post('/tramites', payload);
             
             if (response.data.ok) {
                 setAlertMessage('✅ Solicitud de Patente Municipal enviada correctamente. Se le notificará por correo el estado de su solicitud.');
                 setIsSuccess(true);
                 setShowAlert(true);
                 setTimeout(() => history.push('/MenuPrincipal'), 2500);
+            } else {
+                setAlertMessage('❌ Error: ' + (response.data.mensaje || 'No se pudo enviar la solicitud'));
+                setIsSuccess(false);
+                setShowAlert(true);
             }
         } catch (error: any) {
-            setAlertMessage('❌ Error: ' + (error.response?.data?.mensaje || 'No se pudo enviar la solicitud'));
+            console.error('Error detallado:', error);
+            const mensaje = error.response?.data?.mensaje || error.message || 'No se pudo conectar con el servidor';
+            setAlertMessage('❌ Error: ' + mensaje);
             setIsSuccess(false);
             setShowAlert(true);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -187,8 +210,9 @@ const PatenteMunicipal: React.FC = () => {
                                 <IonButton 
                                     className="btn-submit-patente" 
                                     onClick={handleSubmit}
+                                    disabled={isLoading}
                                 >
-                                    Enviar Solicitud
+                                    {isLoading ? 'Enviando...' : 'Enviar Solicitud'}
                                 </IonButton>
                                 
                                 <IonButton 

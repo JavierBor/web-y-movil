@@ -3,8 +3,7 @@ const router = express.Router();
 const SolicitudTramite = require('../models/SolicitudTramite');
 
 // ==========================================
-// 1. POST: Crear una nueva solicitud de trámite (Ciudadano agendando o subiendo docs)
-// URL: POST http://localhost:3000/api/tramites
+// 1. POST: Crear una nueva solicitud de trámite
 // ==========================================
 router.post('/', async (req, res) => {
     try {
@@ -15,11 +14,12 @@ router.post('/', async (req, res) => {
             comprobante_url, 
             usuario_id, 
             sucursal_id, 
-            tramite_id 
+            tramite_id,
+            datos_extra,
+            tipo_tramite
         } = req.body;
 
-        // 🔐 CANDADO DE SEGURIDAD (Regla de Negocio): Un ciudadano solo puede tener una cita activa a la vez
-        // Buscamos si ya existe una solicitud para este usuario que esté 'Pendiente' o 'Confirmada'
+        // Verificar solicitud activa
         const solicitudActiva = await SolicitudTramite.findOne({
             where: {
                 usuario_id,
@@ -28,24 +28,24 @@ router.post('/', async (req, res) => {
             }
         });
 
-        // Si se encuentra una coincidencia, bloqueamos el proceso enviando un 400 Bad Request
         if (solicitudActiva) {
             return res.status(400).json({
                 ok: false,
-                mensaje: "Ya cuentas con una solicitud activa (Pendiente o Confirmada). No puedes agendar un nuevo trámite hasta que el actual finalice o sea rechazado."
+                mensaje: "Ya cuentas con una solicitud activa. No puedes agendar un nuevo trámite hasta que el actual finalice."
             });
         }
 
-        // 🟢 Si el validador pasa limpio, procedemos a escribir en PostgreSQL
         const nuevaSolicitud = await SolicitudTramite.create({
             documentos_url,
             fecha_cita,
             hora_cita,
             comprobante_url,
-            usuario_id,   // FK apuntando a usuarios
-            sucursal_id,  // FK apuntando a sucursales
-            tramite_id,   // FK apuntando al tipo de trámite (catálogo)
-            estado_tramite: 'Pendiente' // Aseguramos que empiece en pendiente
+            usuario_id,
+            sucursal_id,
+            tramite_id,
+            datos_extra: datos_extra || {},
+            tipo_tramite: tipo_tramite || 'general',
+            estado_tramite: 'Pendiente'
         });
 
         res.status(201).json({
@@ -55,21 +55,23 @@ router.post('/', async (req, res) => {
         });
 
     } catch (error) {
-        res.status(400).json({
+        console.error('Error:', error);
+        res.status(500).json({
             ok: false,
-            mensaje: "Error al procesar la solicitud de trámite",
+            mensaje: "Error al procesar la solicitud",
             error: error.message
         });
     }
 });
 
 // ==========================================
-// 2. GET: Obtener todas las solicitudes del sistema (Para el panel del Administrador)
-// URL: GET http://localhost:3000/api/tramites
+// 2. GET: Obtener todas las solicitudes
 // ==========================================
 router.get('/', async (req, res) => {
     try {
-        const solicitudes = await SolicitudTramite.findAll();
+        const solicitudes = await SolicitudTramite.findAll({
+            order: [['createdAt', 'DESC']]
+        });
         res.status(200).json({
             ok: true,
             solicitudes
@@ -77,25 +79,25 @@ router.get('/', async (req, res) => {
     } catch (error) {
         res.status(500).json({
             ok: false,
-            mensaje: "Error al obtener las solicitudes de trámites",
+            mensaje: "Error al obtener las solicitudes",
             error: error.message
         });
     }
 });
 
 // ==========================================
-// 3. GET por Usuario: Historial personalizado (Para la pantalla "Mis Trámites" en Ionic)
+// 3. GET: Solicitudes por usuario
 // ==========================================
 router.get('/usuario/:usuario_id', async (req, res) => {
     try {
         const { usuario_id } = req.params;
-        const misSolicitudes = await SolicitudTramite.findAll({
-            where: { usuario_id }
+        const solicitudes = await SolicitudTramite.findAll({
+            where: { usuario_id },
+            order: [['createdAt', 'DESC']]
         });
-
         res.status(200).json({
             ok: true,
-            solicitudes: misSolicitudes
+            solicitudes
         });
     } catch (error) {
         res.status(500).json({
@@ -107,45 +109,40 @@ router.get('/usuario/:usuario_id', async (req, res) => {
 });
 
 // ==========================================
-// 4. PUT: Modificar el estado del trámite (Para que el Admin apruebe o rechace en GestionTramites.tsx)
+// 4. PUT: Actualizar estado del trámite
 // ==========================================
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { estado_tramite } = req.body;
 
-        // Buscamos la solicitud por su clave primaria
         const solicitud = await SolicitudTramite.findByPk(id);
-
         if (!solicitud) {
             return res.status(404).json({
                 ok: false,
-                mensaje: "No se encontró la solicitud con el ID proporcionado"
+                mensaje: "Solicitud no encontrada"
             });
         }
 
-        // Actualizamos el string del estado
         solicitud.estado_tramite = estado_tramite;
         await solicitud.save();
 
         res.status(200).json({
             ok: true,
-            mensaje: `El estado del trámite ha sido actualizado a: ${estado_tramite}`,
+            mensaje: `Estado actualizado a: ${estado_tramite}`,
             solicitud
         });
-
     } catch (error) {
-        res.status(400).json({
+        res.status(500).json({
             ok: false,
-            mensaje: "Error al actualizar la solicitud",
+            mensaje: "Error al actualizar",
             error: error.message
         });
     }
 });
 
 // ==========================================
-// 5. DELETE: Cancelar o eliminar una solicitud (Para que el ciudadano se arrepienta)
-// URL: DELETE http://localhost:3000/api/tramites/5
+// 5. DELETE: Eliminar solicitud
 // ==========================================
 router.delete('/:id', async (req, res) => {
     try {
@@ -155,19 +152,18 @@ router.delete('/:id', async (req, res) => {
         if (filasBorradas === 0) {
             return res.status(404).json({
                 ok: false,
-                mensaje: "No se encontró la solicitud que se desea eliminar"
+                mensaje: "Solicitud no encontrada"
             });
         }
 
         res.status(200).json({
             ok: true,
-            mensaje: "Solicitud de trámite eliminada/cancelada con éxito."
+            mensaje: "Solicitud eliminada correctamente"
         });
-
     } catch (error) {
         res.status(500).json({
             ok: false,
-            mensaje: "Error al intentar eliminar la solicitud",
+            mensaje: "Error al eliminar",
             error: error.message
         });
     }

@@ -17,7 +17,7 @@ import MainCard from '../components/MainCard';
 import CustomInput from '../components/CustomInput';
 import UploadItem from '../components/UploadItem';
 import { personOutline, businessOutline, documentTextOutline, cardOutline, schoolOutline } from 'ionicons/icons';
-import axios from 'axios';
+import API from '../services/api';
 import './BecaMunicipal.css';
 
 const BecaMunicipal: React.FC = () => {
@@ -25,6 +25,7 @@ const BecaMunicipal: React.FC = () => {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Datos del estudiante
     const [nombreEstudiante, setNombreEstudiante] = useState('');
@@ -45,6 +46,7 @@ const BecaMunicipal: React.FC = () => {
     const usuarioConectado = localStorage.getItem('usuario_conectado');
     const usuario = usuarioConectado ? JSON.parse(usuarioConectado) : null;
     const sucursalId = 1; // ID para Edificio Plaza Cabildo
+    const tramiteId = 5;   // ID para Becas Municipales en la tabla catálogo
 
     const instituciones = [
         'Universidad de Chile',
@@ -90,20 +92,29 @@ const BecaMunicipal: React.FC = () => {
             return;
         }
 
-        const formData = new FormData();
-        formData.append('nombre_estudiante', nombreEstudiante);
-        formData.append('rut_estudiante', rutEstudiante);
-        formData.append('institucion', institucion);
-        formData.append('carrera', carrera);
-        formData.append('nivel_estudio', nivelEstudio);
-        formData.append('ingreso_familiar', ingresoFamiliar);
-        formData.append('usuario_id', usuario.id);
-        formData.append('sucursal_id', sucursalId.toString());
+        setIsLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:3000/api/becas', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            // Usar la API unificada de tramites
+            const payload = {
+                sucursal_id: sucursalId,
+                tramite_id: tramiteId,
+                tipo_tramite: 'beca',
+                fecha_cita: null,
+                hora_cita: null,
+                documentos_url: null,
+                comprobante_url: null,
+                datos_extra: {
+                    nombre_estudiante: nombreEstudiante,
+                    rut_estudiante: rutEstudiante,
+                    institucion: institucion,
+                    carrera: carrera,
+                    nivel_estudio: nivelEstudio,
+                    ingreso_familiar: ingresoFamiliar
+                }
+            };
+
+            const response = await API.post('/tramites', payload);
             
             if (response.data.ok) {
                 setAlertMessage('✅ Solicitud de Beca Municipal enviada correctamente. El comité de becas evaluará su solicitud.');
@@ -112,9 +123,13 @@ const BecaMunicipal: React.FC = () => {
                 setTimeout(() => history.push('/MenuPrincipal'), 2500);
             }
         } catch (error: any) {
-            setAlertMessage('❌ Error: ' + (error.response?.data?.mensaje || 'No se pudo enviar la solicitud'));
+            console.error('Error:', error);
+            const mensaje = error.response?.data?.mensaje || error.message || 'No se pudo enviar la solicitud';
+            setAlertMessage('❌ Error: ' + mensaje);
             setIsSuccess(false);
             setShowAlert(true);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -230,8 +245,9 @@ const BecaMunicipal: React.FC = () => {
                                 <IonButton 
                                     className="btn-submit-beca" 
                                     onClick={handleSubmit}
+                                    disabled={isLoading}
                                 >
-                                    Enviar Solicitud
+                                    {isLoading ? 'Enviando...' : 'Enviar Solicitud'}
                                 </IonButton>
                                 
                                 <IonButton 

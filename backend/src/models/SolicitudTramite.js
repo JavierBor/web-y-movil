@@ -9,23 +9,48 @@ const SolicitudTramite = sequelize.define('SolicitudTramite', {
     },
     estado_tramite: {
         type: DataTypes.STRING(50),
-        defaultValue: 'Pendiente' // Pendiente, Confirmada, Rechazada (para el Admin)
+        defaultValue: 'Pendiente'
     },
     documentos_url: {
         type: DataTypes.STRING(255),
-        allowNull: true // Aquí guardas el path o link del archivo subido (Licencia de conducir)
+        allowNull: true
     },
     fecha_cita: {
         type: DataTypes.DATEONLY,
-        allowNull: true // El día seleccionado en el frontend
+        allowNull: true
     },
     hora_cita: {
         type: DataTypes.TIME,
-        allowNull: true // La hora seleccionada en el frontend
+        allowNull: true
     },
     comprobante_url: {
         type: DataTypes.STRING(255),
-        allowNull: true // Para que el usuario o admin descarguen el comprobante
+        allowNull: true
+    },
+    // NUEVO: Para almacenar datos específicos de cada trámite (JSON)
+    datos_extra: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
+    },
+    // NUEVO: Para identificar el tipo de trámite
+    tipo_tramite: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        defaultValue: 'general'
+    },
+    // Llaves foráneas
+    usuario_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    sucursal_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    tramite_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 }, {
     tableName: 'solicitudes_tramites',
