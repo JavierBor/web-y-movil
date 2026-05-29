@@ -36,16 +36,21 @@ function AgendarCita() {
         const usuario = JSON.parse(sesion);
         const response = await API.get(`/tramites/usuario/${usuario.id}`);
         const solicitudesUser = response.data.solicitudes || [];
+        
+        console.log("Datos devueltos por el backend:", solicitudesUser);
 
+        // Filtramos para que valide únicamente si ya existe un trámite de Licencia (tramite_id === 2) pendiente
         const tieneCitaActiva = solicitudesUser.some((solicitud: any) => 
-          solicitud.estado_tramite === 'Pendiente' || solicitud.estado_tramite === 'Confirmada'
+          solicitud.tramite_id === 2 && solicitud.estado_tramite === 'Pendiente'
         );
 
-        if (tieneCitaActiva) {
+        if (tieneCitaActiva === true) {
           setIsBloqueado(true);
           setMensajeBloqueo(
-            "Ya cuentas con una solicitud de trámite activa en el sistema. No se permite agendar múltiples citas simultáneas hasta que la actual sea finalizada o rechazada por la administración municipal."
+            "Ya cuentas con una solicitud de licencia de conducir activa en el sistema. No se permite agendar múltiples citas simultáneas para este trámite hasta que la actual sea finalizada o rechazada por la administración municipal."
           );
+        } else if (tieneCitaActiva === false) {
+          setIsBloqueado(false);
         }
       } catch (error) {
         console.error('Error al validar restricciones de agenda:', error);
@@ -58,7 +63,7 @@ function AgendarCita() {
   }, []);
 
   /**
-   * 🚀 Envía la solicitud transaccional a PostgreSQL
+   * 🚀 Envía la solicitud transaccional a PostgreSQL con soporte JSONB
    */
   const handleConfirmCita = async () => {
     if (!horaSeleccionada || isBloqueado) return;
@@ -77,20 +82,27 @@ function AgendarCita() {
     const horaFinal = `${horaSeleccionada}:00`;     
 
     try {
+      // Payload transaccional estructurado adaptado al modelo JSONB
       const payload = {
         documentos_url: "/uploads/documentos/licencia_clase_b.pdf", 
         fecha_cita: fechaFinal,
         hora_cita: horaFinal,
         comprobante_url: null,
         usuario_id: usuario.id, 
-        sucursal_id: 1,         // ID 1: Edificio Consistorial Av. Sta Teresa
-        tramite_id: 2           // ID 2: Obtener/Renovar Licencia
+        sucursal_id: 1,                    // ID 1: Edificio Consistorial Av. Sta Teresa
+        tramite_id: 2,                     // ID 2: Obtener/Renovar Licencia en tu catálogo
+        tipo_tramite: 'licencia',          // Guardamos el tipo de trámite real
+        datos_extra: {                     // Inicializamos el objeto JSONB comodín
+          clase: 'B'
+        } 
       };
+
+      console.log('Despachando reserva de hora para Licencia:', payload);
 
       const response = await API.post('/tramites', payload);
 
       if (response.status === 201 || response.data.ok) {
-        alert('¡Cita agendada con éxito! Tu solicitud quedó en estado Pendiente.');
+        alert('¡Cita agendada con éxito! Tu solicitud quedó en estado Pendiente para revisión de antecedentes.');
         history.push('/MenuPrincipal'); 
       }
 
@@ -105,9 +117,9 @@ function AgendarCita() {
       <IonPage>
         <CustomHeader defaultHref="/subir-documentos" />
         <IonContent>
-          <PageLayout>
-            <p style={{ textAlign: 'center', marginTop: '40px' }}>Verificando disponibilidad de agenda...</p>
-          </PageLayout>
+          <div style={{ textAlign: 'center', marginTop: '60px' }}>
+            <p style={{ color: '#666' }}>Verificando disponibilidad de agenda...</p>
+          </div>
         </IonContent>
       </IonPage>
     );
@@ -168,7 +180,7 @@ function AgendarCita() {
                         })}
                       </div>
                     </div>
-                  </IonCol> {/* 👈 Corregido el cierre aquí */}
+                  </IonCol>
 
                   {/* COLUMNA HORARIOS */}
                   <IonCol size="12" sizeLg="5" className="times-col">

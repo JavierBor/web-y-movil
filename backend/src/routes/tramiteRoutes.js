@@ -1,16 +1,12 @@
 // backend/src/routes/tramitesRoutes.js
-// Cambios respecto al original:
-//   - verificarToken  → aplicado en todas las rutas (usuario debe estar logueado)
-//   - verificarAdmin  → aplicado en PUT y DELETE (solo admin puede cambiar estado o borrar)
-//   - GET /usuario/:id → verifica que el usuario solo acceda a sus propios trámites
-
 const express = require('express');
 const router  = express.Router();
 const SolicitudTramite = require('../models/SolicitudTramite');
+const Usuario = require('../models/Usuario'); // 🔌 IMPORTACIÓN OBLIGATORIA para el include/JOIN
 const { verificarToken, verificarAdmin } = require('../middleware/authMiddleware');
 
 // ══════════════════════════════════════════════════════════
-// POST /api/tramites — Crear nueva solicitud
+// POST /api/tramites — Crear nueva solicitud (Pago o Cita)
 // Requiere: usuario autenticado
 // ══════════════════════════════════════════════════════════
 router.post('/', verificarToken, async (req, res) => {
@@ -32,14 +28,14 @@ router.post('/', verificarToken, async (req, res) => {
       where: {
         usuario_id,
         tramite_id,
-        estado_tramite: ['Pendiente', 'Confirmada']
+        estado_tramite: ['Pendiente']
       }
     });
 
     if (solicitudActiva) {
       return res.status(400).json({
         ok: false,
-        mensaje: 'Ya cuentas con una solicitud activa. No puedes agendar un nuevo trámite hasta que el actual finalice.'
+        mensaje: 'Ya cuentas con una solicitud activa para este trámite. No puedes agendar otra hasta que la actual finalice.'
       });
     }
 
@@ -63,7 +59,7 @@ router.post('/', verificarToken, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error crítico en POST /tramites:', error);
     res.status(500).json({
       ok: false,
       mensaje: 'Error al procesar la solicitud',
@@ -73,16 +69,23 @@ router.post('/', verificarToken, async (req, res) => {
 });
 
 // ══════════════════════════════════════════════════════════
-// GET /api/tramites — Obtener todas las solicitudes
-// Requiere: admin
+// GET /api/tramites — Obtener todas las solicitudes municipales
+// Requiere: admin (Unificada y con el JOIN relacional para el RUT)
 // ══════════════════════════════════════════════════════════
 router.get('/', verificarToken, verificarAdmin, async (req, res) => {
   try {
+    // 🟢 Ejecuta una consulta única segura con verificación de token y JOIN de Usuario
     const solicitudes = await SolicitudTramite.findAll({
-      order: [['createdAt', 'DESC']]
+      include: [{
+        model: Usuario, // 🔌 Obliga a Sequelize a inyectar la relación en Postgres
+        attributes: ['rut', 'nombre_usuario', 'correo'] // Extrae sólo los datos requeridos
+      }],
+      order: [['createdAt', 'DESC']] // Ordena cronológicamente descendente
     });
+
     res.status(200).json({ ok: true, solicitudes });
   } catch (error) {
+    console.error("Error al obtener trámites para administración:", error);
     res.status(500).json({
       ok: false,
       mensaje: 'Error al obtener las solicitudes',
@@ -99,8 +102,7 @@ router.get('/usuario/:usuario_id', verificarToken, async (req, res) => {
   try {
     const { usuario_id } = req.params;
 
-    // Un usuario solo puede ver sus propios trámites;
-    // un admin puede ver los de cualquier usuario
+    // Un usuario solo puede ver sus propios trámites; un admin puede ver los de cualquiera
     if (req.usuario.rol !== 'admin' && req.usuario.id !== parseInt(usuario_id)) {
       return res.status(403).json({
         ok: false,
@@ -124,28 +126,36 @@ router.get('/usuario/:usuario_id', verificarToken, async (req, res) => {
 });
 
 // ══════════════════════════════════════════════════════════
-// PUT /api/tramites/:id — Actualizar estado del trámite
+// PUT /api/tramites/:id — Actualizar estado del trámite o JSONB
 // Requiere: admin
 // ══════════════════════════════════════════════════════════
 router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
   try {
-    const { id }             = req.params;
-    const { estado_tramite } = req.body;
+    const { id } = req.params;
+    const { estado_tramite, datos_extra } = req.body; // 🔌 Recibe datos_extra desde el frontend
 
     const solicitud = await SolicitudTramite.findByPk(id);
     if (!solicitud) {
       return res.status(404).json({ ok: false, mensaje: 'Solicitud no encontrada' });
     }
 
-    solicitud.estado_tramite = estado_tramite;
+    if (estado_tramite) solicitud.estado_tramite = estado_tramite;
+    
+    if (datos_extra) {
+      solicitud.datos_extra = datos_extra;
+      // 🚨 Candado de Sequelize: Avisa a Postgres que el JSONB interno fue alterado
+      solicitud.changed('datos_extra', true); 
+    }
+
     await solicitud.save();
 
     res.status(200).json({
       ok: true,
-      mensaje: `Estado actualizado a: ${estado_tramite}`,
+      mensaje: 'Trámite actualizado exitosamente en el servidor.',
       solicitud
     });
   } catch (error) {
+    console.error('Error al actualizar trámite:', error);
     res.status(500).json({
       ok: false,
       mensaje: 'Error al actualizar',
@@ -160,7 +170,7 @@ router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
 // ══════════════════════════════════════════════════════════
 router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
   try {
-    const { id }       = req.params;
+    const { id } = req.params;
     const filasBorradas = await SolicitudTramite.destroy({ where: { id } });
 
     if (filasBorradas === 0) {

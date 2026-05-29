@@ -51,15 +51,17 @@ function PermisoCirculacion() {
     const horaFormateada = hoy.toTimeString().split(' ')[0];  // HH:MM:SS
 
     try {
-      // 3. Payload transaccional estructurado para PostgreSQL
+      // 3. Payload transaccional estructurado para PostgreSQL (¡Campos JSONB mapeados con éxito!)
       const payload = {
         documentos_url: null, // No requiere adjuntar archivos, es pago directo
         fecha_cita: fechaFormateada,
         hora_cita: horaFormateada,
         comprobante_url: `/uploads/comprobantes/permiso_${formData.patente.toLowerCase()}.pdf`,
         usuario_id: usuario.id,
-        sucursal_id: 1,       // Edificio Consistorial Av. Sta Teresa
-        tramite_id: 1         // ID 1: Catálogo maestro - Permiso de Circulación
+        sucursal_id: 1,           // Edificio Consistorial Av. Sta Teresa
+        tramite_id: 1,            // ID 1: Catálogo maestro - Permiso de Circulación
+        tipo_tramite: 'permiso',   // 👈 Guardamos el tipo de trámite real en la BD
+        datos_extra: { patente: formData.patente } // 👈 Mapeamos la patente dentro del objeto JSONB
       };
 
       console.log('Despachando pago de Permiso de Circulación:', payload);

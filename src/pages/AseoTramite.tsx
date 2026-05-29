@@ -57,15 +57,19 @@ function AseoTramite() {
     const horaFormateada = hoy.toTimeString().split(' ')[0];  // HH:MM:SS
 
     try {
-      // 3. Payload estructurado para los Derechos de Aseo
+      // 3. Payload estructurado adaptado al nuevo modelo JSONB para Derechos de Aseo
       const payload = {
-        documentos_url: null,
-        fecha_cita: fechaFormateada, // Registra el día exacto del pago
-        hora_cita: horaFormateada,   // Registra la hora exacta del pago
+        documentos_url: null, // No requiere adjuntar archivos, es pago directo por pasarela mockup
+        fecha_cita: fechaFormateada, // Registra el día exacto del pago electrónico
+        hora_cita: horaFormateada,   // Registra la hora exacta del pago electrónico
         comprobante_url: `/uploads/comprobantes/aseo_${formData.rol.replace('-', '_')}.pdf`,
         usuario_id: usuario.id,
         sucursal_id: 1,              // Edificio Consistorial Av. Sta Teresa
-        tramite_id: 3                // ID 3: Derechos de Aseo en tu catálogo maestro
+        tramite_id: 3,               // ID 3: Catálogo maestro - Derechos de Aseo Domiciliario
+        tipo_tramite: 'aseo',        // 👈 Inyectamos el tipo de trámite real para el Backend
+        datos_extra: {               // 👈 Mapeamos el número de Rol dentro del objeto JSONB
+          rol: formData.rol 
+        }
       };
 
       console.log('Enviando pago de Derechos de Aseo:', payload);

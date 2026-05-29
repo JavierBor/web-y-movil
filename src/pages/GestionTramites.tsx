@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // 🔌 Añadimos useEffect para la carga asíncrona
+import React, { useState, useEffect } from 'react';
 import {
   IonPage,
   IonContent,
@@ -29,6 +29,7 @@ interface Tramite {
   fecha: string;
   estado: EstadoTramite;
   documentoUrl?: string;
+  rutUsuario: string;   // 🔌 RUT del ciudadano extraído dinámicamente
 }
 
 const GestionTramites: React.FC = () => {
@@ -57,11 +58,10 @@ const GestionTramites: React.FC = () => {
    */
   const cargarSolicitudesMunicipales = async () => {
     try {
-      // Consumimos el endpoint GET /api/tramites que creaste en tu tramiteRoutes.js
       const response = await API.get('/tramites');
       const listaDB = response.data.solicitudes || [];
 
-      // 🔄 MAPEO INTELIGENTE: Transformamos registros relacionales a los tipos del Mockup
+      // 🔄 MAPEO INTELIGENTE: Transformamos registros relacionales a los tipos del Frontend
       const mappedTramites: Tramite[] = listaDB.map((sol: any) => {
         
         // 1. Traducimos las IDs numéricas al nombre institucional del catálogo
@@ -78,13 +78,17 @@ const GestionTramites: React.FC = () => {
         // 3. Limpiamos la cadena ISO de la fecha de Postgres
         const fechaFormateada = sol.fecha_cita ? sol.fecha_cita.split('T')[0] : 'Por definir';
 
+        // 4. 🔍 CORRECCIÓN DEL RUT: Extrae el RUT real obtenido mediante el include/JOIN relacional del backend
+        const rutCiudadano = sol.Usuario?.rut || sol.usuario_rut || sol.rut || 'No disponible';
+
         return {
           id: sol.id.toString(),
           nombre: nombreOficial,
           ref: `MUN-SD-${sol.id.toString().padStart(4, '0')}`,
           fecha: fechaFormateada,
           estado: estadoUI,
-          documentoUrl: sol.documentos_url
+          documentoUrl: sol.documentos_url,
+          rutUsuario: rutCiudadano
         };
       });
 
@@ -183,10 +187,14 @@ const GestionTramites: React.FC = () => {
                   key={tramite.id}
                   className={`tramite-card borde-${tramite.estado.toLowerCase()}`}
                 >
-                  {/* Col izquierda: info real */}
+                  {/* Col izquierda: info real con RUT permanente */}
                   <div className="col-info">
                     <p className="t-nombre">{tramite.nombre}</p>
                     <p className="t-ref">{tramite.ref}</p>
+                    {/* 👤 Visualización del RUT asegurada en primera plana de cada tarjeta */}
+                    <p className="t-rut" style={{ margin: '4px 0', fontSize: '0.95rem', color: '#1a3a5f', fontWeight: 'bold' }}>
+                      RUT Ciudadano: {tramite.rutUsuario}
+                    </p>
                     <p className="t-fecha">Agendado: {tramite.fecha}</p>
                   </div>
 
@@ -227,7 +235,7 @@ const GestionTramites: React.FC = () => {
                           {loadingId === tramite.id ? (
                             <IonSpinner name="crescent" className="mini-spinner" />
                           ) : (
-                            'Confirmar Hora'
+                            'Confirmar Cita'
                           )}
                         </IonButton>
 

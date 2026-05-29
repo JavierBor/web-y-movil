@@ -27,13 +27,13 @@ const SolicitudTramite = sequelize.define('SolicitudTramite', {
         type: DataTypes.STRING(255),
         allowNull: true
     },
-    // NUEVO: Para almacenar datos específicos de cada trámite (JSON)
+    
     datos_extra: {
         type: DataTypes.JSONB,
         allowNull: true,
         defaultValue: {}
     },
-    // NUEVO: Para identificar el tipo de trámite
+    
     tipo_tramite: {
         type: DataTypes.STRING(50),
         allowNull: false,
