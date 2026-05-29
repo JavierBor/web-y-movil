@@ -1,64 +1,67 @@
+// src/components/CustomHeader.tsx
 import React, { useState } from 'react';
-import { 
-  IonHeader, IonToolbar, IonButtons, IonBackButton, 
-  IonImg, IonButton, IonIcon, IonPopover, IonList, 
-  IonItem, IonLabel, IonText 
+import {
+  IonHeader, IonToolbar, IonButtons, IonBackButton,
+  IonImg, IonButton, IonIcon, IonPopover, IonList,
+  IonItem, IonLabel, IonText
 } from '@ionic/react';
-import { useHistory } from 'react-router-dom'; 
-import { 
-  personCircleOutline, chevronDownOutline, 
-  settingsOutline, logOutOutline 
+import {
+  personCircleOutline, chevronDownOutline,
+  settingsOutline, logOutOutline
 } from 'ionicons/icons';
+import { useHistory, useLocation } from 'react-router-dom';   // ← añadido useLocation
+import { useAuth } from '../context/AuthContext';
 import './CustomHeader.css';
 
 interface HeaderProps {
-  showBackButton?: boolean;
-  defaultHref?: string;
-  showAccountButton?: boolean; 
-  isAdmin?: boolean;           
+  showBackButton?:    boolean;
+  defaultHref?:       string;
+  showAccountButton?: boolean;
+  isAdmin?:           boolean;
 }
 
-const CustomHeader: React.FC<HeaderProps> = ({ 
-  showBackButton = true, 
-  defaultHref = "/Login",
+const CustomHeader: React.FC<HeaderProps> = ({
+  showBackButton    = true,
+  defaultHref       = '/Login',
   showAccountButton = true,
-  isAdmin = false 
+  isAdmin: isAdminProp,
 }) => {
-  const history = useHistory(); 
+  const history = useHistory();
+  const location = useLocation();                           // ← obtener ruta actual
+  const { user, logout, isAdmin: isAdminFn } = useAuth();
+
+  const isAdmin = isAdminProp !== undefined ? isAdminProp : isAdminFn();
+
+  // Determinar si la ruta actual pertenece al panel de administrador
+  const esRutaAdmin = location.pathname.startsWith('/Admin') ||
+                      location.pathname.startsWith('/admin');
 
   const [popoverState, setPopoverState] = useState<{
-    showPopover: boolean,
-    event: any | undefined
-  }>({
-    showPopover: false,
-    event: undefined,
-  });
+    showPopover: boolean;
+    event: any | undefined;
+  }>({ showPopover: false, event: undefined });
 
-  const openPopover = (e: any) => {
+  const openPopover  = (e: any) =>
     setPopoverState({ showPopover: true, event: e.nativeEvent });
-  };
-
-  const closePopover = () => {
+  const closePopover = () =>
     setPopoverState({ showPopover: false, event: undefined });
-  };
 
   const handleLogout = () => {
-    console.log("幕🔴 Cerrando sesión: Limpiando LocalStorage de forma segura...");
-    localStorage.removeItem('usuario_conectado');
-    localStorage.removeItem('token');
-    closePopover();         
-    history.push('/Login'); 
+    closePopover();
+    logout();
+    window.location.href = '/Login'; // redirige a Login tras cerrar sesión
   };
 
   return (
     <IonHeader>
-      {/* 🟢 Tag de apertura correcto */}
       <IonToolbar color="primary" className="custom-toolbar">
         <IonButtons slot="start">
-          {showBackButton && <IonBackButton defaultHref={defaultHref} text="Volver" />}
+          {showBackButton && (
+            <IonBackButton defaultHref={defaultHref} text="Volver" />
+          )}
           <h1 className="header-web-title">Municipalidad Santo Domingo</h1>
         </IonButtons>
-        
+
         <div className="header-logo-wrapper">
           <IonImg src="/Logo.png" className="header-logo-img" alt="Logo" />
         </div>
@@ -73,7 +76,7 @@ const CustomHeader: React.FC<HeaderProps> = ({
             </IonButton>
           </IonButtons>
         )}
-      </IonToolbar> {/* 👈 Corregido aquí: </IonToolbar> en lugar de </Toolbar> */}
+      </IonToolbar>
 
       <IonPopover
         isOpen={popoverState.showPopover}
@@ -81,16 +84,19 @@ const CustomHeader: React.FC<HeaderProps> = ({
         onDidDismiss={closePopover}
       >
         <IonList>
-          {isAdmin ? (
-            <IonItem button routerLink="/MenuPrincipal" onClick={closePopover}>
-              <IonIcon slot="start" icon={personCircleOutline} />
-              <IonLabel>Modo Ciudadano</IonLabel>
-            </IonItem>
-          ) : (
-            <IonItem button routerLink="/AdminMenu" onClick={closePopover}>
-              <IonIcon slot="start" icon={settingsOutline} />
-              <IonLabel>Modo Administrador</IonLabel>
-            </IonItem>
+          {/* Cambio de modo basado en la ruta actual, no en isAdmin */}
+          {user?.rol === 'admin' && (
+            esRutaAdmin ? (
+              <IonItem button routerLink="/MenuPrincipal" onClick={closePopover}>
+                <IonIcon slot="start" icon={personCircleOutline} />
+                <IonLabel>Modo Ciudadano</IonLabel>
+              </IonItem>
+            ) : (
+              <IonItem button routerLink="/AdminMenu" onClick={closePopover}>
+                <IonIcon slot="start" icon={settingsOutline} />
+                <IonLabel>Modo Administrador</IonLabel>
+              </IonItem>
+            )
           )}
 
           <IonItem button onClick={handleLogout} lines="none">

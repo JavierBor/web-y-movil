@@ -1,56 +1,72 @@
+// src/pages/Login.tsx
+// Cambios respecto al original:
+//   1. Importa useAuth y llama login() tras recibir el token
+//   2. Admin ve un Alert para elegir modo (Ciudadano / Admin)
+//   3. useLocation para redirigir a la ruta que intentaba visitar
+// Todo lo demás (componentes, CSS, estructura) queda igual.
+
 import React, { useState } from 'react';
-import { 
-  IonContent, 
-  IonPage, 
-  IonButton, 
-  IonText
+import {
+  IonContent,
+  IonPage,
+  IonButton,
+  IonText,
+  IonAlert,
 } from '@ionic/react';
-import { useHistory } from 'react-router-dom'; // Para controlar la navegación por código
+import { useHistory, useLocation } from 'react-router-dom';
 import './Login.css';
 
-// Componentes de Arquitectura Estandarizada
-import CustomHeader from '../components/CustomHeader';
-import PageLayout from '../components/PageLayout';
-import MainCard from '../components/MainCard';
-import CustomInput from '../components/CustomInput';
-import API from '../services/api';  // 🔌 Importamos la instancia centralizada de Axios
+import CustomHeader  from '../components/CustomHeader';
+import PageLayout    from '../components/PageLayout';
+import MainCard      from '../components/MainCard';
+import CustomInput   from '../components/CustomInput';
+import API           from '../services/api';
+import { useAuth }   from '../context/AuthContext';   // ← NUEVO
+
+interface LocationState {
+  from?: { pathname: string };
+}
 
 const Login: React.FC = () => {
-  const history = useHistory(); // Inicializar el historial de rutas
-  const [email, setEmail] = useState<string>('');
+  const history  = useHistory();
+  const location = useLocation<LocationState>();
+  const { login } = useAuth();                        // ← NUEVO
+
+  const [email,    setEmail]    = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-const handleLogin = async () => {
-    // 1. Validaciones básicas en el frontend
+  // Para el alert de elección de modo (admin)
+  const [showModeAlert, setShowModeAlert] = useState(false);
+  const [usuarioTemp,   setUsuarioTemp]   = useState<any>(null);
+
+  const handleLogin = async () => {
     if (!email || !password) {
       alert('Por favor, ingresa tu correo y contraseña.');
       return;
     }
 
     try {
-      // 🚀 2. Petición HTTP optimizada con Axios (EP 2.4)
       const response = await API.post('/auth/login', {
-        correo: email,
-        contrasena: password
+        correo:    email,
+        contrasena: password,
       });
 
-      // 🔑 CAPTURAMOS EL TOKEN Y EL USUARIO ENVIADOS POR EL BACKEND
       const { token, usuario } = response.data;
-      
-      // 💾 Guardamos el token para los interceptores globales
-      if (token) {
-        localStorage.setItem('token', token); 
-      }
 
-      // 💾 Guardamos el usuario real (ID y Rol) para las pantallas de trámites
-      if (usuario) {
-        localStorage.setItem('usuario_conectado', JSON.stringify(usuario));
-      }
+      // ── Guarda en AuthContext + localStorage (mismas claves) ──
+      login(token, usuario);                          // ← NUEVO (reemplaza los 2 setItem anteriores)
 
       alert('¡Inicio de sesión exitoso!');
-      
-      // 🔄 Redirección al Menú Principal
-      history.push('/MenuPrincipal'); 
+
+      if (usuario.rol === 'admin') {
+        // Admin elige cómo navegar
+        setUsuarioTemp(usuario);
+        setShowModeAlert(true);
+      } else {
+        // Usuario normal: va a donde intentaba ir, o al menú
+        const destino = location.state?.from?.pathname ?? '/MenuPrincipal';
+        history.replace(destino);
+      }
 
     } catch (error: any) {
       console.error('Error en el login:', error);
@@ -65,17 +81,17 @@ const handleLogin = async () => {
       <IonContent>
         <PageLayout>
           <MainCard title="Iniciar Sesión" maxWidth="450px">
-            
             <div className="login-form">
-              <CustomInput 
+
+              <CustomInput
                 label="Correo Electrónico"
                 type="email"
                 placeholder="correo@ejemplo.cl"
                 value={email}
-                onIonChange={setEmail} 
+                onIonChange={setEmail}
               />
 
-              <CustomInput 
+              <CustomInput
                 label="Contraseña"
                 type="password"
                 placeholder="********"
@@ -83,10 +99,9 @@ const handleLogin = async () => {
                 onIonChange={setPassword}
               />
 
-              {/* Quitamos routerLink para que handleLogin decida si se cambia de pantalla o no */}
-              <IonButton 
-                expand="block" 
-                className="btn-ingresar" 
+              <IonButton
+                expand="block"
+                className="btn-ingresar"
                 onClick={handleLogin}
               >
                 Iniciar sesión
@@ -100,20 +115,38 @@ const handleLogin = async () => {
                 <IonText color="medium">
                   <p>¿No tienes cuenta?</p>
                 </IonText>
-                <IonButton 
-                  fill="outline" 
-                  expand="block" 
-                  routerLink="/register" 
+                <IonButton
+                  fill="outline"
+                  expand="block"
+                  routerLink="/Register"
                   className="btn-register-outline"
                 >
                   Crear una cuenta nueva
                 </IonButton>
               </div>
-            </div>
 
+            </div>
           </MainCard>
         </PageLayout>
       </IonContent>
+
+      {/* Alert para elegir modo cuando el usuario es admin */}
+      <IonAlert
+        isOpen={showModeAlert}
+        onDidDismiss={() => setShowModeAlert(false)}
+        header="Seleccionar Modo"
+        message={`${usuarioTemp?.nombre}, ¿cómo deseas navegar?`}
+        buttons={[
+          {
+            text: 'Modo Ciudadano',
+            handler: () => history.replace('/MenuPrincipal'),
+          },
+          {
+            text: 'Modo Administrador',
+            handler: () => history.replace('/AdminMenu'),
+          },
+        ]}
+      />
     </IonPage>
   );
 };
