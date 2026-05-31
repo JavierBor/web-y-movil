@@ -40,9 +40,11 @@ function AgendarCita() {
         console.log("Datos devueltos por el backend:", solicitudesUser);
 
         // Filtramos para que valide únicamente si ya existe un trámite de Licencia (tramite_id === 2) pendiente
-        const tieneCitaActiva = solicitudesUser.some((solicitud: any) => 
-          solicitud.tramite_id === 2 && solicitud.estado_tramite === 'Pendiente'
-        );
+      const tieneCitaActiva = solicitudesUser.some((solicitud: any) => {
+  // Aseguramos la existencia del campo y comparamos de forma segura en minúsculas
+  const estado = solicitud.estado_tramite?.toLowerCase() || solicitud.estado?.toLowerCase() || '';
+  return solicitud.tramite_id === 2 && (estado === 'pendiente' || estado === 'en espera');
+});
 
         if (tieneCitaActiva === true) {
           setIsBloqueado(true);

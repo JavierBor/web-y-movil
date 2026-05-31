@@ -35,10 +35,13 @@ src/
 ├── assets/                 # Imágenes y recursos estáticos
 ├── components/             # Componentes reutilizables (CustomHeader, MainCard, etc.)
 ├── pages/                  # Vistas completas (Login, MenuPrincipal, AdminMenu, etc.)
+├── routes/                 #
+├── services/               #  
 ├── theme/                  # Variables CSS globales
 ├── App.tsx                 # Enrutador principal
 ├── main.tsx                # Punto de entrada
 └── setupTests.ts           # Configuración de pruebas
+
 
 ## 3. Requerimientos Funcionales y No Funcionales
 
@@ -131,7 +134,7 @@ Se han definido dos flujos principales para garantizar la eficiencia de la inter
 6. Envío de avisos: contador de caracteres, botón deshabilitado hasta completar datos válidos, toast de confirmación.
 
 
-### 5.6 coherencia de experiencia entre dispositivos (Falta esto)
+### 5.6 coherencia de experiencia entre dispositivos 
 Si bien esta entrega se centra en la versión web, se adoptó un enfoque responsive usando IonGrid, media queries y componentes adaptativos de Ionic. Así, la interfaz se reestructura automáticamente en viewports más pequeños sin necesidad de reescribir código. Esto garantiza una experiencia homogénea en escritorio, tablet y móvil, y facilitará una futura compilación con Capacitor si se requiere una app nativa.
 
 ### 5.7 Justificación Técnica
