@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { 
-  IonPage, 
-  IonContent, 
-  IonButton, 
-  IonText, 
-  IonSelect, 
-  IonSelectOption, 
-  IonAlert,
-  IonIcon
+    IonPage, 
+    IonContent, 
+    IonButton, 
+    IonText, 
+    IonSelect, 
+    IonSelectOption, 
+    IonAlert,
+    IonIcon
 } from '@ionic/react';
 import { informationCircleOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
@@ -33,34 +33,24 @@ const PatenteMunicipal: React.FC = () => {
     const [direccionComercial, setDireccionComercial] = useState('');
     const [tipoPatente, setTipoPatente] = useState('');
     
-    // Estado de archivos (por ahora solo visual, no implementa subida real)
+    // Estado de archivos visuales
     const [documentos, setDocumentos] = useState({
         rut: false,
         patenteAnterior: false,
         certificadoDGI: false
     });
 
-    // Obtener usuario de localStorage
-    const usuarioConectado = localStorage.getItem('usuario_conectado');
-    const usuario = usuarioConectado ? JSON.parse(usuarioConectado) : null;
-    const sucursalId = 1; // ID para Edificio Plaza Cabildo
+    const sucursalId = 2; // ID para Edificio Plaza Cabildo
     const tramiteId = 4;   // ID para Patentes Municipales
 
     const rubrosComunes = [
-        'Comercio minorista',
-        'Comercio mayorista',
-        'Restaurante',
-        'Cafetería',
-        'Servicios profesionales',
-        'Consultoría',
-        'Construcción',
-        'Transporte',
-        'Turismo',
-        'Otro'
+        'Comercio minorista', 'Comercio mayorista', 'Restaurante', 'Cafetería',
+        'Servicios profesionales', 'Consultoría', 'Construcción', 'Transporte',
+        'Turismo', 'Otro'
     ];
 
     const handleSubmit = async () => {
-        // Validaciones
+        // 1. Validaciones de Inputs locales
         if (!nombreNegocio || !rubro || !direccionComercial || !tipoPatente) {
             setAlertMessage('Por favor complete todos los campos requeridos');
             setIsSuccess(false);
@@ -68,22 +58,28 @@ const PatenteMunicipal: React.FC = () => {
             return;
         }
 
-        if (!usuario) {
-            setAlertMessage('Debe iniciar sesión para realizar esta solicitud');
+        // 🛡️ RECOLECCIÓN SEGURA DE SESIÓN (Unificada con tu Login original)
+        const token = localStorage.getItem('token');
+        const usuarioSesion = localStorage.getItem('usuario_conectado'); // 🚀 Volvemos a tu clave original
+        const usuario = usuarioSesion ? JSON.parse(usuarioSesion) : null;
+
+        // Validamos que existan ambos para no romper la llave foránea en PostgreSQL
+        if (!token || !usuario || !usuario.id) {
+            setAlertMessage('Su sesión no es válida. Por favor, inicie sesión nuevamente.');
             setIsSuccess(false);
             setShowAlert(true);
-            history.push('/Login');
+            setTimeout(() => history.push('/Login'), 2000);
             return;
         }
 
         setIsLoading(true);
 
         try {
-            // Payload para la API unificada
+            // Payload transaccional estructurado
             const payload = {
                 sucursal_id: sucursalId,
                 tramite_id: tramiteId,
-                usuario_id: usuario.id,
+                usuario_id: usuario.id, // ID real sincronizado de PostgreSQL (1 o 2 en seeding)
                 tipo_tramite: 'patente',
                 fecha_cita: null,
                 hora_cita: null,
@@ -97,28 +93,33 @@ const PatenteMunicipal: React.FC = () => {
                 }
             };
 
-            console.log('Enviando solicitud:', payload);
+            console.log('Despachando payload transaccional:', payload);
             
-            const response = await API.post('/tramites', payload);
+            // 🔄 CUMPLE EP 2.4: Consumo API REST adjuntando las credenciales de sesión en headers
+            const response = await API.post('/tramites', payload, {
+                headers: {
+                    Authorization: `Bearer ${token}` // El guardia de authMiddleware.js del backend procesará esto
+                }
+            });
             
             if (response.data.ok) {
-                setAlertMessage('✅ Solicitud de Patente Municipal enviada correctamente. Se le notificará por correo el estado de su solicitud.');
+                setAlertMessage('✅ Solicitud de Patente Municipal enviada correctamente. Podrá revisar su estado en el buzón de notificaciones.');
                 setIsSuccess(true);
                 setShowAlert(true);
                 setTimeout(() => history.push('/MenuPrincipal'), 2500);
             } else {
-                setAlertMessage('❌ Error: ' + (response.data.mensaje || 'No se pudo enviar la solicitud'));
+                setAlertMessage('❌ Error: ' + (response.data.mensaje || 'No se pudo procesar la solicitud'));
                 setIsSuccess(false);
                 setShowAlert(true);
             }
         } catch (error: any) {
-            console.error('Error detallado:', error);
-            const mensaje = error.response?.data?.mensaje || error.message || 'No se pudo conectar con el servidor';
-            setAlertMessage('❌ Error: ' + mensaje);
+            console.error('Error capturado en el controlador del Frontend:', error);
+            const mensaje = error.response?.data?.mensaje || error.message || 'Error de conexión con el servidor de Santo Domingo';
+            setAlertMessage('❌ Error al enviar solicitud: ' + mensaje);
             setIsSuccess(false);
             setShowAlert(true);
         } finally {
-            setIsLoading(false);
+            box_loading: setIsLoading(false);
         }
     };
 
@@ -211,7 +212,7 @@ const PatenteMunicipal: React.FC = () => {
                                     className="btn-submit-patente" 
                                     onClick={handleSubmit}
                                     disabled={isLoading}
-                                >
+                                Dino-Btn>
                                     {isLoading ? 'Enviando...' : 'Enviar Solicitud'}
                                 </IonButton>
                                 

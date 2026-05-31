@@ -3,7 +3,6 @@ import {
   IonPage, 
   IonContent, 
   IonButton, 
-  IonText, 
   IonSelect, 
   IonSelectOption, 
   IonAlert,
@@ -16,7 +15,7 @@ import PageLayout from '../components/PageLayout';
 import MainCard from '../components/MainCard';
 import CustomInput from '../components/CustomInput';
 import UploadItem from '../components/UploadItem';
-import { personOutline, businessOutline, documentTextOutline, cardOutline, schoolOutline } from 'ionicons/icons';
+import { businessOutline, documentTextOutline, cardOutline } from 'ionicons/icons';
 import API from '../services/api';
 import './BecaMunicipal.css';
 
@@ -35,7 +34,7 @@ const BecaMunicipal: React.FC = () => {
     const [nivelEstudio, setNivelEstudio] = useState('');
     const [ingresoFamiliar, setIngresoFamiliar] = useState('');
 
-    // Estado de archivos
+    // Estado de archivos visuales
     const [documentos, setDocumentos] = useState({
         certificadoAlumno: false,
         concentracionNotas: false,
@@ -43,22 +42,13 @@ const BecaMunicipal: React.FC = () => {
         fotocopiaCedula: false
     });
 
-    const usuarioConectado = localStorage.getItem('usuario_conectado');
-    const usuario = usuarioConectado ? JSON.parse(usuarioConectado) : null;
-    const sucursalId = 1; // ID para Edificio Plaza Cabildo
+    const sucursalId = 2; // ID para Edificio Plaza Cabildo
     const tramiteId = 5;   // ID para Becas Municipales en la tabla catálogo
 
     const instituciones = [
-        'Universidad de Chile',
-        'Pontificia Universidad Católica',
-        'Universidad de Santiago',
-        'Universidad de Concepción',
-        'Universidad Técnica Federico Santa María',
-        'INACAP',
-        'DUOC UC',
-        'Liceo Municipal',
-        'Colegio Particular',
-        'Otra institución'
+        'Universidad de Chile', 'Pontificia Universidad Católica', 'Universidad de Santiago',
+        'Universidad de Concepción', 'Universidad Técnica Federico Santa María', 'INACAP',
+        'DUOC UC', 'Liceo Municipal', 'Colegio Particular', 'Otra institución'
     ];
 
     const nivelesEstudio = [
@@ -69,14 +59,12 @@ const BecaMunicipal: React.FC = () => {
     ];
 
     const rangosIngreso = [
-        'Menos de $500.000',
-        '$500.000 - $1.000.000',
-        '$1.000.000 - $1.500.000',
-        '$1.500.000 - $2.000.000',
-        'Más de $2.000.000'
+        'Menos de $500.000', '$500.000 - $1.000.000', '$1.000.000 - $1.500.000',
+        '$1.500.000 - $2.000.000', 'Más de $2.000.000'
     ];
 
     const handleSubmit = async () => {
+        // 1. Validaciones locales de inputs
         if (!nombreEstudiante || !rutEstudiante || !institucion || !carrera || !nivelEstudio || !ingresoFamiliar) {
             setAlertMessage('Por favor complete todos los campos requeridos');
             setIsSuccess(false);
@@ -84,21 +72,27 @@ const BecaMunicipal: React.FC = () => {
             return;
         }
 
-        if (!usuario) {
-            setAlertMessage('Debe iniciar sesión para realizar esta solicitud');
+        // 🛡️ RECOLECCIÓN SEGURA DE CREDENCIALES (EP 2.4 / 2.5)
+        const token = localStorage.getItem('token');
+        const usuarioSesion = localStorage.getItem('usuario_conectado');
+        const usuario = usuarioSesion ? JSON.parse(usuarioSesion) : null;
+
+        if (!token || !usuario || !usuario.id) {
+            setAlertMessage('Su sesión ha expirado o es inválida. Por favor, vuelva a ingresar.');
             setIsSuccess(false);
             setShowAlert(true);
-            history.push('/Login');
+            setTimeout(() => history.push('/Login'), 2000);
             return;
         }
 
         setIsLoading(true);
 
         try {
-            // Usar la API unificada de tramites
+            // Payload transaccional unificado e íntegro
             const payload = {
                 sucursal_id: sucursalId,
                 tramite_id: tramiteId,
+                usuario_id: usuario.id, // 🚀 CORREGIDO: Inyectamos la llave foránea obligatoria
                 tipo_tramite: 'beca',
                 fecha_cita: null,
                 hora_cita: null,
@@ -114,18 +108,29 @@ const BecaMunicipal: React.FC = () => {
                 }
             };
 
-            const response = await API.post('/tramites', payload);
+            console.log('Despachando postulación de Beca:', payload);
+            
+            // 🔄 CUMPLE EP 2.4: Consumo API REST adjuntando el token Bearer en los headers de Axios
+            const response = await API.post('/tramites', payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             
             if (response.data.ok) {
-                setAlertMessage('✅ Solicitud de Beca Municipal enviada correctamente. El comité de becas evaluará su solicitud.');
+                setAlertMessage('✅ Solicitud de Beca Municipal enviada correctamente. El comité de becas evaluará su expediente social.');
                 setIsSuccess(true);
                 setShowAlert(true);
                 setTimeout(() => history.push('/MenuPrincipal'), 2500);
+            } else {
+                setAlertMessage('❌ Error: ' + (response.data.mensaje || 'No se pudo registrar la postulación.'));
+                setIsSuccess(false);
+                setShowAlert(true);
             }
         } catch (error: any) {
-            console.error('Error:', error);
-            const mensaje = error.response?.data?.mensaje || error.message || 'No se pudo enviar la solicitud';
-            setAlertMessage('❌ Error: ' + mensaje);
+            console.error('Error capturado en BecaMunicipal:', error);
+            const mensaje = error.response?.data?.mensaje || error.message || 'Error de pasarela con el backend municipal';
+            setAlertMessage('❌ Error en el envío: ' + mensaje);
             setIsSuccess(false);
             setShowAlert(true);
         } finally {
@@ -178,7 +183,7 @@ const BecaMunicipal: React.FC = () => {
                                     label="Carrera / Curso *"
                                     value={carrera}
                                     onIonChange={setCarrera}
-                                    placeholder="Ej: Ingeniería Civil Industrial / 4° Medio"
+                                    placeholder="Ej: Ingeniería Civil Informática / 4° Medio"
                                 />
 
                                 <IonSelect

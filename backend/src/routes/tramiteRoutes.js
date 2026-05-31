@@ -96,30 +96,37 @@ router.get('/', verificarToken, verificarAdmin, async (req, res) => {
 
 // ══════════════════════════════════════════════════════════
 // GET /api/tramites/usuario/:usuario_id — Solicitudes del usuario
-// Requiere: usuario autenticado, y solo puede ver las suyas
+// CUMPLE REQUISITO: EP 2.3 (Endpoints) y EP 2.4 (Mapeo Relacional)
 // ══════════════════════════════════════════════════════════
 router.get('/usuario/:usuario_id', verificarToken, async (req, res) => {
   try {
     const { usuario_id } = req.params;
+    const Tramite = require('../models/Tramite'); // 🔌 Importación local segura del modelo catálogo
 
-    // Un usuario solo puede ver sus propios trámites; un admin puede ver los de cualquiera
+    // Control de seguridad por Token JWT: Un contribuyente común solo audita sus propias filas
     if (req.usuario.rol !== 'admin' && req.usuario.id !== parseInt(usuario_id)) {
       return res.status(403).json({
         ok: false,
-        mensaje: 'No tienes permiso para ver los trámites de otro usuario.'
+        mensaje: 'No tienes permiso para verificar registros de otros contribuyentes.'
       });
     }
 
+    // Buscamos las solicitudes del usuario e INCLUIMOS el trámite base de la tabla catálogo
     const solicitudes = await SolicitudTramite.findAll({
       where: { usuario_id },
-      order: [['createdAt', 'DESC']]
+      include: [{
+        model: Tramite, // 🚀 JOIN relacional para heredar 'nombre_tramite' y 'requiere_documentos'
+        attributes: ['nombre_tramite', 'requiere_documentos']
+      }],
+      order: [['createdAt', 'DESC']] // Las actualizaciones más recientes primero
     });
 
     res.status(200).json({ ok: true, solicitudes });
   } catch (error) {
+    console.error('Error al compilar buzón relacional del usuario:', error);
     res.status(500).json({
       ok: false,
-      mensaje: 'Error al obtener el historial del usuario',
+      mensaje: 'Error interno del servidor al procesar el buzón del usuario',
       error: error.message
     });
   }

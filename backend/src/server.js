@@ -1,5 +1,6 @@
 const app = require('./app');
 const sequelize = require('./config/database');
+const bcrypt = require('bcrypt'); // 🚀 Importado arriba para evitar errores en las funciones asíncronas
 
 // 1. Importamos todos los modelos para que Sequelize los registre en memoria
 require('./models/Usuario');
@@ -31,11 +32,11 @@ async function poblarDatosBase() {
                     direccion: 'Av. Chile Intercomunal 456', 
                     telefono: '+56352200001' 
                 }
-            ]);
+            ], { ignoreDuplicates: true });
             console.log('🌱 Base de datos: Sucursales cargadas correctamente.');
         }
 
-        // 2. Verificar e insertar el Catálogo de Trámites real (Calza con tu frontend)
+        // 2. Verificar e insertar el Catálogo de Trámites real (Incluye Plaza Cabildo)
         const conteoTramites = await Tramite.count();
         if (conteoTramites === 0) {
             await Tramite.bulkCreate([
@@ -52,15 +53,27 @@ async function poblarDatosBase() {
                 { 
                     id: 3, 
                     nombre_tramite: 'Derechos de Aseo', 
+                    requiere_documentos: false 
+                },
+                { 
+                    id: 4, 
+                    nombre_tramite: 'Patente Municipal', 
+                    requiere_documentos: true 
+                },
+                { 
+                    id: 5, 
+                    nombre_tramite: 'Beca Municipal', 
                     requiere_documentos: true 
                 }
-            ]);
+            ], { ignoreDuplicates: true });
+            console.log('🌱 Base de datos: Catálogo de trámites completo y sincronizado.');
         }
 
+        // 3. Verificar e insertar Usuarios Base
         const conteoUsuarios = await Usuario.count();
         if (conteoUsuarios === 0) {
             const saltRounds = 10;
-            // Encriptamos las contraseñas de prueba
+            // Encriptamos las contraseñas de prueba (EP 2.6 b)
             const passwordHashUser = await bcrypt.hash('user123', saltRounds);
             const passwordHashAdmin = await bcrypt.hash('admin123', saltRounds);
 
@@ -79,21 +92,18 @@ async function poblarDatosBase() {
                 },
                 {
                     id: 2,
-            
                     rut: '22.345.678-9',
                     nombre_usuario: 'Admin',
                     correo: 'admin@santodomingo.cl',
                     region: 'Región Metropolitana',
                     comuna: 'Santiago',
                     contrasena_hash: passwordHashAdmin,
-                    rol: 'admin', // Calza con tu ENUM
+                    rol: 'admin', 
                     "createdAt": new Date(),
                     "updatedAt": new Date()
                 }
-                
-
-            ]);
-            console.log('🌱 Base de datos: Catálogo de trámites sincronizado con el Frontend.');
+            ], { ignoreDuplicates: true });
+            console.log('🌱 Base de datos: Usuarios base (contribuyente y admin) listos.');
         }
     } catch (error) {
         console.error('❌ Error al ejecutar el Seeding automático:', error);
@@ -101,16 +111,16 @@ async function poblarDatosBase() {
 }
 
 // 2. Crear las relaciones de manera segura una vez cargados los modelos
-const { Usuario, Sucursal, Tramite, SolicitudTramite } = sequelize.models;
+const { Usuario: ModelUsuario, Sucursal: ModelSucursal, Tramite: ModelTramite, SolicitudTramite } = sequelize.models;
 
-Usuario.hasMany(SolicitudTramite, { foreignKey: 'usuario_id' });
-SolicitudTramite.belongsTo(Usuario, { foreignKey: 'usuario_id' });
+ModelUsuario.hasMany(SolicitudTramite, { foreignKey: 'usuario_id' });
+SolicitudTramite.belongsTo(ModelUsuario, { foreignKey: 'usuario_id' });
 
-Sucursal.hasMany(SolicitudTramite, { foreignKey: 'sucursal_id' });
-SolicitudTramite.belongsTo(Sucursal, { foreignKey: 'sucursal_id' });
+ModelSucursal.hasMany(SolicitudTramite, { foreignKey: 'sucursal_id' });
+SolicitudTramite.belongsTo(ModelSucursal, { foreignKey: 'sucursal_id' });
 
-Tramite.hasMany(SolicitudTramite, { foreignKey: 'tramite_id' });
-SolicitudTramite.belongsTo(Tramite, { foreignKey: 'tramite_id' });
+ModelTramite.hasMany(SolicitudTramite, { foreignKey: 'tramite_id' });
+SolicitudTramite.belongsTo(ModelTramite, { foreignKey: 'tramite_id' });
 
 
 // 3. Sincronizar, poblar base de datos y levantar servidor

@@ -16,10 +16,9 @@ import { useHistory } from 'react-router-dom';
 import CustomHeader from '../components/CustomHeader';
 import PageLayout from '../components/PageLayout';
 import MainCard from '../components/MainCard';
-import API from '../services/api'; // 🔌 Instancia centralizada de Axios
+import API from '../services/api'; 
 import './GestionTramites.css';
 
-// ─── Tipos Originales Habilitados ────────────────────────
 type EstadoTramite = 'Confirmado' | 'Pendiente' | 'Rechazado';
 
 interface Tramite {
@@ -29,13 +28,12 @@ interface Tramite {
   fecha: string;
   estado: EstadoTramite;
   documentoUrl?: string;
-  rutUsuario: string;   // 🔌 RUT del ciudadano extraído dinámicamente
+  rutUsuario: string;   
 }
 
 const GestionTramites: React.FC = () => {
   const history = useHistory();
   
-  // Estados transaccionales conectados a la API
   const [tramites, setTramites] = useState<Tramite[]>([]);
   const [loadingView, setLoadingView] = useState<boolean>(true);
   const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -61,24 +59,30 @@ const GestionTramites: React.FC = () => {
       const response = await API.get('/tramites');
       const listaDB = response.data.solicitudes || [];
 
-      // 🔄 MAPEO INTELIGENTE: Transformamos registros relacionales a los tipos del Frontend
+      // 🔄 MAPEO DINÁMICO: Soportando la expansión del catálogo de Plaza Cabildo
       const mappedTramites: Tramite[] = listaDB.map((sol: any) => {
         
-        // 1. Traducimos las IDs numéricas al nombre institucional del catálogo
-        let nombreOficial = 'Trámite Municipal';
-        if (sol.tramite_id === 1) nombreOficial = 'Permiso de Circulación';
-        if (sol.tramite_id === 2) nombreOficial = 'Obtener/Renovar Licencia Clase B';
-        if (sol.tramite_id === 3) nombreOficial = 'Derechos de Aseo Domiciliario';
+        // 🚀 MEJORA: Prioriza el nombre dinámico del JOIN de Sequelize. Si no viene, evalúa los 5 casos.
+        let nombreOficial = sol.Tramite?.nombre_tramite;
 
-        // 2. Homologamos el género gramatical de los estados para no romper el CSS frontend
+        if (!nombreOficial) {
+          if (sol.tramite_id === 1) nombreOficial = 'Permiso de Circulación';
+          else if (sol.tramite_id === 2) nombreOficial = 'Obtener/Renovar Licencia Clase B';
+          else if (sol.tramite_id === 3) nombreOficial = 'Derechos de Aseo Domiciliario';
+          else if (sol.tramite_id === 4) nombreOficial = 'Patente Municipal'; // 🏢 Mapeado con éxito
+          else if (sol.tramite_id === 5) nombreOficial = 'Beca Municipal';    // 🎓 Mapeado con éxito
+          else nombreOficial = 'Trámite Interno Comunal';
+        }
+
+        // Homologamos el género gramatical de los estados para no romper el CSS frontend
         let estadoUI: EstadoTramite = 'Pendiente';
         if (sol.estado_tramite === 'Confirmada' || sol.estado_tramite === 'Confirmado') estadoUI = 'Confirmado';
         if (sol.estado_tramite === 'Rechazada' || sol.estado_tramite === 'Rechazado') estadoUI = 'Rechazado';
 
-        // 3. Limpiamos la cadena ISO de la fecha de Postgres
+        // Limpiamos la cadena ISO de la fecha de Postgres
         const fechaFormateada = sol.fecha_cita ? sol.fecha_cita.split('T')[0] : 'Por definir';
 
-        // 4. 🔍 CORRECCIÓN DEL RUT: Extrae el RUT real obtenido mediante el include/JOIN relacional del backend
+        // Extrae el RUT real obtenido mediante el include/JOIN relacional del backend
         const rutCiudadano = sol.Usuario?.rut || sol.usuario_rut || sol.rut || 'No disponible';
 
         return {
@@ -110,22 +114,15 @@ const GestionTramites: React.FC = () => {
     cargarSolicitudesMunicipales();
   }, []);
 
-  /**
-   * 🚀 ACCIÓN TRANSACCIONAL: Despacha el cambio de estado a PostgreSQL via PUT
-   */
   const handleAccion = async (id: string, accion: 'Confirmar' | 'Rechazar') => {
     setLoadingId(id);
-    
-    // 🔀 Adaptamos la acción al string estricto de tu base de datos relacional
     const estadoBackend = accion === 'Confirmar' ? 'Confirmada' : 'Rechazada';
 
     try {
-      // Impactamos el endpoint PUT /api/tramites/:id definido en tu backend
       await API.put(`/tramites/${id}`, {
         estado_tramite: estadoBackend
       });
 
-      // Si la API responde OK, actualizamos el nodo de forma reactiva instantánea
       const nuevoEstadoUI: EstadoTramite = accion === 'Confirmar' ? 'Confirmado' : 'Rechazado';
       setTramites((prev) =>
         prev.map((t) => (t.id === id ? { ...t, estado: nuevoEstadoUI } : t))
@@ -187,18 +184,15 @@ const GestionTramites: React.FC = () => {
                   key={tramite.id}
                   className={`tramite-card borde-${tramite.estado.toLowerCase()}`}
                 >
-                  {/* Col izquierda: info real con RUT permanente */}
                   <div className="col-info">
                     <p className="t-nombre">{tramite.nombre}</p>
                     <p className="t-ref">{tramite.ref}</p>
-                    {/* 👤 Visualización del RUT asegurada en primera plana de cada tarjeta */}
                     <p className="t-rut" style={{ margin: '4px 0', fontSize: '0.95rem', color: '#1a3a5f', fontWeight: 'bold' }}>
                       RUT Ciudadano: {tramite.rutUsuario}
                     </p>
                     <p className="t-fecha">Agendado: {tramite.fecha}</p>
                   </div>
 
-                  {/* Col central: estado reactivo */}
                   <div className="col-estado">
                     <span className="estado-label">Estado:&nbsp;</span>
                     <span className={`estado-valor ${tramite.estado.toLowerCase()}`}>
@@ -206,7 +200,6 @@ const GestionTramites: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Col derecha: acciones del funcionario */}
                   <div className="col-acciones">
                     <a
                       href="#"

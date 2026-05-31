@@ -1,258 +1,144 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CustomHeader from '../components/CustomHeader';  
 
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
   IonContent,
-  IonButtons,
-  IonButton,
   IonIcon,
-  IonLabel,
   IonToast,
   IonSpinner,
-  IonBadge,
 } from '@ionic/react';
 import {
-  arrowBackOutline,
-  personCircleOutline,
-  chevronDownOutline,
   alertCircle,
   calendarOutline,
   checkmarkCircle,
-  chatbubbleOutline,
-  cloudUploadOutline,
-  downloadOutline,
-  eyeOutline,
-  mailOpenOutline,
 } from 'ionicons/icons';
-import { useHistory } from 'react-router-dom';
+import API from '../services/api'; 
 import './MisNotificaciones.css';
-
-// ─── Tipos ────────────────────────────────────────────────
-type TipoNotificacion = 'urgente' | 'cita' | 'aprobado' | 'mensaje';
-type AccionNotificacion = 'subir_documento' | 'ver_detalles' | 'descargar_comprobante' | 'ver_mensaje';
 
 interface Notificacion {
   id: string;
-  tipo: TipoNotificacion;
+  tipo: 'urgente' | 'cita' | 'aprobado' | 'mensaje';
   titulo: string;
   ref: string;
   fecha: string;
   mensaje: string;
-  accion: AccionNotificacion;
-  // Urgente
-  fechaLimite?: string;
-  diasRestantes?: number;
-  progresoPorcentaje?: number;
-  // Cita
-  fechaCita?: string;
-  // Leído
-  leido?: boolean;
 }
 
-// ─── Datos de ejemplo ─────────────────────────────────────
-const notificacionesIniciales: Notificacion[] = [
-  {
-    id: '1',
-    tipo: 'urgente',
-    titulo: 'Urgente: Requerimiento de Documentación',
-    ref: 'WEB-DOC-0051',
-    fecha: '20/05/2024',
-    mensaje: 'Falta certificado de antecedentes penales.',
-    accion: 'subir_documento',
-    fechaLimite: '25/05/2024',
-    diasRestantes: 5,
-    progresoPorcentaje: 70,
-  },
-  {
-    id: '2',
-    tipo: 'cita',
-    titulo: 'Aviso: Confirmación de Cita',
-    ref: 'WEB-CITA-1234',
-    fecha: '18/05/2024',
-    mensaje: 'Por favor confirme su asistencia.',
-    accion: 'ver_detalles',
-    fechaCita: '22/05/2024 a las 10:00 AM',
-  },
-  {
-    id: '3',
-    tipo: 'aprobado',
-    titulo: 'Actualización de Estado: Trámite Aprobado',
-    ref: 'WEB-CERT-9988',
-    fecha: '17/05/2024',
-    mensaje: 'Su documento está listo para descarga.',
-    accion: 'descargar_comprobante',
-  },
-  {
-    id: '4',
-    tipo: 'mensaje',
-    titulo: 'Mensaje General: Nuevo Beneficio Disponible',
-    ref: 'Gral.Invierno',
-    fecha: '15/05/2024',
-    mensaje: 'Postulaciones abiertas para el Bono Invierno 2024.',
-    accion: 'ver_mensaje',
-    leido: false,
-  },
-];
-
-// ─── Ícono central según tipo ────────────────────────────
-const IconoCentral: React.FC<{ notif: Notificacion }> = ({ notif }) => {
-  switch (notif.tipo) {
-    case 'urgente':
-      return (
-        <div className="icono-urgente-wrap">
-          <IonIcon icon={alertCircle} className="icono-urgente" />
-          <div className="barra-progreso-wrap">
-            <div
-              className="barra-progreso-fill"
-              style={{ width: `${notif.progresoPorcentaje ?? 0}%` }}
-            />
-          </div>
-          <p className="urgente-fecha-limite">
-            Fecha Límite: {notif.fechaLimite}
-          </p>
-          <p className="urgente-dias">({notif.diasRestantes} días restantes)</p>
-        </div>
-      );
-    case 'cita':
-      return (
-        <div className="icono-cita-wrap">
-          <IonIcon icon={calendarOutline} className="icono-cita" />
-          <p className="cita-info">Cita: {notif.fechaCita}</p>
-        </div>
-      );
-    case 'aprobado':
-      return (
-        <div className="icono-aprobado-wrap">
-          <IonIcon icon={checkmarkCircle} className="icono-aprobado" />
-          <p className="aprobado-label">Aprobado</p>
-        </div>
-      );
-    case 'mensaje':
-      return (
-        <div className="icono-mensaje-wrap">
-          <IonIcon icon={chatbubbleOutline} className="icono-mensaje" />
-          <p className="mensaje-estado">{notif.leido ? 'Leído' : 'No Leído'}</p>
-        </div>
-      );
-  }
-};
-
-// ─── Componente principal ─────────────────────────────────
 const MisNotificaciones: React.FC = () => {
-  const history = useHistory();
-  const [notificaciones, setNotificaciones] = useState<Notificacion[]>(notificacionesIniciales);
-  const [loadingId, setLoadingId] = useState<string | null>(null);
-  const [toast, setToast] = useState<{
-    isOpen: boolean;
-    message: string;
-    color: 'success' | 'danger' | 'medium';
-  }>({ isOpen: false, message: '', color: 'success' });
+  const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
+  const [loadingScreen, setLoadingScreen] = useState<boolean>(true);
+  const [toast, setToast] = useState({ isOpen: false, message: '', color: 'success' as 'success' | 'danger' });
 
-  const ejecutarAccion = async (notif: Notificacion) => {
-    setLoadingId(notif.id);
+  useEffect(() => {
+    const sincronizarAlertasComunales = async () => {
+      try {
+        const token = localStorage.getItem('token'); 
+        const usuarioSesion = localStorage.getItem('usuario_conectado'); 
+        const usuario = usuarioSesion ? JSON.parse(usuarioSesion) : null;
 
-    // Marcar como leído si es mensaje
-    if (notif.tipo === 'mensaje') {
-      setNotificaciones((prev) =>
-        prev.map((n) => (n.id === notif.id ? { ...n, leido: true } : n))
-      );
-    }
+        if (!token || !usuario || !usuario.id) {
+          setLoadingScreen(false);
+          return;
+        }
+        
+        // Conexión transaccional directa a tu endpoint real
+        const response = await API.get(`/tramites/usuario/${usuario.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
 
-    try {
-      // Reemplazar con la llamada real a la API
-      await new Promise((res) => setTimeout(res, 1100));
+        if (response.data.ok) {
+          
+          // Filtramos el buzón activo (Pendientes o Rechazados) para control UX
+          const solicitudesActivas = response.data.solicitudes.filter(
+            (sol: any) => sol.estado_tramite === 'Pendiente' || sol.estado_tramite === 'Rechazada' || sol.estado_tramite === 'Rechazado'
+          );
 
-      const mensajes: Record<AccionNotificacion, string> = {
-        subir_documento: 'Redirigiendo para subir documento...',
-        ver_detalles: 'Cargando detalles de la cita...',
-        descargar_comprobante: 'Comprobante descargado exitosamente.',
-        ver_mensaje: 'Abriendo mensaje...',
-      };
+          const mapeoDinamico = solicitudesActivas.map((sol: any) => {
+            const nombreTramite = sol.Tramite?.nombre_tramite || 'Trámite Municipal';
+            let tipoCard: 'urgente' | 'cita' | 'aprobado' | 'mensaje' = 'mensaje';
+            let mensajeUI = '';
 
-      setToast({ isOpen: true, message: mensajes[notif.accion], color: 'success' });
-    } catch {
-      setToast({ isOpen: true, message: 'Error al procesar la acción.', color: 'danger' });
-    } finally {
-      setLoadingId(null);
-    }
-  };
+            if (sol.estado_tramite === 'Pendiente') {
+              tipoCard = 'cita';
+              mensajeUI = `Tu solicitud de ${nombreTramite} fue ingresada con éxito en el sistema. Actualmente se encuentra esperando revisión por parte del departamento encargado en el Edificio Consistorial.`;
+            } 
+            else if (sol.estado_tramite === 'Rechazada' || sol.estado_tramite === 'Rechazado') {
+              tipoCard = 'urgente';
+              mensajeUI = `Atención: Tu trámite de ${nombreTramite} presenta observaciones en los antecedentes provistos. Por favor, comuníquese a la brevedad con Soporte Municipal llamando al fono +56 35 220 0000 o acérquese de forma presencial.`;
+            }
 
-  const getLabelAccion = (accion: AccionNotificacion): string => {
-    const labels: Record<AccionNotificacion, string> = {
-      subir_documento: 'Subir Documento',
-      ver_detalles: 'Ver Detalles',
-      descargar_comprobante: 'Descargar Comprobante',
-      ver_mensaje: 'Ver Mensaje',
+            return {
+              id: sol.id.toString(),
+              tipo: tipoCard,
+              titulo: nombreTramite,
+              ref: `MUN-SD-${sol.id.toString().padStart(4, '0')}`,
+              fecha: new Date(sol.createdAt).toLocaleDateString('es-CL'),
+              mensaje: mensajeUI
+            };
+          });
+
+          setNotificaciones(mapeoDinamico);
+        }
+      } catch (error) {
+        console.error('Error al sincronizar notificaciones:', error);
+        setToast({ isOpen: true, message: 'Error al sincronizar el buzón de alertas.', color: 'danger' });
+      } finally {
+        setLoadingScreen(false);
+      }
     };
-    return labels[accion];
-  };
 
-  const getIconoAccion = (accion: AccionNotificacion) => {
-    const iconos: Record<AccionNotificacion, string> = {
-      subir_documento: cloudUploadOutline,
-      ver_detalles: eyeOutline,
-      descargar_comprobante: downloadOutline,
-      ver_mensaje: mailOpenOutline,
-    };
-    return iconos[accion];
-  };
+    sincronizarAlertasComunales();
+  }, []);
 
   return (
     <IonPage className="notif-page">
-
       <CustomHeader showBackButton={true} defaultHref="/MenuPrincipal" />
 
-      {/* ── CONTENT ── */}
       <IonContent className="notif-content">
         <div className="notif-wrapper">
-
           <h1 className="notif-title">Mis Notificaciones Pendientes</h1>
 
-          {notificaciones.map((notif) => (
-            <div key={notif.id} className={`notif-card tipo-${notif.tipo}`}>
-
-              {/* Col izquierda: info */}
-              <div className="notif-col-info">
-                <p className="notif-nombre">{notif.titulo}</p>
-                <p className="notif-ref">Ref: {notif.ref}</p>
-                <p className="notif-fecha">Fecha: {notif.fecha}</p>
-              </div>
-
-              {/* Col central: ícono dinámico */}
-              <div className="notif-col-icono">
-                <IconoCentral notif={notif} />
-              </div>
-
-              {/* Col derecha: mensaje + botón */}
-              <div className="notif-col-accion">
-                <p className="notif-mensaje">{notif.mensaje}</p>
-                <IonButton
-                  className="notif-btn"
-                  size="small"
-                  onClick={() => ejecutarAccion(notif)}
-                  disabled={loadingId === notif.id}
-                >
-                  {loadingId === notif.id ? (
-                    <IonSpinner name="crescent" className="notif-spinner" />
-                  ) : (
-                    <>
-                      <IonIcon icon={getIconoAccion(notif.accion)} slot="start" />
-                      {getLabelAccion(notif.accion)}
-                    </>
-                  )}
-                </IonButton>
-              </div>
-
+          {loadingScreen ? (
+            <div style={{ textAlign: 'center', marginTop: '50px' }}>
+              <IonSpinner name="crescent" />
+              <p style={{ color: '#666', marginTop: '10px' }}>Conectando de forma segura con la base de datos...</p>
             </div>
-          ))}
+          ) : notificaciones.length === 0 ? (
+            <div style={{ textAlign: 'center', marginTop: '60px', color: '#777' }}>
+              <p>Tu buzón municipal está limpio. No registras alertas o trámites pendientes.</p>
+            </div>
+          ) : (
+            notificaciones.map((notif) => (
+              <div key={notif.id} className={`notif-card tipo-${notif.tipo}`}>
+                
+                {/* 🏢 Col Izquierda: Identificación e ID Relacional de PostgreSQL */}
+                <div className="notif-col-info">
+                  <p className="notif-nombre">{notif.titulo}</p>
+                  <p className="notif-ref">{notif.ref}</p>
+                  <p className="notif-fecha">Fecha: {notif.fecha}</p>
+                </div>
 
+                {/* 🔔 Col Central: Iconografía de Alerta Dinámica */}
+                <div className="notif-col-icono">
+                  {notif.tipo === 'urgente' && <IonIcon icon={alertCircle} className="icono-urgente" style={{fontSize: '40px', color: 'var(--ion-color-danger)'}} />}
+                  {notif.tipo === 'cita' && <IonIcon icon={calendarOutline} className="icono-cita" style={{fontSize: '40px', color: 'var(--ion-color-primary)'}} />}
+                  {notif.tipo === 'aprobado' && <IonIcon icon={checkmarkCircle} className="icono-aprobado" style={{fontSize: '40px', color: 'var(--ion-color-success)'}} />}
+                </div>
+
+                {/* 📝 Col Derecha: Texto Informativo Completo (Ocupa todo el ancho restante) */}
+                <div className="notif-col-accion" style={{ flex: 2, paddingLeft: '15px' }}>
+                  <p className="notif-mensaje" style={{ margin: 0, lineHeight: '1.4', color: '#444' }}>
+                    {notif.mensaje}
+                  </p>
+                </div>
+
+              </div>
+            ))
+          )}
         </div>
       </IonContent>
 
-      {/* ── TOAST ── */}
       <IonToast
         isOpen={toast.isOpen}
         onDidDismiss={() => setToast({ ...toast, isOpen: false })}
