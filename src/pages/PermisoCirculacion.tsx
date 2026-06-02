@@ -28,7 +28,7 @@ function PermisoCirculacion() {
   const [fechaTransaccion, setFechaTransaccion] = useState('');
 
   /**
-   * 🚀 FUNCIÓN CORE: Conecta con el backend Express y procesa el pago del impuesto vehicular
+   * FUNCIÓN CORE: Conecta con el backend Express y procesa el pago del impuesto vehicular
    */
   const handlePagar = async () => {
     if (!formData.rut || !formData.patente) {
@@ -60,8 +60,8 @@ function PermisoCirculacion() {
         usuario_id: usuario.id,
         sucursal_id: 1,           // Edificio Consistorial Av. Sta Teresa
         tramite_id: 1,            // ID 1: Catálogo maestro - Permiso de Circulación
-        tipo_tramite: 'permiso',   // 👈 Guardamos el tipo de trámite real en la BD
-        datos_extra: { patente: formData.patente } // 👈 Mapeamos la patente dentro del objeto JSONB
+        tipo_tramite: 'permiso',   // Guardamos el tipo de trámite real en la BD
+        datos_extra: { patente: formData.patente } // Mapeamos la patente dentro del objeto JSONB
       };
 
       console.log('Despachando pago de Permiso de Circulación:', payload);

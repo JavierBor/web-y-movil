@@ -2,7 +2,7 @@
 const express = require('express');
 const router  = express.Router();
 const SolicitudTramite = require('../models/SolicitudTramite');
-const Usuario = require('../models/Usuario'); // 🔌 IMPORTACIÓN OBLIGATORIA para el include/JOIN
+const Usuario = require('../models/Usuario');
 const { verificarToken, verificarAdmin } = require('../middleware/authMiddleware');
 
 // ══════════════════════════════════════════════════════════
@@ -96,37 +96,30 @@ router.get('/', verificarToken, verificarAdmin, async (req, res) => {
 
 // ══════════════════════════════════════════════════════════
 // GET /api/tramites/usuario/:usuario_id — Solicitudes del usuario
-// CUMPLE REQUISITO: EP 2.3 (Endpoints) y EP 2.4 (Mapeo Relacional)
+// Requiere: usuario autenticado, y solo puede ver las suyas
 // ══════════════════════════════════════════════════════════
 router.get('/usuario/:usuario_id', verificarToken, async (req, res) => {
   try {
     const { usuario_id } = req.params;
-    const Tramite = require('../models/Tramite'); // 🔌 Importación local segura del modelo catálogo
 
-    // Control de seguridad por Token JWT: Un contribuyente común solo audita sus propias filas
+    // Un usuario solo puede ver sus propios trámites; un admin puede ver los de cualquiera
     if (req.usuario.rol !== 'admin' && req.usuario.id !== parseInt(usuario_id)) {
       return res.status(403).json({
         ok: false,
-        mensaje: 'No tienes permiso para verificar registros de otros contribuyentes.'
+        mensaje: 'No tienes permiso para ver los trámites de otro usuario.'
       });
     }
 
-    // Buscamos las solicitudes del usuario e INCLUIMOS el trámite base de la tabla catálogo
     const solicitudes = await SolicitudTramite.findAll({
       where: { usuario_id },
-      include: [{
-        model: Tramite, // 🚀 JOIN relacional para heredar 'nombre_tramite' y 'requiere_documentos'
-        attributes: ['nombre_tramite', 'requiere_documentos']
-      }],
-      order: [['createdAt', 'DESC']] // Las actualizaciones más recientes primero
+      order: [['createdAt', 'DESC']]
     });
 
     res.status(200).json({ ok: true, solicitudes });
   } catch (error) {
-    console.error('Error al compilar buzón relacional del usuario:', error);
     res.status(500).json({
       ok: false,
-      mensaje: 'Error interno del servidor al procesar el buzón del usuario',
+      mensaje: 'Error al obtener el historial del usuario',
       error: error.message
     });
   }

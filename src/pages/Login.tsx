@@ -1,10 +1,3 @@
-// src/pages/Login.tsx
-// Cambios respecto al original:
-//   1. Importa useAuth y llama login() tras recibir el token
-//   2. Admin ve un Alert para elegir modo (Ciudadano / Admin)
-//   3. useLocation para redirigir a la ruta que intentaba visitar
-// Todo lo demás (componentes, CSS, estructura) queda igual.
-
 import React, { useState } from 'react';
 import {
   IonContent,
@@ -21,7 +14,7 @@ import PageLayout    from '../components/PageLayout';
 import MainCard      from '../components/MainCard';
 import CustomInput   from '../components/CustomInput';
 import API           from '../services/api';
-import { useAuth }   from '../context/AuthContext';   // ← NUEVO
+import { useAuth }   from '../context/AuthContext';
 
 interface LocationState {
   from?: { pathname: string };
@@ -30,7 +23,7 @@ interface LocationState {
 const Login: React.FC = () => {
   const history  = useHistory();
   const location = useLocation<LocationState>();
-  const { login } = useAuth();                        // ← NUEVO
+  const { login } = useAuth();
 
   const [email,    setEmail]    = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -54,7 +47,7 @@ const Login: React.FC = () => {
       const { token, usuario } = response.data;
 
       // ── Guarda en AuthContext + localStorage (mismas claves) ──
-      login(token, usuario);                          // ← NUEVO (reemplaza los 2 setItem anteriores)
+      login(token, usuario);
 
       alert('¡Inicio de sesión exitoso!');
 

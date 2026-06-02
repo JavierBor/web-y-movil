@@ -22,7 +22,7 @@ function AgendarCita() {
   const horasTarde = ['14:00', '14:30', '15:00', '15:30'];
 
   /**
-   * 🛡️ Valida restricciones en la base de datos antes de renderizar
+   * Valida restricciones en la base de datos antes de renderizar
    */
   useEffect(() => {
     const verificarHistorialActivo = async () => {
@@ -65,7 +65,7 @@ function AgendarCita() {
   }, []);
 
   /**
-   * 🚀 Envía la solicitud transaccional a PostgreSQL con soporte JSONB
+   * Envía la solicitud transaccional a PostgreSQL con soporte JSONB
    */
   const handleConfirmCita = async () => {
     if (!horaSeleccionada || isBloqueado) return;

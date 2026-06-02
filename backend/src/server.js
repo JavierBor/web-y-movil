@@ -1,6 +1,6 @@
 const app = require('./app');
 const sequelize = require('./config/database');
-const bcrypt = require('bcrypt'); // 🚀 Importado arriba para evitar errores en las funciones asíncronas
+const bcrypt = require('bcrypt'); // Importado arriba para evitar errores en las funciones asíncronas
 
 // 1. Importamos todos los modelos para que Sequelize los registre en memoria
 require('./models/Usuario');
@@ -10,7 +10,7 @@ require('./models/SolicitudTramite');
 
 const PORT = 3000;
   
-// 🛠️ FUNCIÓN AUTOMÁTICA DE SEEDING (Con tus datos reales de trámites)
+// FUNCIÓN AUTOMÁTICA DE SEEDING (Con tus datos reales de trámites)
 async function poblarDatosBase() {
     try {
         // Obtenemos las referencias seguras de los modelos registrados
@@ -33,7 +33,7 @@ async function poblarDatosBase() {
                     telefono: '+56352200001' 
                 }
             ], { ignoreDuplicates: true });
-            console.log('🌱 Base de datos: Sucursales cargadas correctamente.');
+            console.log('Base de datos: Sucursales cargadas correctamente.');
         }
 
         // 2. Verificar e insertar el Catálogo de Trámites real (Incluye Plaza Cabildo)
@@ -66,7 +66,7 @@ async function poblarDatosBase() {
                     requiere_documentos: true 
                 }
             ], { ignoreDuplicates: true });
-            console.log('🌱 Base de datos: Catálogo de trámites completo y sincronizado.');
+            console.log('Base de datos: Catálogo de trámites completo y sincronizado.');
         }
 
         // 3. Verificar e insertar Usuarios Base
@@ -103,10 +103,10 @@ async function poblarDatosBase() {
                     "updatedAt": new Date()
                 }
             ], { ignoreDuplicates: true });
-            console.log('🌱 Base de datos: Usuarios base (contribuyente y admin) listos.');
+            console.log('Base de datos: Usuarios base (contribuyente y admin) listos.');
         }
     } catch (error) {
-        console.error('❌ Error al ejecutar el Seeding automático:', error);
+        console.error('Error al ejecutar el Seeding automático:', error);
     }
 }
 

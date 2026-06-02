@@ -58,7 +58,7 @@ const Register: React.FC = () => {
       }
 
       try {
-        // 🚀 2. LLAMADA LIMPIA CON AXIOS (EP 2.4): Enviamos el payload directo al prefijo /auth/register
+        // 2. LLAMADA LIMPIA CON AXIOS (EP 2.4): Enviamos el payload directo al prefijo /auth/register
         // Los headers y la URL base se resuelven de forma automática en el archivo api.ts
         await API.post('/auth/register', {
           rut: formData.rut,
@@ -160,7 +160,6 @@ const Register: React.FC = () => {
             </IonGrid>
 
             <div className="register-actions">
-              {/* ⚠️ Quitamos el routerLink directo para que handleRegister maneje el flujo */}
               <IonButton 
                 expand="block" 
                 onClick={handleRegister} 

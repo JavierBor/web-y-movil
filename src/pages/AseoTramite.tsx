@@ -34,7 +34,7 @@ function AseoTramite() {
   const [fechaTransaccion, setFechaTransaccion] = useState('');
 
   /**
-   * 🚀 FUNCIÓN CORE: Conecta con Express y procesa el pago electrónico
+   * FUNCIÓN CORE: Conecta con Express y procesa el pago electrónico
    */
   const handleProcesarPago = async () => {
     if (!formData.rut || !formData.rol) {
@@ -66,8 +66,8 @@ function AseoTramite() {
         usuario_id: usuario.id,
         sucursal_id: 1,              // Edificio Consistorial Av. Sta Teresa
         tramite_id: 3,               // ID 3: Catálogo maestro - Derechos de Aseo Domiciliario
-        tipo_tramite: 'aseo',        // 👈 Inyectamos el tipo de trámite real para el Backend
-        datos_extra: {               // 👈 Mapeamos el número de Rol dentro del objeto JSONB
+        tipo_tramite: 'aseo',        // Inyectamos el tipo de trámite real para el Backend
+        datos_extra: {               // Mapeamos el número de Rol dentro del objeto JSONB
           rol: formData.rol 
         }
       };

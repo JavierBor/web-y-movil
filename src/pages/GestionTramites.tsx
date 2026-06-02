@@ -52,17 +52,17 @@ const GestionTramites: React.FC = () => {
   }>({ isOpen: false, message: '', color: 'success' });
 
   /**
-   * 📡 GATILLO DE ENTRADA: Descarga el listado global de solicitudes desde Express
+   * GATILLO DE ENTRADA: Descarga el listado global de solicitudes desde Express
    */
   const cargarSolicitudesMunicipales = async () => {
     try {
       const response = await API.get('/tramites');
       const listaDB = response.data.solicitudes || [];
 
-      // 🔄 MAPEO DINÁMICO: Soportando la expansión del catálogo de Plaza Cabildo
+      // MAPEO DINÁMICO: Soportando la expansión del catálogo de Plaza Cabildo
       const mappedTramites: Tramite[] = listaDB.map((sol: any) => {
         
-        // 🚀 MEJORA: Prioriza el nombre dinámico del JOIN de Sequelize. Si no viene, evalúa los 5 casos.
+        // MEJORA: Prioriza el nombre dinámico del JOIN de Sequelize. Si no viene, evalúa los 5 casos.
         let nombreOficial = sol.Tramite?.nombre_tramite;
 
         if (!nombreOficial) {

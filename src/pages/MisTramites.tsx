@@ -119,7 +119,7 @@ const MisTramites: React.FC = () => {
         const response = await API.get(`/tramites/usuario/${usuario.id}`);
         const solicitudesDB = response.data.solicitudes || [];
 
-        // 🔄 MAPEO RELACIONAL: Convertimos filas de SQL a la estructura del Stepper
+        // MAPEO RELACIONAL: Convertimos filas de SQL a la estructura del Stepper
         const tramitesFormateados: Tramite[] = solicitudesDB.map((sol: any) => {
           
           // 1. Traducir tramite_id al nombre oficial de tu catálogo maestro
@@ -193,7 +193,7 @@ const MisTramites: React.FC = () => {
   }, [history]);
 
   /**
-   * 💾 ACCIÓN: Descargar comprobante oficial de la base de datos
+   * ACCIÓN: Descargar comprobante oficial de la base de datos
    */
   const handleDescargar = async (tramite: Tramite) => {
     setLoadingId(tramite.id);

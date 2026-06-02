@@ -72,7 +72,7 @@ const BecaMunicipal: React.FC = () => {
             return;
         }
 
-        // 🛡️ RECOLECCIÓN SEGURA DE CREDENCIALES (EP 2.4 / 2.5)
+        // RECOLECCIÓN SEGURA DE CREDENCIALES (EP 2.4 / 2.5)
         const token = localStorage.getItem('token');
         const usuarioSesion = localStorage.getItem('usuario_conectado');
         const usuario = usuarioSesion ? JSON.parse(usuarioSesion) : null;
@@ -92,7 +92,7 @@ const BecaMunicipal: React.FC = () => {
             const payload = {
                 sucursal_id: sucursalId,
                 tramite_id: tramiteId,
-                usuario_id: usuario.id, // 🚀 CORREGIDO: Inyectamos la llave foránea obligatoria
+                usuario_id: usuario.id,
                 tipo_tramite: 'beca',
                 fecha_cita: null,
                 hora_cita: null,
@@ -110,7 +110,7 @@ const BecaMunicipal: React.FC = () => {
 
             console.log('Despachando postulación de Beca:', payload);
             
-            // 🔄 CUMPLE EP 2.4: Consumo API REST adjuntando el token Bearer en los headers de Axios
+            
             const response = await API.post('/tramites', payload, {
                 headers: {
                     Authorization: `Bearer ${token}`

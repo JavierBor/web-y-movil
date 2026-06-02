@@ -58,9 +58,9 @@ const PatenteMunicipal: React.FC = () => {
             return;
         }
 
-        // 🛡️ RECOLECCIÓN SEGURA DE SESIÓN (Unificada con tu Login original)
+        // RECOLECCIÓN SEGURA DE SESIÓN (Unificada con tu Login original)
         const token = localStorage.getItem('token');
-        const usuarioSesion = localStorage.getItem('usuario_conectado'); // 🚀 Volvemos a tu clave original
+        const usuarioSesion = localStorage.getItem('usuario_conectado');
         const usuario = usuarioSesion ? JSON.parse(usuarioSesion) : null;
 
         // Validamos que existan ambos para no romper la llave foránea en PostgreSQL
@@ -95,7 +95,7 @@ const PatenteMunicipal: React.FC = () => {
 
             console.log('Despachando payload transaccional:', payload);
             
-            // 🔄 CUMPLE EP 2.4: Consumo API REST adjuntando las credenciales de sesión en headers
+            
             const response = await API.post('/tramites', payload, {
                 headers: {
                     Authorization: `Bearer ${token}` // El guardia de authMiddleware.js del backend procesará esto
