@@ -211,6 +211,8 @@ Además:
 
 # Documentación de la Entrega Parcial 2 – Backend, API REST, Autenticación JWT y Pruebas
 
+### Creación del servidor en Node.js con Express
+
 Tecnología utilizada: Node.js + Express.
 
 Archivo principal: `backend/src/server.js`
@@ -220,10 +222,10 @@ Características:
 - Servidor HTTP en el puerto 3000.
 - Configuración de middlewares: cors, express.json(), express.static() para archivos estáticos (/uploads).
 - Conexión a PostgreSQL mediante Sequelize (ORM):
-      - Modelos: cada archivo en backend/src/models/ (por ejemplo Usuario.js, Sucursal.js, Tramite.js, SolicitudTramite.js) define una clase que extiende de Sequelize.Model y utiliza          sequelize.define().
-      - Conexión: en backend/src/config/database.js se crea una instancia de Sequelize pasando la configuración de PostgreSQL.
-      - Operaciones: en las rutas (tramiteRoutes.js, authRoutes.js) se usan métodos del ORM como Usuario.findOne(), SolicitudTramite.create(), findAll(), findByPk(), save(), destroy().
-      - Sincronización: en server.js se ejecuta sequelize.sync() que crea las tablas a partir de los modelos.
+-> Modelos: cada archivo en backend/src/models/ (por ejemplo Usuario.js, Sucursal.js, Tramite.js, SolicitudTramite.js) define una clase que extiende de Sequelize.Model y utiliza          sequelize.define().
+-> Conexión: en backend/src/config/database.js se crea una instancia de Sequelize pasando la configuración de PostgreSQL.
+-> Operaciones: en las rutas (tramiteRoutes.js, authRoutes.js) se usan métodos del ORM como Usuario.findOne(), SolicitudTramite.create(), findAll(), findByPk(), save(), destroy().
+-> Sincronización: en server.js se ejecuta sequelize.sync() que crea las tablas a partir de los modelos.
 - Sincronización de modelos con sequelize.sync({ alter: false }) (evita cambios automáticos en producción).
 
 Evidencia:
@@ -232,3 +234,11 @@ Evidencia:
 - `backend/src/app.js` (configuración de middlewares y rutas).
 - `backend/src/server.js` (inicio del servidor y conexión a BD).
 
+### Configuración y modelado de la base de datos relacional
+
+- Sistema gestor: PostgreSQL.
+- ORM: Sequelize (permite definir modelos y relaciones).
+
+Diagrama de modelo relacional: 
+
+![Diagrama 1]()
