@@ -26,6 +26,20 @@ Este proyecto está desarrollado utilizando **Ionic**, **React** y **TypeScript*
 Asegúrate de tener instalado [Node.js](https://nodejs.org/) en tu equipo. Además, necesitarás la CLI de Ionic instalada de forma global. Si no la tienes, puedes instalarla ejecutando:
 `npm install -g @ionic/cli`
 
+Asegúrate de tener instalado pgAdmin4 y haber creado la base de datos llamada tramites_db.
+
+Luego, abre el archivo de configuración en tu entorno de desarrollo siguiendo la ruta: backend/config/database.js
+
+Dentro de este archivo, modifica las credenciales (usuario y contraseña) correspondientes a tu servidor local de PostgreSQL, tal como se muestra en el siguiente bloque de código:
+
+```
+const sequelize = new Sequelize('tramites_db', 'tu_usuario', 'tu_contraseña', {
+    host: 'localhost',
+    dialect: 'postgres',
+    logging: false // Evita saturar la consola con mensajes de SQL
+});
+```
+
 ### Pasos para ejecutar la aplicación
 
 **1. Clonar el repositorio y acceder a la carpeta raíz**
@@ -59,7 +73,7 @@ src/
 
 ## 3. Requerimientos Funcionales y No Funcionales
 
-A continuación, se describen los requerimientos identificados para el desarrollo del sistema.
+A continuación, se describen los requerimientos identificados para el desarrollo del sistema, en los que participan los roles de usuario y administrados.
 
 #### Requerimientos Funcionales
 
