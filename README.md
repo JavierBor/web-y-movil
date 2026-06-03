@@ -241,4 +241,138 @@ Evidencia:
 
 Diagrama de modelo relacional: 
 
-![Diagrama 1]()
+![Diagrama 1](https://github.com/JavierBor/web-y-movil/blob/main/otros/MR.jpeg)
+
+Relaciones: 
+- usuarios (1) → (N) solicitudes_tramites (un usuario puede tener muchas solicitudes).
+- sucursales (1) → (N) solicitudes_tramites (una sucursal puede recibir muchas solicitudes).
+- tramites (1) → (N) solicitudes_tramites (un tipo de trámite puede tener muchas solicitudes).
+
+Validación de integridad:
+
+- Claves foráneas con ON DELETE CASCADE (se eliminan solicitudes al borrar un usuario o sucursal).
+- datos_extra es de tipo JSONB, permite almacenar datos variables según el tipo de trámite (patentes, becas, etc.).
+- tipo_tramite es un string que identifica la naturaleza del trámite (ej. 'patente', 'beca', 'permiso_circulacion').
+
+### Desarrollo de API REST con endpoints básicos
+
+Base URL: http://localhost:3000/api
+
+Endpoints implementados:
+
+
+| Método |	Ruta |	Descripción | Códigos HTTP posibles	| Autenticación |
+| :--- | :--- | :--- | :--- | :--- |
+| POST |	/auth/register |	Registro de un nuevo usuario (ciudadano). |	201 (Creado), 400 (Datos inválidos o correo duplicado), 500 (Error servidor) |	Pública |
+| POST |	/auth/login	| Inicio de sesión. Devuelve token JWT y datos del usuario. |	200 (OK), 401 (Credenciales incorrectas), 500 (Error servidor) |	Pública |
+| GET	| /tramites	| Lista todas las solicitudes de trámites (solo administradores). |	200 (OK), 403 (No autorizado), 500 (Error servidor) |	JWT + rol admin |
+| POST |	/tramites |	 Crea una nueva solicitud de trámite (ciudadano autenticado). |	201 (Creado), 400 (Datos inválidos), 401 (No autenticado), 500 (Error servidor) | JWT (cualquier rol) |
+| GET	| /tramites/usuario/:usuario_id |	Obtiene todas las solicitudes de un usuario específico (solo el propio usuario o admin). |	200 (OK), 403 (No autorizado), 404 (Usuario no encontrado), 500 (Error servidor) |	JWT |
+| PUT	| /tramites/:id |	Actualiza el estado de una solicitud (solo administradores). |	200 (OK), 403 (No autorizado), 404 (Solicitud no existe), 500 (Error servidor) |	JWT + rol admin |
+| DELETE |	/tramites/:id |	Elimina una solicitud (el propio ciudadano o administrador). |	200 (OK), 403 (No autorizado), 404 (No encontrada),500 (Error servidor) |	JWT + rol admin |
+
+Ejemplo de respuesta:
+
+```
+{
+  "ok": true,
+  "mensaje": "Usuario registrado con éxito en la base de datos",
+  "usuario": { "id": 1, "name": "Diego Álvarez" }
+}
+```
+
+###  Consumo de la API REST desde Ionic + React (Axios)
+
+Configuración de Axios:
+Archivo frontend/src/services/api.ts
+
+- Interceptores de petición: añaden automáticamente el token JWT al header Authorization: Bearer <token>.
+- Interceptores de respuesta: capturan errores 401 (token inválido/expirado) y redirigen a /Login.
+
+Ejemplo de uso:
+```
+const payload = {
+  sucursal_id: 2,
+  tramite_id: 4,
+  tipo_tramite: 'patente',
+  datos_extra: { nombre_negocio, rubro, direccion_comercial, tipo_patente }
+};
+const response = await API.post('/tramites', payload);
+```
+
+Manejo de errores:
+Se muestra un IonAlert con el mensaje devuelto por el backend o un error genérico de conexión.
+
+### Implementación de autenticación con JWT
+
+-> Formularios de registro e inicio de sesión:
+- Register.tsx: captura nombre, RUT, correo, región, comuna, contraseña y confirmación. Envía a /auth/register.
+- Login.tsx: captura correo y contraseña. Envía a /auth/login. Al recibir el token, lo guarda en localStorage y en el contexto AuthContext.
+- Redirección por roles: Si el usuario es admin, muestra un IonAlert para elegir modo (ciudadano/admin). Si es ciudadano, va directamente a /MenuPrincipal.
+
+-> Rutas protegidas en frontend:
+- PrivateRoute: componente que verifica la existencia de un token válido. Si no, redirige a /Login.
+- AdminRoute: además del token, comprueba que rol === 'admin'. Si no, redirige a /MenuPrincipal.
+- Uso en App.tsx:
+```
+<Route path="/MenuPrincipal" element={<PrivateRoute><MenuPrincipal /></PrivateRoute>} />
+<Route path="/AdminMenu" element={<AdminRoute><AdminMenu /></AdminRoute>} />
+```
+
+-> Generación y validación de JWT:
+- Generación: en `backend/src/routes/authRoutes.js`, al validar credenciales, se crea un token con `jwt.sign({ id, rol }, JWT_SECRET, { expiresIn: '24h' })`.
+- Validación en backend: middleware verificarToken (en authMiddleware.js) extrae el token del header, lo verifica y decodifica, inyectando req.usuario. El middleware verificarAdmin comprueba el rol.
+- Protección de rutas API: las rutas sensibles usan verificarToken y/o verificarAdmin.
+
+-> Diferenciación por roles:
+
+- En el frontend, AdminRoute y PrivateRoute segregan el acceso.
+- En el backend, los endpoints como GET /tramites solo son accesibles para admin.
+- El menú "Mi Cuenta" muestra opción de cambiar de modo solo si el usuario tiene rol admin.
+
+###  Validación de usuarios y manejo de sesiones
+
+-> Validación de inputs (frontend):
+- En Register.tsx: se verifica que todos los campos obligatorios estén completos, que las contraseñas coincidan y que la contraseña tenga al menos 6 caracteres.
+- En Login.tsx: se valida que ambos campos no estén vacíos.
+- En formularios de trámites: se validan campos específicos (ej. nombre del negocio, RUT, etc.) antes de enviar.
+-> Hash de contraseñas con bcrypt:
+- En `backend/src/routes/authRoutes.js`, al registrar, se genera un hash con `bcrypt.hash(contrasena, 10)` y se guarda en la columna `contrasena_hash`.
+- Al iniciar sesión, se compara la contraseña ingresada con el hash usando bcrypt.compare.
+-> Manejo seguro de credenciales:
+- Las contraseñas nunca se almacenan en texto plano.
+- El token JWT se guarda en localStorage (para persistencia) y se envía en cada petición mediante el interceptor de Axios.
+- El servidor valida el token en cada petición protegida.
+-> Protección básica contra inyección SQL:
+- Sequelize (ORM) utiliza consultas parametrizadas, lo que previene inyección SQL.
+- No se concatenan strings para construir consultas SQL.
+
+### Pruebas funcionales (Postman)
+
+-> Pruebas realizadas en Postman:
+
+
+|Endpoint	| Método	| Resultado esperado	| Evidencia |
+| :--- | :--- | :--- | :--- |
+|POST /auth/register	 |POST |	201 Created |	Imagen (registro exitoso) |
+|POST /auth/login	| POST |	200 OK + token |	Imagen  (token JWT) |
+|POST /tramites	| POST |	201 Created |	Imagen  (solicitud creada) |
+|PUT /tramites/2	| PUT |	200 OK (estado actualizado) |	Imagen (cambio a "Aprobado") |
+|GET /tramites	| GET |	200 OK + lista |	Imagen (solicitudes con datos de usuario) |
+
+![Img Register](https://github.com/JavierBor/web-y-movil/blob/main/otros/Register.jpeg)
+
+![Img Login](https://github.com/JavierBor/web-y-movil/blob/main/otros/Login.jpeg)
+
+![Img CreacionTramites](https://github.com/JavierBor/web-y-movil/blob/main/otros/CreacionTramite.jpeg)
+
+![Img ConfirmnTramites](https://github.com/JavierBor/web-y-movil/blob/main/otros/ConfirmarRechazarTramite.jpeg)
+
+![Img ObtenerTramite](https://github.com/JavierBor/web-y-movil/blob/main/otros/ObtenerTramites.jpeg)
+
+Estas imagenes demuestran:
+- Registro exitoso.
+- Login con obtención de token.
+- Creación de solicitud con datos en JSON.
+- Actualización de estado (aprobación).
+- Listado de trámites con datos anidados del usuario.
