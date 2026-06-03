@@ -4,6 +4,20 @@ Integrantes:
 - Javier Bórquez [javier.borquez.d@mail.pucv.cl]
 - Benjamín Soto [benjamin.soto.v@mail.pucv.cl]
 
+---
+
+## Requisitos de sistema
+
+Para garantizar la correcta ejecución del proyecto tener en cuenta los siguientes puntos:
+
+| Herramienta | Versión requerida | Comando para verificar |
+|-------------|-------------------|------------------------|
+| Node.js     | **18.x o superior** | `node -v` |
+| npm         | 9.x o superior    | `npm -v` |
+
+-> Si se usa bajo esta version de node, la aplicación fallara.
+-> Node.js 18+ desde [nodejs.org](https://nodejs.org/) o usa `nvm` (Node Version Manager) para cambiar de versión.
+
 ## 1. Ejecución del Proyecto (Compilación)
 
 Este proyecto está desarrollado utilizando **Ionic**, **React** y **TypeScript**. A continuación, se detallan los pasos necesarios para compilar y levantar el entorno de desarrollo local.
@@ -51,35 +65,70 @@ A continuación, se describen los requerimientos identificados para el desarroll
 
 | ID | Nombre | Descripción |
 | :--- | :--- | :--- |
-| **RF1** | Catálogo Dinámico de Trámites | El sistema permitirá buscar y filtrar trámites por sucursal (ej. Edificio Plaza Cabildo). |
-| **RF2** | Visualización de Requisitos | El usuario podrá ver la lista detallada de documentos necesarios antes de iniciar un trámite. |
-| **RF3** | Agendamiento de Citas Online | Interfaz de calendario para seleccionar fecha y bloques horarios (Mañana/Tarde) para atención presencial. |
-| **RF4** | Postulación y Carga de Documentos | Formulario para ingresar datos personales y adjuntar archivos (Cédula de Identidad Frontal/Reverso). |
-| **RF5** | Acceso a notificaciones pendientes | El usuario recibirá alertas alertas y avisos sobre sus citas y trámites. |
-| **RF6** | Seguimiento de Estados (Tracking) | Visualización del progreso del trámite mediante una línea de tiempo (Recibido, En Revisión, Aprobado, etc.). 
-| **RF7** | Gestión administrativa | El administrador podrá Confirmar/Rechazar trámites y enviar alertas o avisos en tiempo real. |
+| **RF1** | Catálogo Dinámico de Trámites | El sistema permite filtrar trámites por sucursal (Edificio Consistorial / Plaza Cabildo). Cada trámite muestra nombre, descripción e ícono. |
+| **RF2** | Visualización de Requisitos | Antes de iniciar un trámite, el usuario puede ver la lista completa de documentos necesarios (con iconos y descripciones). |
+| **RF3** | Agendamiento de Citas Online | Interfaz con calendario visual (mes actual) y horarios divididos en bloques (mañana/tarde). El usuario selecciona fecha y hora, y confirma la cita. |
+| **RF4** | Postulación y Carga de Documentos | Formulario multi‑paso para ingresar datos específicos del trámite (ej. nombre del negocio, RUT del estudiante) y futuramente adjuntar archivos (PDF/JPEG) con validación de tamaño y tipo. |
+| **RF5** | Acceso a notificaciones pendientes | El usuario accede a un centro de avisos donde visualiza alertas sobre sus citas, cambios de estado o mensajes del administrador. |
+| **RF6** | Seguimiento de Estados (Tracking) | Cada trámite muestra una línea de tiempo (stepper) con etapas: Recibido → En Revisión → Aprobado/Rechazado. Los colores indican el progreso (verde = completado, azul = activo, gris = pendiente). |
+| **RF7** | Gestión administrativa | El administrador puede (a) ver lista de todos los trámites pendientes, (b) cambiar su estado (Confirmar/Rechazar), (c) enviar alertas masivas a los ciudadanos (correo y/o notificación interna). |
 
 #### Requerimientos No Funcionales
 
 | ID | Nombre | Descripción |
 | :--- | :--- | :--- |
-| **RNF1** | Seguridad de Acceso | El sistema debe implementar autenticación mediante JWT (JSON Web Tokens) y asegurar que todas las contraseñas sean almacenadas usando un hash con bcrypt para protección de credenciales. |
+| **RNF1** | Seguridad de Acceso | Todas las contraseñas se almacenan con bcrypt (hash + salt). El intercambio de datos usa JWT con expiración de 24h. Las peticiones a la API solo se aceptan con token válido (rutas protegidas). |
 | **RNF2** | Responsividad y Multiplataforma | La interfaz debe ser desarrollada en Ionic con React, garantizando una experiencia de usuario coherente y fluida en navegadores web, sin importar el tamaño de la pantalla. |
 | **RNF3** | Estándares de Arquitectura API | El backend debe operar como una API RESTful, utilizando el formato JSON para el intercambio de datos y manejando correctamente los códigos de estado HTTP para cada respuesta. |
 | **RNF4** | Integridad de Datos | El sistema debe utilizar una base de datos relacional (PostgreSQL o MySQL) con protección básica contra inyección SQL para garantizar la seguridad de la información de los trámites. |
-| **RNF5** | Integración futura Clave Única | Preparación para autenticación estatal con OAuth 2.0 / OpenID Connect, utilizando APIs proporcionadas por la municipalidad. |
+| **RNF5** | Rendimiento | La aplicación debe cargar la pantalla de inicio (Login) en menos de 2 segundos en una conexión de banda ancha estándar. |
+| **RNF6** | Integración futura Clave Única | Preparación para autenticación estatal con OAuth 2.0 / OpenID Connect, utilizando APIs proporcionadas por la municipalidad. |
 
-## 4. Definición del Proyecto
+## 4. Definición del Proyecto y Análisis del Usuario Objetivo (basado en el 1er Estudio de Madurez Digital de Municipalidades y la Ley 21.180)
 
-### 4.1 Justificación del Problema
-La digitalización de trámites municipales responde a la necesidad de reducir las barreras burocráticas y las largas filas presenciales en la Municipalidad de Santo Domingo. El sistema permite centralizar la gestión de documentos, agendamiento de citas y seguimiento de estados, mejorando la transparencia y eficiencia en la atención al ciudadano.
+### Contexto nacional
+El 1er Estudio de Madurez Digital de Municipalidades (realizado por Movistar Empresas, Fundación País Digital y Fortinet) reveló que, si bien el 90% de los municipios permite pagar el permiso de circulación en línea, solo el 19% ofrece agendar exámenes de licencia de conducir por internet, generando demoras de hasta 4 meses y alta congestión presencial. Además, apenas el 6% de las municipalidades tiene un plan de transformación digital definido y solo el 16% ha capacitado a su personal en competencias digitales.
 
-### 4.2 Análisis del Usuario Objetivo
-El sistema está diseñado para dos perfiles principales:
-1.  **Ciudadano:** Personas que necesitan realizar trámites municipales de forma remota, con poco tiempo disponible y que buscan una interfaz intuitiva tanto en móvil como en web.
-2.  **Administrador Municipal:** Personal encargado de la gestión interna, revisión de documentos y actualización del catálogo de trámites.
+La Ley de Transformación Digital del Estado (Ley 21.180) exige que todos los organismos públicos, incluidas las municipalidades, implementen sistemas 100% digitales antes de 2027, eliminando el papel, garantizando interoperabilidad y ciberseguridad.
 
-* **Enlace al Prototipo (Figma):** [Proyecto Web y Móvil - Trámites](https://www.figma.com/proto/DL35jWeIPprjCTITTUBVDe/Proyecto-web-y-movil?node-id=3569-2&t=RzJ9EIYChqhZK2EX-1&scaling=min-zoom&content-scaling=fixed&page-id=3315%3A3)
+### Problema especifico de la Municipalidad de Santo Domingo
+
+Actualmente, los ciudadanos de Santo Domingo enfrentan:
+
+- Largas filas presenciales para trámites como patentes municipales, becas y permisos de circulación.
+
+- Falta de transparencia en el estado de sus solicitudes.
+
+- Desconocimiento de requisitos previos (documentos, horarios).
+
+- El personal municipal usa planillas Excel o papel, lo que retrasa las respuestas y dificulta el seguimiento.
+
+Nuestra solución digitaliza el ciclo completo de los trámites más demandados, alineándose con los ejes del estudio: conectividad, soluciones digitales y transformación digital. Proporciona un catálogo por sucursal, agendamiento en línea, carga de documentos, seguimiento visual y panel administrativo para gestionar solicitudes.
+
+### Análisis detallado del usuario objetivo
+
+Perfil Ciudadano:
+
+- Edad: 25‑65 años, nivel educativo diverso.
+- Familiaridad con tecnología: media‑baja. Valoran la simplicidad y los pasos guiados.
+- Necesidades: resolver trámites rápidamente, sin desplazarse, con instrucciones claras y seguimiento en tiempo real.
+- Dificultades: confusión con la nomenclatura de los trámites, olvido de documentos, desconocimiento de requisitos previos.
+- Expectativas: recordatorios automáticos, notificaciones de cambios de estado, interfaz intuitiva tanto en móvil como en web.
+
+Perfil Administrador Municipalidad:
+
+- Funcionarios de la Oficina de Partes y Atención al Vecino.
+- Necesidades: una bandeja centralizada donde revisar solicitudes, ver documentos adjuntos y actualizar estados (confirmar/rechazar).
+- Dificultades: actualmente usan planillas Excel o papel, lo que retrasa las respuestas.
+- Expectativas: herramienta intuitiva, avisos automáticos a los ciudadanos, historial completo de cada trámite.
+
+## Prototipo Figma 
+
+- Más de 7 pantallas.
+- Versión web solicitada y conversada con el solicitante de la municipalidad.
+- Unificación del idioma (todas las etiquetas en español).
+
+**Enlace al Prototipo (Figma):** [Proyecto Web y Móvil - Trámites](https://www.figma.com/proto/DL35jWeIPprjCTITTUBVDe/Proyecto-web-y-movil?node-id=3516-956&p=f&t=mpUIVUan1DObxKIR-0&scaling=min-zoom&content-scaling=fixed&page-id=3315%3A3)
 
 ## 5. Arquitectura de Navegación y Estructura
 
@@ -117,13 +166,16 @@ Para la entrega del frontend, decidimos poder cambiar la vista del usuario con l
 * **Ciudadano:** solo puede ver sus propios trámites y notificaciones, y agendar citas.
 * **Administrador:** puede ver todos los trámites pendientes, gestionar el catálogo y enviar avisos masivos a traves de `AdminMenu`.
 
-### 5.4 Flujo de Tareas (Revisar Flujo Administrativo)
+### 5.4 Flujo de Tareas
 Se han definido dos flujos principales para garantizar la eficiencia de la interacción:
 
-1.  **Flujo Ciudadano (Reserva de Trámite):**
-    `Login` → `MenuPrincipal` → `Tramites` → `DetalleTramite`  → `SubirDocumentos` → `AgendarCita`.
-2.  **Flujo Administrativo:**
-    `Login` → `MenuPrincipal` → `Acceso Mi Cuenta` → `AdminMenu`.
+Flujo ciudadano (agendar un trámite):
+
+1.  Iniciar sesión (`/Login`) → 2. Navegar al menú principal → 3. Seleccionar “Realizar trámite” → 4. Elegir sucursal (filtro) → 5. Hacer clic en “Ver detalles” de un trámite → 6. Leer requisitos → 7. Completar formulario de datos y subir documentos → 8. Seleccionar fecha y hora en el calendario → 9. Confirmar cita → 10. Ver mensaje de éxito y redirección al historial.
+
+Flujo administrador (revisar solicitudes):
+   
+2.  Iniciar sesión como admin → 2. Elegir “Modo Administrador” (alerta de selección) → 3. Ingresar a `/AdminMenu` → 4. Clic en “Trámites Pendientes” → 5. Ver lista de solicitudes con estado “Pendiente” → 6. Descargar documentos subidos → 7. Elegir “Confirmar cita” o “Rechazar cita” → 8. Confirmar acción en diálogo → 9. El estado se actualiza y el ciudadano recibe notificación.
 
 ### 5.5 Puntos Críticos de Interacción
 1. Inicio de sesión y registro: validación en tiempo real, mensajes de error claros.
@@ -133,16 +185,50 @@ Se han definido dos flujos principales para garantizar la eficiencia de la inter
 5. Acciones administrativas: diálogo de confirmación antes de confirmar/rechazar, feedback inmediato.
 6. Envío de avisos: contador de caracteres, botón deshabilitado hasta completar datos válidos, toast de confirmación.
 
-
 ### 5.6 coherencia de experiencia entre dispositivos 
 Si bien esta entrega se centra en la versión web, se adoptó un enfoque responsive usando IonGrid, media queries y componentes adaptativos de Ionic. Así, la interfaz se reestructura automáticamente en viewports más pequeños sin necesidad de reescribir código. Esto garantiza una experiencia homogénea en escritorio, tablet y móvil, y facilitará una futura compilación con Capacitor si se requiere una app nativa.
 
+Además:
+
+- Login y registro: validación en tiempo real, mensajes de error claros.
+- Agendamiento de cita: confirmación explícita (alerta) antes de guardar.
+- Futura carga de documentos: indicador de progreso, límite de tamaño (5 MB), formatos permitidos (PDF, JPG, PNG).
+- Seguimiento de estados: uso de colores universales (verde = completado, azul = activo, rojo = error).
+- Acciones administrativas: diálogo de confirmación antes de modificar estados, feedback con toast.
+
 ### 5.7 Justificación Técnica
-La arquitectura modular (pages, components) y el uso de React Router con IonReactRouter proporcionan un enrutamiento declarativo y eficiente. Se implementó **redirección automática** al Login desde la raíz. Los componentes reutilizables (CustomHeader, MainCard, PageLayout) estandarizan la apariencia y reducen la duplicación de código. Las variables CSS (:root) permiten cambiar la paleta de colores de forma centralizada y preparan el proyecto para un eventual tema oscuro.
+
+- React Router v6 con PrivateRoute y AdminRoute para proteger rutas según rol.
+- Redirección automática desde / a /Login y desde rutas no autorizadas a la pantalla de acceso.
+- Estructura modular (pages, components, services) que facilita el mantenimiento y la escalabilidad.
+- Estructura modular (pages, components, services) que facilita el mantenimiento y la escalabilidad.
 
 ### 6. Tecnologías utilizadas
 1. Frontend: Ionic 7, React18, TypeScript, Vite.
 2. Estilos: CSS personalizados con variables, Flexbox/Grid.
 3. Enrutamiento: React Router v5, IonReactRouter.
 4. Herramientas: Visual Studio Code, Git, GitHub, Figma.
- 
+
+# Documentación de la Entrega Parcial 2 – Backend, API REST, Autenticación JWT y Pruebas
+
+Tecnología utilizada: Node.js + Express.
+
+Archivo principal: `backend/src/server.js`
+
+Características:
+
+- Servidor HTTP en el puerto 3000.
+- Configuración de middlewares: cors, express.json(), express.static() para archivos estáticos (/uploads).
+- Conexión a PostgreSQL mediante Sequelize (ORM):
+      - Modelos: cada archivo en backend/src/models/ (por ejemplo Usuario.js, Sucursal.js, Tramite.js, SolicitudTramite.js) define una clase que extiende de Sequelize.Model y utiliza          sequelize.define().
+      - Conexión: en backend/src/config/database.js se crea una instancia de Sequelize pasando la configuración de PostgreSQL.
+      - Operaciones: en las rutas (tramiteRoutes.js, authRoutes.js) se usan métodos del ORM como Usuario.findOne(), SolicitudTramite.create(), findAll(), findByPk(), save(), destroy().
+      - Sincronización: en server.js se ejecuta sequelize.sync() que crea las tablas a partir de los modelos.
+- Sincronización de modelos con sequelize.sync({ alter: false }) (evita cambios automáticos en producción).
+
+Evidencia:
+
+- `backend/package.json` (dependencias: express, cors, sequelize, pg, bcrypt, jsonwebtoken, multer).
+- `backend/src/app.js` (configuración de middlewares y rutas).
+- `backend/src/server.js` (inicio del servidor y conexión a BD).
+
