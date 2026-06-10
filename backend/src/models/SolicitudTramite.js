@@ -12,7 +12,7 @@ const SolicitudTramite = sequelize.define('SolicitudTramite', {
         defaultValue: 'Pendiente'
     },
     documentos_url: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.TEXT,
         allowNull: true
     },
     fecha_cita: {

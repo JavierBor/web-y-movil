@@ -11,6 +11,7 @@ import {
 import {
   downloadOutline,
   checkmarkCircleOutline,
+  documentTextOutline,
 } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import CustomHeader from '../components/CustomHeader';
@@ -30,6 +31,16 @@ interface Tramite {
   documentoUrl?: string;
   rutUsuario: string;   
 }
+
+// Mapeo de traducción: Convierte las llaves técnicas de la BD a nombres amigables para el Admin
+const NOMBRES_DOCUMENTOS: { [key: string]: string } = {
+  cedula: 'Cédula de Identidad Vigente',
+  hojaVida: 'Hoja de Vida del Conductor',
+  certificadoEstudios: 'Certificado de Estudios',
+  antecedentes: 'Certificado de Antecedentes',
+  residencia: 'Certificado de Residencia',
+  examenesMedicos: 'Exámenes Médicos (Sensométrico/Psicométrico)'
+};
 
 const GestionTramites: React.FC = () => {
   const history = useHistory();
@@ -69,8 +80,8 @@ const GestionTramites: React.FC = () => {
           if (sol.tramite_id === 1) nombreOficial = 'Permiso de Circulación';
           else if (sol.tramite_id === 2) nombreOficial = 'Obtener/Renovar Licencia Clase B';
           else if (sol.tramite_id === 3) nombreOficial = 'Derechos de Aseo Domiciliario';
-          else if (sol.tramite_id === 4) nombreOficial = 'Patente Municipal'; // 🏢 Mapeado con éxito
-          else if (sol.tramite_id === 5) nombreOficial = 'Beca Municipal';    // 🎓 Mapeado con éxito
+          else if (sol.tramite_id === 4) nombreOficial = 'Patente Municipal'; 
+          else if (sol.tramite_id === 5) nombreOficial = 'Beca Municipal';    
           else nombreOficial = 'Trámite Interno Comunal';
         }
 
@@ -156,6 +167,20 @@ const GestionTramites: React.FC = () => {
     });
   };
 
+  // Parsea de forma segura el String JSON que viene de la columna TEXT de la BD y lo convierte en un objeto de JavaScript para su renderizado dinámico
+  const desglosarExpedienteDigital = (documentoUrlRaw?: string) => {
+    if (!documentoUrlRaw || documentoUrlRaw === '#' || documentoUrlRaw === '') {
+      return null;
+    }
+    try {
+      // Intenta transformar la cadena de texto de la BD en un objeto iterable de JS
+      return JSON.parse(documentoUrlRaw);
+    } catch (e) {
+      // Respaldo de compatibilidad: si contiene un enlace antiguo de texto plano, lo encapsula como archivo único
+      return { 'Archivo Adjunto': documentoUrlRaw };
+    }
+  };
+
   if (loadingView) {
     return (
       <IonPage>
@@ -179,72 +204,88 @@ const GestionTramites: React.FC = () => {
           <MainCard title="Gestión de Trámites Pendientes" maxWidth="960px">
             
             <div className="list-wrapper">
-              {tramites.map((tramite) => (
-                <div
-                  key={tramite.id}
-                  className={`tramite-card borde-${tramite.estado.toLowerCase()}`}
-                >
-                  <div className="col-info">
-                    <p className="t-nombre">{tramite.nombre}</p>
-                    <p className="t-ref">{tramite.ref}</p>
-                    <p className="t-rut" style={{ margin: '4px 0', fontSize: '0.95rem', color: '#1a3a5f', fontWeight: 'bold' }}>
-                      RUT Ciudadano: {tramite.rutUsuario}
-                    </p>
-                    <p className="t-fecha">Agendado: {tramite.fecha}</p>
-                  </div>
+              {tramites.map((tramite) => {
+                // Obtenemos el objeto de archivos estructurado para este trámite específico
+                const expedienteDigital = desglosarExpedienteDigital(tramite.documentoUrl);
 
-                  <div className="col-estado">
-                    <span className="estado-label">Estado:&nbsp;</span>
-                    <span className={`estado-valor ${tramite.estado.toLowerCase()}`}>
-                      {tramite.estado}
-                    </span>
-                  </div>
+                return (
+                  <div
+                    key={tramite.id}
+                    className={`tramite-card borde-${tramite.estado.toLowerCase()}`}
+                  >
+                    <div className="col-info">
+                      <p className="t-nombre">{tramite.nombre}</p>
+                      <p className="t-ref">{tramite.ref}</p>
+                      <p className="t-rut" style={{ margin: '4px 0', fontSize: '0.95rem', color: '#1a3a5f', fontWeight: 'bold' }}>
+                        RUT Ciudadano: {tramite.rutUsuario}
+                      </p>
+                      <p className="t-fecha">Agendado: {tramite.fecha}</p>
+                    </div>
 
-                  <div className="col-acciones">
-                    <a
-                      href="#"
-                      className="link-descargar"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (!tramite.documentoUrl || tramite.documentoUrl === '#') {
-                          alert('Este trámite fue un pago directo electrónico. No requiere validación de archivos adjuntos.');
-                        } else {
-                          alert(`Gatillando descarga del expediente digital cargado por el ciudadano desde la ruta: ${tramite.documentoUrl}`);
-                        }
-                      }}
-                    >
-                      <IonIcon icon={downloadOutline} className="dl-icon" />
-                      Auditar documentos adjuntos
-                    </a>
+                    <div className="col-estado">
+                      <span className="estado-label">Estado:&nbsp;</span>
+                      <span className={`estado-valor ${tramite.estado.toLowerCase()}`}>
+                        {tramite.estado}
+                      </span>
+                    </div>
 
-                    {tramite.estado === 'Pendiente' && (
-                      <div className="btn-group">
-                        <IonButton
-                          className="btn-confirmar"
-                          size="small"
-                          onClick={() => abrirAlerta(tramite, 'Confirmar')}
-                          disabled={loadingId === tramite.id}
-                        >
-                          {loadingId === tramite.id ? (
-                            <IonSpinner name="crescent" className="mini-spinner" />
-                          ) : (
-                            'Confirmar Cita'
-                          )}
-                        </IonButton>
+                    <div className="col-acciones">
+                      <p style={{ fontSize: '0.88rem', fontWeight: 'bold', color: '#444', marginBottom: '8px', marginTop: '0' }}>
+                        <IonIcon icon={downloadOutline} style={{ verticalAlign: 'middle', marginRight: '5px', fontSize: '1.1rem' }} />
+                        Auditar Documentos Adjuntos:
+                      </p>
 
-                        <IonButton
-                          className="btn-rechazar"
-                          size="small"
-                          onClick={() => abrirAlerta(tramite, 'Rechazar')}
-                          disabled={loadingId === tramite.id}
-                        >
-                          Rechazar
-                        </IonButton>
+                      {/* Renderizado dinámico de enlaces para revisión del Administrador */}
+                      <div className="documentos-expediente-list" style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '15px' }}>
+                        {expedienteDigital ? (
+                          Object.keys(expedienteDigital).map((key) => (
+                            <a
+                              key={key}
+                              href={expedienteDigital[key]}
+                              target="_blank" // Abre el archivo binario en una pestaña limpia del navegador
+                              rel="noopener noreferrer" // Norma de seguridad recomendada por React
+                              style={{ fontSize: '0.85rem', color: '#0056b3', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+                            >
+                              <IonIcon icon={documentTextOutline} style={{ marginRight: '5px', color: '#555' }} />
+                              {NOMBRES_DOCUMENTOS[key] || key}
+                            </a>
+                          ))
+                        ) : (
+                          <span style={{ fontSize: '0.82rem', color: '#888', fontStyle: 'italic' }}>
+                            Este trámite no requirió validación de archivos binarios (Pago Electrónico).
+                          </span>
+                        )}
                       </div>
-                    )}
+
+                      {tramite.estado === 'Pendiente' && (
+                        <div className="btn-group">
+                          <IonButton
+                            className="btn-confirmar"
+                            size="small"
+                            onClick={() => abrirAlerta(tramite, 'Confirmar')}
+                            disabled={loadingId === tramite.id}
+                          >
+                            {loadingId === tramite.id ? (
+                              <IonSpinner name="crescent" className="mini-spinner" />
+                            ) : (
+                              'Confirmar Cita'
+                            )}
+                          </IonButton>
+
+                          <IonButton
+                            className="btn-rechazar"
+                            size="small"
+                            onClick={() => abrirAlerta(tramite, 'Rechazar')}
+                            disabled={loadingId === tramite.id}
+                          >
+                            Rechazar
+                          </IonButton>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
               {tramites.length === 0 && (
                 <div className="empty-state">
