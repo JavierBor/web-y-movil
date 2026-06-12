@@ -1,6 +1,7 @@
+require('dotenv').config(); // 🚀 ¡OBLIGATORIO EN LA PRIMERA LÍNEA!
 const app = require('./app');
 const sequelize = require('./config/database');
-const bcrypt = require('bcrypt'); // Importado arriba para evitar errores en las funciones asíncronas
+const bcrypt = require('bcrypt');
 
 // 1. Importamos todos los modelos para que Sequelize los registre en memoria
 require('./models/Usuario');
@@ -8,7 +9,8 @@ require('./models/Sucursal');
 require('./models/Tramite');
 require('./models/SolicitudTramite');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
   
 // FUNCIÓN AUTOMÁTICA DE SEEDING (Con tus datos reales de trámites)
 async function poblarDatosBase() {
@@ -123,12 +125,10 @@ ModelTramite.hasMany(SolicitudTramite, { foreignKey: 'tramite_id' });
 SolicitudTramite.belongsTo(ModelTramite, { foreignKey: 'tramite_id' });
 
 
-// 3. Sincronizar, poblar base de datos y levantar servidor
 sequelize.sync({ alter: false }) 
     .then(async () => {
         console.log('Tablas y Relaciones sincronizadas en la base de datos.');
         
-        // Ejecuta la inyección automática con tus datos exactos
         await poblarDatosBase();
         
         app.listen(PORT, () => {

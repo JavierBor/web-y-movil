@@ -6,7 +6,19 @@ const path    = require('path');
 const fs      = require('fs');
 const SolicitudTramite = require('../models/SolicitudTramite');
 const Usuario = require('../models/Usuario');
+const nodemailer = require('nodemailer');
+
+// 🛡️ EF 3: Importación ÚNICA de los middlewares de seguridad
 const { verificarToken, verificarAdmin } = require('../middleware/authMiddleware');
+
+// 📧 EF 5: Configurar el transportador con tus variables seguras del archivo .env
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.MUNICIPALIDAD_EMAIL,
+    pass: process.env.MUNICIPALIDAD_PASSWORD
+  }
+});
 
 // ══════════════════════════════════════════════════════════
 // CONFIGURACIÓN DE ALMACENAMIENTO DE ARCHIVOS (LOCAL)
@@ -22,7 +34,6 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    // Cambia el nombre para evitar colisiones. Ejemplo: cedula-164829312.pdf
     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname).toLowerCase());
   }
 });
@@ -31,7 +42,6 @@ const upload = multer({
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // Candado de seguridad (EF 3): Máximo 5MB por cada archivo
   fileFilter: (req, file, cb) => {
-    // Solo permitimos archivos PDF o imágenes comunes
     const filetypes = /jpeg|jpg|png|pdf/;
     const mimetype = filetypes.test(file.mimetype);
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -43,7 +53,6 @@ const upload = multer({
   }
 });
 
-// Definimos los campos exactos que configuramos en SubirDocumentos.tsx de Ionic
 const cargarDocumentos = upload.fields([
   { name: 'cedula', maxCount: 1 },
   { name: 'hojaVida', maxCount: 1 },
@@ -55,11 +64,9 @@ const cargarDocumentos = upload.fields([
 
 // ══════════════════════════════════════════════════════════
 // POST /api/tramites — Crear nueva solicitud (Paso 1: Carga de Papeles)
-// Requiere: usuario autenticado
 // ══════════════════════════════════════════════════════════
 router.post('/', verificarToken, cargarDocumentos, async (req, res) => {
   try {
-    // Multer procesa el FormData multipart y deposita las cadenas de texto en req.body
     const {
       fecha_cita,
       hora_cita,
@@ -71,7 +78,6 @@ router.post('/', verificarToken, cargarDocumentos, async (req, res) => {
       tipo_tramite
     } = req.body;
 
-    // Verificar que no haya una solicitud activa pendiente para este trámite
     const solicitudActiva = await SolicitudTramite.findOne({
       where: {
         usuario_id,
@@ -87,21 +93,18 @@ router.post('/', verificarToken, cargarDocumentos, async (req, res) => {
       });
     }
 
-    // 📂 PROCESAMIENTO DINÁMICO DE ARCHIVOS SUBIDOS
     const urlsMapeadas = {};
     if (req.files) {
       Object.keys(req.files).forEach((key) => {
         const archivoProcesado = req.files[key][0];
-        // Construimos la URL pública apuntando a nuestro servidorExpress
         urlsMapeadas[key] = `http://localhost:3000/uploads/${archivoProcesado.filename}`;
       });
     }
 
-    // Convertimos el mapa de URLs resultantes a un String JSON para salvarlo en la columna TEXT de Postgres
     const documentosResultantes = JSON.stringify(urlsMapeadas);
 
     const nuevaSolicitud = await SolicitudTramite.create({
-      documentos_url: documentosResultantes, // Guardamos todas las rutas estructuradas
+      documentos_url: documentosResultantes,
       fecha_cita,
       hora_cita,
       comprobante_url,
@@ -130,8 +133,7 @@ router.post('/', verificarToken, cargarDocumentos, async (req, res) => {
 });
 
 // ══════════════════════════════════════════════════════════
-// GET /api/tramites — Obtener todas las solicitudes municipales
-// Requiere: admin (Con include relacional seguro para pgAdmin)
+// GET /api/tramites — Obtener todas las solicitudes municipales (Admin)
 // ══════════════════════════════════════════════════════════
 router.get('/', verificarToken, verificarAdmin, async (req, res) => {
   try {
@@ -156,7 +158,6 @@ router.get('/', verificarToken, verificarAdmin, async (req, res) => {
 
 // ══════════════════════════════════════════════════════════
 // GET /api/tramites/usuario/:usuario_id — Solicitudes del usuario
-// Requiere: usuario autenticado, y solo puede ver las suyas
 // ══════════════════════════════════════════════════════════
 router.get('/usuario/:usuario_id', verificarToken, async (req, res) => {
   try {
@@ -186,7 +187,6 @@ router.get('/usuario/:usuario_id', verificarToken, async (req, res) => {
 
 // ══════════════════════════════════════════════════════════
 // PUT /api/tramites/:id — Actualizar estado (Admin) o Agendar Cita (Ciudadano)
-// Requiere: token de usuario activo
 // ══════════════════════════════════════════════════════════
 router.put('/:id', verificarToken, async (req, res) => {
   try {
@@ -198,11 +198,8 @@ router.put('/:id', verificarToken, async (req, res) => {
       return res.status(404).json({ ok: false, mensaje: 'Solicitud no encontrada' });
     }
 
-    // 🔍 CONTROL EN TERMINAL: Permite auditar en tiempo real la consistencia de tipos
     console.log('-> ID Solicitud en BD:', solicitud.usuario_id, '|| ID Usuario en Token:', req.usuario.id);
 
-    // 🛡️ REGLA DE PRIVACIDAD (EF 3): Un ciudadano común SOLO puede alterar su propia solicitud.
-    // Usamos Number() para romper la falla estricta por si el id del token viaja como String.
     if (req.usuario.rol !== 'admin' && Number(solicitud.usuario_id) !== Number(req.usuario.id)) {
       return res.status(403).json({
         ok: false,
@@ -210,7 +207,6 @@ router.put('/:id', verificarToken, async (req, res) => {
       });
     }
 
-    // 🔒 CANDADO DE ROL: Si viene un cambio de estado, verificamos estrictamente que sea Administrador
     if (estado_tramite) {
       if (req.usuario.rol !== 'admin') {
         return res.status(403).json({ ok: false, mensaje: 'Acción exclusiva para administradores municipales.' });
@@ -218,13 +214,11 @@ router.put('/:id', verificarToken, async (req, res) => {
       solicitud.estado_tramite = estado_tramite;
     }
     
-    // Inyectamos los campos de la cita (Paso 2 del ciudadano en Ionic desde el calendario)
     if (fecha_cita) solicitud.fecha_cita = fecha_cita;
     if (hora_cita) solicitud.hora_cita = hora_cita;
 
     if (datos_extra) {
       solicitud.datos_extra = datos_extra;
-      // Candado de Sequelize para bases JSONB en Postgres
       solicitud.changed('datos_extra', true); 
     }
 
@@ -246,8 +240,7 @@ router.put('/:id', verificarToken, async (req, res) => {
 });
 
 // ══════════════════════════════════════════════════════════
-// DELETE /api/tramites/:id — Eliminar solicitud
-// Requiere: admin
+// DELETE /api/tramites/:id — Eliminar solicitud (Admin)
 // ══════════════════════════════════════════════════════════
 router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
   try {
@@ -265,6 +258,47 @@ router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
       mensaje: 'Error al eliminar',
       error: error.message
     });
+  }
+});
+
+// ══════════════════════════════════════════════════════════
+// POST /api/tramites/enviar-aviso — Adaptado a las variables del Frontend
+// ══════════════════════════════════════════════════════════
+router.post('/enviar-aviso', verificarToken, verificarAdmin, async (req, res) => {
+  // 🛠️ Cambiamos los nombres para que coincidan con lo que escupe tu consola de Ionic:
+  const { recipient, subject, message } = req.body;
+
+  // Validación de seguridad preventiva en el servidor
+  if (!recipient || !subject || !message) {
+    return res.status(400).json({ error: 'Todos los campos (recipient, subject, message) son requeridos por el backend.' });
+  }
+
+  const mailOptions = {
+    from: `"Municipalidad de Santo Domingo" <${process.env.MUNICIPALIDAD_EMAIL}>`,
+    to: recipient, // <- Usamos recipient
+    subject: `Notificación Municipal: ${subject}`, // <- Usamos subject
+    html: `
+      <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 8px; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #0066cc; border-bottom: 2px solid #0066cc; padding-bottom: 10px; margin-top: 0;">
+          Municipalidad de Santo Domingo
+        </h2>
+        <p style="font-size: 16px; color: #333;">Estimado(a) vecino(a),</p>
+        <p style="font-size: 15px; color: #444; line-height: 1.6; background-color: #f9f9f9; padding: 15px; border-left: 4px solid #0066cc; border-radius: 4px;">
+          ${message} 
+        </p>
+        <br />
+        <hr style="border: 0; border-top: 1px solid #eee;" />
+        <small style="color: #999; display: block; text-align: center;">Este es un correo automático del sistema de atención digital. Por favor no respondas a este mensaje.</small>
+      </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ success: true, msg: 'Correo enviado con éxito.' });
+  } catch (error) {
+    console.error('Error crítico de Nodemailer en el servidor:', error);
+    res.status(500).json({ error: 'El servidor de Google rechazó el despacho del correo.' });
   }
 });
 

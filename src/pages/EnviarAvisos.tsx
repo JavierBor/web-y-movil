@@ -88,16 +88,43 @@ const EnviarAvisos: React.FC = () => {
 
     setLoading(true);
     try {
-      // Simula llamada a la API REST del backend
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // 1. Rescatamos el token guardado en el LocalStorage
+      const token = localStorage.getItem('token');
 
-      setToastMessage('¡Aviso enviado exitosamente!');
-      setToastColor('success');
-      setShowToast(true);
-      setForm({ enviarA: '', asunto: '', mensaje: '' });
-      setErrors({});
-    } catch {
-      setToastMessage('Error al enviar el aviso. Intente nuevamente.');
+      // 2. Hacemos la petición HTTP real a nuestra API Express
+      const response = await fetch('http://localhost:3000/api/tramites/enviar-aviso', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Mandamos el token en la cabecera para pasar el Authmiddleware
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          correoDestino: form.enviarA.trim(), // Coincide con tu backend
+          asunto: form.asunto.trim(),
+          mensaje: form.mensaje.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      // 3. Evaluamos la respuesta del backend
+      if (response.ok) {
+        setToastMessage('¡Aviso enviado exitosamente al correo electrónico!');
+        setToastColor('success');
+        setShowToast(true);
+        setForm({ enviarA: '', asunto: '', mensaje: '' });
+        setErrors({});
+      } else {
+        // Si el backend responde con un error controlado (ej: 400 o 500)
+        setToastMessage(data.error || 'Error al procesar el envío del aviso.');
+        setToastColor('danger');
+        setShowToast(true);
+      }
+    } catch (error) {
+      // Si la API está abajo o hay un problema de red (CORS bloqueado, etc.)
+      console.error('Error en la conexión con la API:', error);
+      setToastMessage('No se pudo establecer conexión con el servidor.');
       setToastColor('danger');
       setShowToast(true);
     } finally {

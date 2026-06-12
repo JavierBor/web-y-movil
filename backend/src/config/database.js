@@ -1,14 +1,18 @@
 const { Sequelize } = require('sequelize');
 
-// Configuración de la conexión a PostgreSQL
-const sequelize = new Sequelize('tramites_db', 'postgres', 'postgres', {
-    host: 'localhost',
-    dialect: 'postgres',
-    logging: false // Para que no llene la consola de mensajes de SQL
-});
+// 🔒 EF 3: Cargamos las credenciales de forma segura desde las variables de entorno
+const sequelize = new Sequelize(
+    process.env.DB_NAME, 
+    process.env.DB_USER, 
+    process.env.DB_PASSWORD, 
+    {
+        host: process.env.DB_HOST,
+        dialect: 'postgres',
+        logging: false // Para que no llene la consola de mensajes de SQL
+    }
+);
 
 // Probando la conexión
-
 const testConnection = async () => {
     try {
         await sequelize.authenticate();
