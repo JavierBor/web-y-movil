@@ -19,7 +19,7 @@ import PageLayout from '../components/PageLayout';
 import MainCard from '../components/MainCard';
 
 // Usamos el mismo CSS que el menú de usuario para mantener consistencia
-import './MenuDashboard.css'; 
+import './MenuDashBoard.css'; 
 
 const AdminMenu: React.FC = () => {
   return (

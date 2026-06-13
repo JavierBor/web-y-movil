@@ -20,7 +20,7 @@ import CustomHeader from '../components/CustomHeader';
 import PageLayout from '../components/PageLayout';
 import MainCard from '../components/MainCard';
 
-import './MenuDashboard.css'; // Crearemos un CSS compartido para ambos menús
+import './MenuDashBoard.css'; // Crearemos un CSS compartido para ambos menús
 
 function MenuPrincipal() {
   return (

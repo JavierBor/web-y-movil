@@ -15,7 +15,7 @@ app.use(helmet());
 
 const opcionesCors = {
   // 🔒 Permitimos explícitamente los dos puertos comunes de desarrollo para que no rebote
-  origin: ['http://localhost:8100', 'http://localhost:5173'], 
+  origin: ['http://localhost:8100', 'http://localhost:5173', 'http://localhost:8080'], 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true

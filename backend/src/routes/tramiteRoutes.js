@@ -9,7 +9,7 @@ const Usuario = require('../models/Usuario');
 const nodemailer = require('nodemailer');
 
 // 🛡️ EF 3: Importación ÚNICA de los middlewares de seguridad
-const { verificarToken, verificarAdmin } = require('../middleware/authMiddleware');
+const { verificarToken, verificarAdmin } = require('../middleware/AuthMiddleware');
 
 // 📧 EF 5: Configurar el transportador con tus variables seguras del archivo .env
 const transporter = nodemailer.createTransport({
