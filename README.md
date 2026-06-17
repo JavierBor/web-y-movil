@@ -390,3 +390,59 @@ Estas imagenes demuestran:
 - Creación de solicitud con datos en JSON.
 - Actualización de estado (aprobación).
 - Listado de trámites con datos anidados del usuario.
+
+# Entrega final
+
+## 1. Implementación de funcionalidades completas
+
+En esta fase final, el sistema ha consolidado su lógica de negocio transaccional, logrando una integración completa de extremo a extremo (End-to-End) entre el Frontend (Ionic/React) y el Backend (Node.js/Express + PostgreSQL). Se han programado y desplegado las funcionalidades *core* que resuelven de forma real las problemáticas planteadas.
+
+A continuación, se detallan los módulos principales completados y operativos en su totalidad:
+
+### 1. 📂 Módulo de Documentación y Carga de Archivos (Ciudadano)
+* **Descripción:** Permite a los vecinos adjuntar y enviar la documentación requerida para formalizar sus trámites (por ejemplo, certificados de alumno regular para la Beca Municipal o padrón del vehículo para el Permiso de Circulación).
+* **Detalles Técnicos:** * Uso de los componentes `SubirDocumentos.tsx` y `UploadItem.tsx` en el frontend, que gestionan los estados de carga y validaciones visuales.
+    * Procesamiento en el backend mediante el middleware `Multer` para la captura segura de archivos, almacenando las referencias directas en la base de datos (columna `datos_extra` / enlaces asociados) y vinculándolas estrictamente al registro del trámite y al `usuario_id`.
+
+### 2. 🛡️ Módulo de Auditoría y Gestión de Documentos (Administrador)
+* **Descripción:** Panel especializado que dota al cuerpo administrativo municipal de herramientas para revisar minuciosamente las solicitudes recibidas.
+* **Detalles Técnicos:**
+    * Implementado en la vista `GestionTramites.tsx`.
+    * El administrador cuenta con un flujo CRUD donde puede listar todas las solicitudes pendientes de la comuna, deserializar los metadatos variables de cada trámite y **visualizar/revisar de forma independiente los archivos adjuntos** cargados por el ciudadano para su aprobación o rechazo en tiempo real.
+
+### 3. 🔔 Módulo de Notificaciones y Alertas del Portal
+* **Descripción:** Sistema de comunicación reactivo diseñado para mantener al ciudadano informado sobre el estado de sus trámites en curso y emitir comunicados importantes de la comuna.
+* **Detalles Técnicos:**
+    * **Seguimiento Individual:** Vistas reactivas en `MisNotificaciones.tsx` y `MisTramites.tsx` que leen directamente los cambios de estado (Aprobado/Rechazado/Pendiente) gatillados por las acciones del administrador.
+    * **Avisos Masivos:** Herramienta administrativa (`EnviarAvisos.tsx` / `AdminAlerts.tsx`) que permite la redacción y emisión de avisos generales dirigidos a todos los usuarios del sistema (ej: cierres de sucursal por mantención o llamados a postulación).
+
+---
+
+### 📊 Resumen de Cumplimiento del CRUD y Flujo de Datos
+El circuito transaccional del sistema se ejecuta sin dependencias estáticas o datos simulados (*mockups*):
+1.  **Create (POST):** El ciudadano agenda su cita o postula a un beneficio enviando el formulario con sus archivos adjuntos (`/api/tramites`).
+2.  **Read (GET):** El ciudadano visualiza su historial y notificaciones; el Administrador lista globalmente las solicitudes y descarga los archivos adjuntos (`/api/tramites`).
+3.  **Update (PUT):** El Administrador actualiza el estado del trámite tras auditar la documentación o modifica la disponibilidad horaria de las oficinas.
+4.  **Delete (DELETE):** Permite la cancelación de solicitudes vigentes o la depuración de registros según las reglas de negocio.
+
+## 2. Implementación de seguridad avanzada en API
+
+## 🔒 Entrega Final - EF 3: Seguridad Avanzada en la API y Protección de Datos
+
+Para garantizar la integridad del sistema y resguardar la información confidencial de los ciudadanos, la API REST construida en Node.js/Express implementa múltiples capas de seguridad avanzada, mitigando los riesgos informáticos más comunes descritos en el estándar OWASP Top 10.
+
+### 1. 🛡️ Mitigación de Inyección SQL (SQL Injection) mediante Consultas Parametrizadas
+* **Mecanismo:** La persistencia y comunicación con la base de datos PostgreSQL se gestiona mediante el ORM **Sequelize**, prohibiendo de manera estricta la construcción de queries mediante concatenación directa de strings de texto.
+* **Detalle Técnico:** Sequelize implementa de forma nativa la **parametrización y sanitización automática de variables** (Prepared Statements). Cuando un usuario ingresa datos en los formularios de Ionic (como el RUT o datos variables del trámite), los valores se envían disociados de la estructura del comando SQL. Cualquier intento de inyectar código malicioso (ej: `' OR '1'='1` o ``; DROP TABLE Usuarios;``) es interpretado por el motor de la base de datos como un simple string literal inofensivo y no como una instrucción ejecutable.
+
+### 2. 🌐 Configuración de CORS Seguro (Cross-Origin Resource Sharing)
+* **Mecanismo:** Para evitar que scripts maliciosos alojados en dominios de terceros apunten e interactúen con nuestra API, se configuró el middleware oficial `cors` en el servidor Express.
+* **Detalle Técnico:** Se restringe el acceso limitando los métodos HTTP permitidos (`GET`, `POST`, `PUT`, `DELETE`) y definiendo explícitamente una lista blanca (*whitelist*) de orígenes autorizados (ej: `http://localhost:8100` correspondiente al entorno de desarrollo local de Ionic). Peticiones provenientes de dominios no autorizados son rechazadas de inmediato a nivel de red por el servidor.
+
+### 3. 🔑 Encriptación de Credenciales con Bcrypt
+* **Mecanismo:** Siguiendo las directrices de seguridad de la industria, las contraseñas de los usuarios jamás se almacenan en texto plano en PostgreSQL.
+* **Detalle Técnico:** Durante el flujo de registro (`/api/auth/register`), el backend intercepta la contraseña y le aplica una función hash criptográfica utilizando la librería **bcrypt**, aplicando un factor de costo computacional (Salt). Al iniciar sesión, el sistema utiliza `bcrypt.compare()` para contrastar la contraseña ingresada contra el hash guardado, haciendo inviable la ingeniería inversa o la lectura de contraseñas en caso de una filtración de la base de datos.
+
+## 3. Integración con algún servicio externo
+
+## 4. Despliegue con docker
