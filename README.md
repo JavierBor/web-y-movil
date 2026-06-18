@@ -14,6 +14,9 @@ Para garantizar la correcta ejecución del proyecto tener en cuenta los siguient
 |-------------|-------------------|------------------------|
 | Node.js     | **18.x o superior** | `node -v` |
 | npm         | 9.x o superior    | `npm -v` |
+| Docker Desktop | Última Ver. | docker-compose up --build (construir imagenes) |
+
+
 
 -> Si se usa bajo esta version de node, la aplicación fallara.
 -> Node.js 18+ desde [nodejs.org](https://nodejs.org/) o usa `nvm` (Node Version Manager) para cambiar de versión.
@@ -39,8 +42,57 @@ const sequelize = new Sequelize('tramites_db', 'tu_usuario', 'tu_contraseña', {
     logging: false // Evita saturar la consola con mensajes de SQL
 });
 ```
+Además de tener instalado Docker Desktop, comandos utiles:
+
+| Comando | Descripción | 
+|-------------|-------------------|
+| docker-compose up --build    | Construye imágenes y levanta contenedores (modo interactivo) |
+| docker-compose up -d --build    | Ídem, pero en segundo plano (modo detached) | 
+| docker-compose down | Detiene y elimina contenedores (mantiene volúmenes) |
+| docker-compose down -v | Detiene, elimina contenedores y borra volúmenes (pierdes datos de BD) | 
+| docker-compose logs -f backend | Ver logs en tiempo real del backend |
+| docker-compose logs -f frontend | Ver logs en tiempo real del frontend | 
+| docker-compose ps | Ver estado de los servicios |
 
 ### Pasos para ejecutar la aplicación
+
+**Caso Docker:**
+
+**1. Instalar Docker**
+- Descargar instalador de Docker -> https://www.docker.com/products/docker-desktop/
+- Ejecutar instalador y seguir las instrucciones.
+- Aparece con un icono de ballena.
+
+**2. Obtener código proyecto**
+- Abre una terminal (PowerShell en Windows, Terminal en Mac).
+- Clona el repositorio (reemplaza la URL si es privada):
+```
+git clone https://github.com/JavierBor/web-y-movil.git
+cd web-y-movil
+```
+**3. Levantar Docker**
+- Asegúrate de que Docker Desktop esté abierto y funcionando.
+- En la terminal (dentro de la carpeta web-y-movil), ejecuta:
+`
+docker-compose up --build
+
+**4. Usar la aplicación**
+
+- Una vez que veas mensajes como:
+```
+Servidor corriendo en http://localhost:3000
+```
+- Abre tu navegador y ve:
+    - Frontend: http://localhost:8080
+    - Backend (API): http://localhost:3000 (deberías ver "Servidor Express corriendo correctamente")
+- Regístrate o inicia sesión con las credenciales adecuadas. 
+
+**5. Detener la aplicación**
+- En la terminal donde está corriendo docker-compose up, presiona Ctrl + C para detener los contenedores.
+- Luego ejecuta: 
+```
+docker-compose down
+``` 
 
 **1. Clonar el repositorio y acceder a la carpeta raíz**
 Abre tu terminal, clona el repositorio (reemplaza la URL por la tuya) y navega hacia la carpeta del proyecto:
@@ -400,15 +452,15 @@ En esta fase final, el sistema ha consolidado su lógica de negocio transacciona
 
 A continuación, se detallan los módulos principales completados y operativos en su totalidad:
 
-### 📂 Módulo de Documentación y Carga de Archivos (Ciudadano)
+###  Módulo de Documentación y Carga de Archivos (Ciudadano)
 * **Descripción:** Permite a los vecinos adjuntar y enviar la documentación requerida para formalizar sus trámites (por ejemplo, certificados de alumno regular para la Beca Municipal o padrón del vehículo para el Permiso de Circulación).
 * **Detalles Técnicos:** Uso de los componentes `SubirDocumentos.tsx` y `UploadItem.tsx` en el frontend, que gestionan los estados de carga y validaciones visuales. Procesamiento en el backend mediante el middleware `Multer` para la captura segura de archivos, almacenando las referencias directas en la base de datos (columna `datos_extra` / enlaces asociados) y vinculándolas estrictamente al registro del trámite y al `usuario_id`.
 
-### 🛡️ Módulo de Auditoría y Gestión de Documentos (Administrador)
+###  Módulo de Auditoría y Gestión de Documentos (Administrador)
 * **Descripción:** Panel especializado que dota al cuerpo administrativo municipal de herramientas para revisar minuciosamente las solicitudes recibidas.
 * **Detalles Técnicos:** Implementado en la vista `GestionTramites.tsx`. El administrador cuenta con un flujo CRUD completo donde puede listar todas las solicitudes pendientes de la comuna, deserializar los metadatos variables de cada trámite y **visualizar/revisar de forma independiente los archivos adjuntos** cargados por el ciudadano para su aprobación o rechazo en tiempo real.
 
-### 🔔 Módulo de Notificaciones y Alertas del Portal
+###  Módulo de Notificaciones y Alertas del Portal
 * **Descripción:** Sistema de comunicación reactivo diseñado para mantener al ciudadano informado sobre el estado de sus trámites en curso y emitir comunicados importantes de la comuna.
 * **Detalles Técnicos:**
   * **Seguimiento Individual:** Vistas reactivas en `MisNotificaciones.tsx` y `MisTramites.tsx` que leen directamente los cambios de estado (Aprobado/Rechazado/Pendiente) gatillados por las acciones del administrador.
@@ -416,7 +468,7 @@ A continuación, se detallan los módulos principales completados y operativos e
 
 ---
 
-### 📊 Resumen de Cumplimiento del CRUD y Flujo de Datos
+###  Resumen de Cumplimiento del CRUD y Flujo de Datos
 El circuito transaccional del sistema se ejecuta sin dependencias estáticas o datos simulados (*mockups*):
 1. **Create (POST):** El ciudadano agenda su cita o postula a un beneficio enviando el formulario con sus archivos adjuntos (`/api/tramites`).
 2. **Read (GET):** El ciudadano visualiza su historial y notificaciones; el Administrador lista globalmente las solicitudes y descarga los archivos adjuntos (`/api/tramites`).
@@ -436,19 +488,19 @@ Para cumplir con una experiencia de usuario fluida, responsiva y adaptada a las 
 
 Para garantizar la integridad del sistema y resguardar la información confidencial de los ciudadanos, la API REST construida en Node.js/Express implementa múltiples capas de seguridad avanzada, mitigando los riesgos informáticos más comunes descritos en el estándar OWASP Top 10.
 
-### 🛡️ Mitigación de Inyección SQL (SQL Injection) mediante Consultas Parametrizadas
+###  Mitigación de Inyección SQL (SQL Injection) mediante Consultas Parametrizadas
 * **Mecanismo:** La persistencia y comunicación con la base de datos PostgreSQL se gestiona mediante el ORM **Sequelize**, prohibiendo de manera estricta la construcción de queries mediante concatenación directa de strings de texto.
 * **Detalle Técnico:** Sequelize implementa de forma nativa la **parametrización y sanitización automática de variables** (Prepared Statements). Cuando un usuario ingresa datos en los formularios de Ionic (como el RUT o datos variables del trámite), los valores se envían disociados de la estructura del comando SQL. Cualquier intento de inyectar código malicioso es interpretado por el motor de la base de datos como un simple string literal inofensivo y no como una instrucción ejecutable.
 
-### 🌐 Configuración de CORS Seguro (Cross-Origin Resource Sharing)
+###  Configuración de CORS Seguro (Cross-Origin Resource Sharing)
 * **Mecanismo:** Para evitar que scripts maliciosos alojados en dominios de terceros apunten e interactúen con nuestra API, se configuró el middleware oficial `cors` en el servidor Express.
 * **Detalle Técnico:** Se restringe el acceso limitando los métodos HTTP permitidos (`GET`, `POST`, `PUT`, `DELETE`) y definiendo explícitamente una lista blanca (*whitelist*) de orígenes autorizados, incluyendo `http://localhost:8080` (puerto del frontend en entorno Dockerizado) y `http://localhost:8100` (entorno local). Peticiones provenientes de dominios no autorizados son rechazadas de inmediato a nivel de red por el servidor.
 
-### 🔑 Encriptación de Credenciales con Bcrypt
+###  Encriptación de Credenciales con Bcrypt
 * **Mecanismo:** Siguiendo las directrices de seguridad de la industria, las contraseñas de los usuarios jamás se almacenan en texto plano en PostgreSQL.
 * **Detalle Técnico:** Durante el flujo de registro (`/api/auth/register`), el backend intercepta la contraseña y le aplica una función hash criptográfica utilizando la librería **bcrypt**, aplicando un factor de costo computacional (Salt). Al iniciar sesión, el sistema utiliza `bcrypt.compare()` para contrastar la contraseña ingresada contra el hash guardado, haciendo inviable la ingeniería inversa o la lectura de contraseñas en caso de una filtración.
 
-### 🪖 Protección de Cabeceras con Helmet
+###  Protección de Cabeceras con Helmet
 * **Mecanismo:** Integración de la librería `helmet()` como middleware de cabeceras HTTP seguras en Express. Esto blinda la API ocultando la firma del servidor web (como `X-Powered-By`), mitigando ataques de Cross-Site Scripting (XSS) y Clickjacking directamente en el navegador del cliente.
 
 ---
