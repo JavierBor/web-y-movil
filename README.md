@@ -20,6 +20,10 @@ Para garantizar la correcta ejecución del proyecto tener en cuenta los siguient
 
 -> Si se usa bajo esta version de node, la aplicación fallara.
 -> Node.js 18+ desde [nodejs.org](https://nodejs.org/) o usa `nvm` (Node Version Manager) para cambiar de versión.
+## 0.IMPORTANTE: Cuenta base de admin para probar funcionalidades de este
+
+Correo: admin@santodomingo.cl
+Contraseña: admin123
 
 ## 1. Ejecución del Proyecto (Compilación)
 
