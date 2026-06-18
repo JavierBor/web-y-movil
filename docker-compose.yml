@@ -26,6 +26,8 @@ services:
       DB_PASSWORD: postgres
       DB_NAME: tramites_db
       PORT: 3000
+      MUNICIPALIDAD_EMAIL: santodomingoadmin@gmail.com
+      MUNICIPALIDAD_PASSWORD: rwfkrjwyamezfszm
     ports:
       - "3000:3000"
     volumes:

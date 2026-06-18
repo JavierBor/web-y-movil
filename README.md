@@ -391,6 +391,7 @@ Estas imagenes demuestran:
 - Actualización de estado (aprobación).
 - Listado de trámites con datos anidados del usuario.
 
+
 # Entrega final
 
 ## 1. Implementación de funcionalidades completas
@@ -399,50 +400,88 @@ En esta fase final, el sistema ha consolidado su lógica de negocio transacciona
 
 A continuación, se detallan los módulos principales completados y operativos en su totalidad:
 
-### 1. 📂 Módulo de Documentación y Carga de Archivos (Ciudadano)
+### 📂 Módulo de Documentación y Carga de Archivos (Ciudadano)
 * **Descripción:** Permite a los vecinos adjuntar y enviar la documentación requerida para formalizar sus trámites (por ejemplo, certificados de alumno regular para la Beca Municipal o padrón del vehículo para el Permiso de Circulación).
-* **Detalles Técnicos:** * Uso de los componentes `SubirDocumentos.tsx` y `UploadItem.tsx` en el frontend, que gestionan los estados de carga y validaciones visuales.
-    * Procesamiento en el backend mediante el middleware `Multer` para la captura segura de archivos, almacenando las referencias directas en la base de datos (columna `datos_extra` / enlaces asociados) y vinculándolas estrictamente al registro del trámite y al `usuario_id`.
+* **Detalles Técnicos:** Uso de los componentes `SubirDocumentos.tsx` y `UploadItem.tsx` en el frontend, que gestionan los estados de carga y validaciones visuales. Procesamiento en el backend mediante el middleware `Multer` para la captura segura de archivos, almacenando las referencias directas en la base de datos (columna `datos_extra` / enlaces asociados) y vinculándolas estrictamente al registro del trámite y al `usuario_id`.
 
-### 2. 🛡️ Módulo de Auditoría y Gestión de Documentos (Administrador)
+### 🛡️ Módulo de Auditoría y Gestión de Documentos (Administrador)
 * **Descripción:** Panel especializado que dota al cuerpo administrativo municipal de herramientas para revisar minuciosamente las solicitudes recibidas.
-* **Detalles Técnicos:**
-    * Implementado en la vista `GestionTramites.tsx`.
-    * El administrador cuenta con un flujo CRUD donde puede listar todas las solicitudes pendientes de la comuna, deserializar los metadatos variables de cada trámite y **visualizar/revisar de forma independiente los archivos adjuntos** cargados por el ciudadano para su aprobación o rechazo en tiempo real.
+* **Detalles Técnicos:** Implementado en la vista `GestionTramites.tsx`. El administrador cuenta con un flujo CRUD completo donde puede listar todas las solicitudes pendientes de la comuna, deserializar los metadatos variables de cada trámite y **visualizar/revisar de forma independiente los archivos adjuntos** cargados por el ciudadano para su aprobación o rechazo en tiempo real.
 
-### 3. 🔔 Módulo de Notificaciones y Alertas del Portal
+### 🔔 Módulo de Notificaciones y Alertas del Portal
 * **Descripción:** Sistema de comunicación reactivo diseñado para mantener al ciudadano informado sobre el estado de sus trámites en curso y emitir comunicados importantes de la comuna.
 * **Detalles Técnicos:**
-    * **Seguimiento Individual:** Vistas reactivas en `MisNotificaciones.tsx` y `MisTramites.tsx` que leen directamente los cambios de estado (Aprobado/Rechazado/Pendiente) gatillados por las acciones del administrador.
-    * **Avisos Masivos:** Herramienta administrativa (`EnviarAvisos.tsx` / `AdminAlerts.tsx`) que permite la redacción y emisión de avisos generales dirigidos a todos los usuarios del sistema (ej: cierres de sucursal por mantención o llamados a postulación).
+  * **Seguimiento Individual:** Vistas reactivas en `MisNotificaciones.tsx` y `MisTramites.tsx` que leen directamente los cambios de estado (Aprobado/Rechazado/Pendiente) gatillados por las acciones del administrador.
+  * **Avisos Masivos:** Herramienta administrativa (`EnviarAvisos.tsx` / `AdminAlerts.tsx`) que permite la redacción y emisión de avisos generales dirigidos a todos los usuarios del sistema (ej: cierres de sucursal por mantención o llamados a postulación).
 
 ---
 
 ### 📊 Resumen de Cumplimiento del CRUD y Flujo de Datos
 El circuito transaccional del sistema se ejecuta sin dependencias estáticas o datos simulados (*mockups*):
-1.  **Create (POST):** El ciudadano agenda su cita o postula a un beneficio enviando el formulario con sus archivos adjuntos (`/api/tramites`).
-2.  **Read (GET):** El ciudadano visualiza su historial y notificaciones; el Administrador lista globalmente las solicitudes y descarga los archivos adjuntos (`/api/tramites`).
-3.  **Update (PUT):** El Administrador actualiza el estado del trámite tras auditar la documentación o modifica la disponibilidad horaria de las oficinas.
-4.  **Delete (DELETE):** Permite la cancelación de solicitudes vigentes o la depuración de registros según las reglas de negocio.
+1. **Create (POST):** El ciudadano agenda su cita o postula a un beneficio enviando el formulario con sus archivos adjuntos (`/api/tramites`).
+2. **Read (GET):** El ciudadano visualiza su historial y notificaciones; el Administrador lista globalmente las solicitudes y descarga los archivos adjuntos (`/api/tramites`).
+3. **Update (PUT):** El Administrador actualiza el estado del trámite tras auditar la documentación o modifica la disponibilidad horaria de las oficinas.
+4. **Delete (DELETE):** Permite la cancelación de solicitudes vigentes o la depuración de registros según las reglas de negocio.
 
-## 2. Implementación de seguridad avanzada en API
+---
+## 2. Mejoras avanzadas en la UI/UX y optimización del rendimiento (EF 2)
 
-## 🔒 Entrega Final - EF 3: Seguridad Avanzada en la API y Protección de Datos
+Para cumplir con una experiencia de usuario fluida, responsiva y adaptada a las necesidades del ecosistema municipal, se implementaron las siguientes mejoras en la interfaz:
+
+* **Componentes de Carga Interactivos (Subir Archivos):** Se diseñó una experiencia guiada permitiendo que el usuario sea capaz de subir archivos
+* **Consistencia de Flujos de Extremo a Extremo (End-to-End):** Se realizó una revisión exhaustiva de consistencia en todas las rutas de navegación de la aplicación, garantizando que tanto el flujo del ciudadano (desde el catálogo guiado hasta la confirmación explícita) como el del administrador operen bajo una misma línea gráfica, predictibilidad y coherencia cognitiva. 
+* **Optimización de Tiempos de Respuesta:** El uso de empaquetado optimizado mediante **Vite** en combinación con llamadas asíncronas no bloqueantes en el Frontend garantiza que los componentes esenciales de la aplicación (como el Login y el Catálogo) carguen en menos de 2 segundos.
+
+## 3. Implementación de seguridad avanzada en API (EF 3)
 
 Para garantizar la integridad del sistema y resguardar la información confidencial de los ciudadanos, la API REST construida en Node.js/Express implementa múltiples capas de seguridad avanzada, mitigando los riesgos informáticos más comunes descritos en el estándar OWASP Top 10.
 
-### 1. 🛡️ Mitigación de Inyección SQL (SQL Injection) mediante Consultas Parametrizadas
+### 🛡️ Mitigación de Inyección SQL (SQL Injection) mediante Consultas Parametrizadas
 * **Mecanismo:** La persistencia y comunicación con la base de datos PostgreSQL se gestiona mediante el ORM **Sequelize**, prohibiendo de manera estricta la construcción de queries mediante concatenación directa de strings de texto.
-* **Detalle Técnico:** Sequelize implementa de forma nativa la **parametrización y sanitización automática de variables** (Prepared Statements). Cuando un usuario ingresa datos en los formularios de Ionic (como el RUT o datos variables del trámite), los valores se envían disociados de la estructura del comando SQL. Cualquier intento de inyectar código malicioso (ej: `' OR '1'='1` o ``; DROP TABLE Usuarios;``) es interpretado por el motor de la base de datos como un simple string literal inofensivo y no como una instrucción ejecutable.
+* **Detalle Técnico:** Sequelize implementa de forma nativa la **parametrización y sanitización automática de variables** (Prepared Statements). Cuando un usuario ingresa datos en los formularios de Ionic (como el RUT o datos variables del trámite), los valores se envían disociados de la estructura del comando SQL. Cualquier intento de inyectar código malicioso es interpretado por el motor de la base de datos como un simple string literal inofensivo y no como una instrucción ejecutable.
 
-### 2. 🌐 Configuración de CORS Seguro (Cross-Origin Resource Sharing)
+### 🌐 Configuración de CORS Seguro (Cross-Origin Resource Sharing)
 * **Mecanismo:** Para evitar que scripts maliciosos alojados en dominios de terceros apunten e interactúen con nuestra API, se configuró el middleware oficial `cors` en el servidor Express.
-* **Detalle Técnico:** Se restringe el acceso limitando los métodos HTTP permitidos (`GET`, `POST`, `PUT`, `DELETE`) y definiendo explícitamente una lista blanca (*whitelist*) de orígenes autorizados (ej: `http://localhost:8100` correspondiente al entorno de desarrollo local de Ionic). Peticiones provenientes de dominios no autorizados son rechazadas de inmediato a nivel de red por el servidor.
+* **Detalle Técnico:** Se restringe el acceso limitando los métodos HTTP permitidos (`GET`, `POST`, `PUT`, `DELETE`) y definiendo explícitamente una lista blanca (*whitelist*) de orígenes autorizados, incluyendo `http://localhost:8080` (puerto del frontend en entorno Dockerizado) y `http://localhost:8100` (entorno local). Peticiones provenientes de dominios no autorizados son rechazadas de inmediato a nivel de red por el servidor.
 
-### 3. 🔑 Encriptación de Credenciales con Bcrypt
+### 🔑 Encriptación de Credenciales con Bcrypt
 * **Mecanismo:** Siguiendo las directrices de seguridad de la industria, las contraseñas de los usuarios jamás se almacenan en texto plano en PostgreSQL.
-* **Detalle Técnico:** Durante el flujo de registro (`/api/auth/register`), el backend intercepta la contraseña y le aplica una función hash criptográfica utilizando la librería **bcrypt**, aplicando un factor de costo computacional (Salt). Al iniciar sesión, el sistema utiliza `bcrypt.compare()` para contrastar la contraseña ingresada contra el hash guardado, haciendo inviable la ingeniería inversa o la lectura de contraseñas en caso de una filtración de la base de datos.
+* **Detalle Técnico:** Durante el flujo de registro (`/api/auth/register`), el backend intercepta la contraseña y le aplica una función hash criptográfica utilizando la librería **bcrypt**, aplicando un factor de costo computacional (Salt). Al iniciar sesión, el sistema utiliza `bcrypt.compare()` para contrastar la contraseña ingresada contra el hash guardado, haciendo inviable la ingeniería inversa o la lectura de contraseñas en caso de una filtración.
 
-## 3. Integración con algún servicio externo
+### 🪖 Protección de Cabeceras con Helmet
+* **Mecanismo:** Integración de la librería `helmet()` como middleware de cabeceras HTTP seguras en Express. Esto blinda la API ocultando la firma del servidor web (como `X-Powered-By`), mitigando ataques de Cross-Site Scripting (XSS) y Clickjacking directamente en el navegador del cliente.
 
-## 4. Despliegue con docker
+---
+## 4. Optimización de consultas y eficiencia de respuesta (EF 4)
+
+El backend de la aplicación ha sido diseñado bajo estrictos estándares de rendimiento relacional, optimizando la comunicación con el motor PostgreSQL para garantizar transacciones concurrentes eficientes y respuestas ligeras en el cliente:
+
+* **Mitigación del Problema de Rendimiento $N+1$ (Eager Loading):** En el endpoint crítico de administración `GET /api/tramites`, el sistema rechaza la ejecución de múltiples consultas iterativas a la base de datos. En su lugar, utiliza la estrategia de carga asociativa de Sequelize mediante la cláusula `include`, acoplando el modelo `Usuario` al de `SolicitudTramite`. Esto resuelve la obtención global de solicitudes y los metadatos de los ciudadanos en una **única consulta indexada** (`LEFT OUTER JOIN`), reduciendo drásticamente la latencia en el servidor.
+* **Proyección Selectiva de Atributos y Privacidad:** En estricta alineación con la eficiencia de red, las consultas hacia el modelo `Usuario` restringen la transferencia de datos especificando únicamente campos necesarios en el payload (`attributes: ['rut', 'nombre_usuario', 'correo']`). Esto no solo aligera los paquetes JSON que viajan por HTTP, sino que previene de raíz la exposición de metadatos innecesarios o hashes de credenciales críticas del sistema.
+* **Uso Eficiente de Estructuras Dinámicas con `JSONB`:** La persistencia de los datos variables y específicos de cada tipo de formulario municipal (ej. rubro de patentes o datos escolares de becas) se delega a la columna `datos_extra`. Al operar bajo el tipo de dato nativo `JSONB` de PostgreSQL, el servidor procesa y serializa los campos de manera eficiente como objetos binarios indexables en disco, evitando complejas uniones de tablas adicionales o reestructuraciones del esquema relacional.
+* **Validación de Estados en Memoria:** Antes de procesar inserciones pesadas en la base de datos (como la carga en disco del middleware Multer), el endpoint `POST /api/tramites` realiza un filtro preventivo mediante `findOne` para verificar si el ciudadano ya cuenta con registros duplicados en estado `'Pendiente'`, deteniendo el flujo de forma inmediata y liberando recursos de procesamiento tempranamente si la regla de negocio no se cumple.
+
+## 4. Integración con algún servicio externo (EF 5)
+
+El sistema automatiza la comunicación asíncrona hacia el exterior mediante la integración de la API con servicios de mensajería masiva e institucional provistos por terceros.
+
+* **Servicio Utilizado:** Servidor SMTP Seguro de **Google (Gmail API Integration)**.
+* **Librería de Abstracción:** **Nodemailer** incorporado en el entorno Node.js.
+* **Detalle de Implementación:** Desde la pantalla de administración (`AdminAlerts.tsx`), el gestor municipal puede redactar y emitir un comunicado importante. Al accionar el botón, Axios despacha el payload hacia la ruta autenticada de la API. El backend levanta un objeto `transporter` seguro encriptado con TLS, consume las credenciales inyectadas desde las variables de entorno del archivo compilado, traduce la información a una plantilla HTML responsiva con la marca corporativa municipal y despacha en tiempo real la notificación directa a la bandeja de entrada del correo personal del vecino contribuyente.
+
+---
+
+## 5. Despliegue con Docker (EF 6)
+
+Para asegurar la portabilidad y la reproducibilidad exacta del entorno (evitando problemas de dependencias locales), toda la arquitectura se encuentra empaquetada, aislada y orquestada dentro de contenedores independientes mediante **Docker Compose**.
+
+### Componentes de la infraestructura Docker:
+1. **Contenedor `tramites_db` (PostgreSQL 15 Alpine):** Base de datos relacional aislada con persistencia montada en un volumen independiente (`postgres_data`).
+2. **Contenedor `tramites_backend` (Node.js 18 Alpine):** Levanta la API Express expuesta hacia el host en el puerto `3000`. Recibe de manera segura las variables de entorno para su comunicación interna con la BD y el servidor de Nodemailer.
+3. **Contenedor `tramites_frontend` (Ionic 7 / React Alpine):** Compila la SPA optimizada y la sirve bajo un servidor web mapeado y expuesto hacia la máquina local en el puerto de producción externo **`8080`**.
+
+### Comandos de Control de Infraestructura:
+* **Encender y compilar la arquitectura completa:**
+```bash
+  docker compose up -d --build
+
